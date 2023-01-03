@@ -24,37 +24,37 @@ library(gridExtra)
 # Thüringen (Erfurt) 10554
 
 #Setting up da data frame containing the states and the corresponding weather IDs
-dictStateId <- data.frame(matrix(nrow=0, ncol=2))
+dictStateId <- data.frame(matrix(nrow = 0, ncol = 2))
 colnames(dictStateId) <- c("Bundesland", "ID")
-dictStateId[nrow(dictStateId)+1,] <- c("Baden-Württemberg", 10738)
-dictStateId[nrow(dictStateId)+1,] <- c("Bayern", 10865)
-dictStateId[nrow(dictStateId)+1,] <- c("Berlin", 10382)
-dictStateId[nrow(dictStateId)+1,] <- c("Brandenburg", 10379)
-dictStateId[nrow(dictStateId)+1,] <- c("Bremen", 10224)
-dictStateId[nrow(dictStateId)+1,] <- c("Hamburg", 10147)
-dictStateId[nrow(dictStateId)+1,] <- c("Hessen", 10633)
-dictStateId[nrow(dictStateId)+1,] <- c("Mecklenburg-Vorpommern", 10162)
-dictStateId[nrow(dictStateId)+1,] <- c("Niedersachsen", 10338)
-dictStateId[nrow(dictStateId)+1,] <- c("Nordrhein-Westfalen", 10400)
-dictStateId[nrow(dictStateId)+1,] <- c("Rheinland-Pfalz", "D3137")
-dictStateId[nrow(dictStateId)+1,] <- c("Saarland", "D6217")
-dictStateId[nrow(dictStateId)+1,] <- c("Sachsen", "D1051")
-dictStateId[nrow(dictStateId)+1,] <- c("Sachsen-Anhalt", 10361)
-dictStateId[nrow(dictStateId)+1,] <- c("Schleswig-Holstein", 10044)
-dictStateId[nrow(dictStateId)+1,] <- c("Thüringen", 10554)
+dictStateId[nrow(dictStateId) + 1, ] <- c("Baden-Württemberg", 10738)
+dictStateId[nrow(dictStateId) + 1, ] <- c("Bayern", 10865)
+dictStateId[nrow(dictStateId) + 1, ] <- c("Berlin", 10382)
+dictStateId[nrow(dictStateId) + 1, ] <- c("Brandenburg", 10379)
+dictStateId[nrow(dictStateId) + 1, ] <- c("Bremen", 10224)
+dictStateId[nrow(dictStateId) + 1, ] <- c("Hamburg", 10147)
+dictStateId[nrow(dictStateId) + 1, ] <- c("Hessen", 10633)
+dictStateId[nrow(dictStateId) + 1, ] <- c("Mecklenburg-Vorpommern", 10162)
+dictStateId[nrow(dictStateId) + 1, ] <- c("Niedersachsen", 10338)
+dictStateId[nrow(dictStateId) + 1, ] <- c("Nordrhein-Westfalen", 10400)
+dictStateId[nrow(dictStateId) + 1, ] <- c("Rheinland-Pfalz", "D3137")
+dictStateId[nrow(dictStateId) + 1, ] <- c("Saarland", "D6217")
+dictStateId[nrow(dictStateId) + 1, ] <- c("Sachsen", "D1051")
+dictStateId[nrow(dictStateId) + 1, ] <- c("Sachsen-Anhalt", 10361)
+dictStateId[nrow(dictStateId) + 1, ] <- c("Schleswig-Holstein", 10044)
+dictStateId[nrow(dictStateId) + 1, ] <- c("Thüringen", 10554)
 
 #Reading incidence data in, data hereby comes from RKI
- url1 <-'https://www.rki.de/DE/Content/InfAZ/N/Neuartiges_Coronavirus/Daten/Fallzahlen_Kum_Tab_Archiv.xlsx?__blob=publicationFile'
- GET(url1, write_disk(tf <- tempfile(fileext = ".xlsx")))
- incidenceDataArchiv <- read_excel(tf, 3)
- colnames(incidenceDataArchiv) <- incidenceDataArchiv[4, ]
- colnames(incidenceDataArchiv)[1] <- "Bundesland"
- incidenceDataArchiv <- incidenceDataArchiv[-(1:4), ]
- incidenceDataArchiv <- pivot_longer(incidenceDataArchiv, names_to="Date", values_to="Incidence", cols=colnames(incidenceDataArchiv)[2:ncol(incidenceDataArchiv)])
- incidenceDataArchiv$Date <- as.integer(incidenceDataArchiv$Date)
- incidenceDataArchiv$Date <- as.Date(incidenceDataArchiv$Date,origin="1899-12-30")
+url1 <-'https://www.rki.de/DE/Content/InfAZ/N/Neuartiges_Coronavirus/Daten/Fallzahlen_Kum_Tab_Archiv.xlsx?__blob=publicationFile'
+GET(url1, write_disk(tf <- tempfile(fileext = ".xlsx")))
+incidenceDataArchiv <- read_excel(tf, 3)
+colnames(incidenceDataArchiv) <- incidenceDataArchiv[4, ]
+colnames(incidenceDataArchiv)[1] <- "Bundesland"
+incidenceDataArchiv <- incidenceDataArchiv[-(1:4), ]
+incidenceDataArchiv <- pivot_longer(incidenceDataArchiv, names_to="Date", values_to="Incidence", cols=colnames(incidenceDataArchiv)[2:ncol(incidenceDataArchiv)])
+incidenceDataArchiv$Date <- as.integer(incidenceDataArchiv$Date)
+incidenceDataArchiv$Date <- as.Date(incidenceDataArchiv$Date,origin="1899-12-30")
 
-url1<-'https://www.rki.de/DE/Content/InfAZ/N/Neuartiges_Coronavirus/Daten/Fallzahlen_Kum_Tab_aktuell.xlsx?__blob=publicationFile'
+url1 <- 'https://www.rki.de/DE/Content/InfAZ/N/Neuartiges_Coronavirus/Daten/Fallzahlen_Kum_Tab_aktuell.xlsx?__blob=publicationFile'
 GET(url1, write_disk(tf <- tempfile(fileext = ".xlsx")))
 incidenceData <- read_excel(tf, 4)
 colnames(incidenceData) <- incidenceData[4, ]
@@ -70,25 +70,17 @@ incidenceData <- rbind(incidenceDataArchiv, incidenceData)
 incidenceData$Incidence <- as.double(incidenceData$Incidence)
 incidendeData <- filter(incidenceData, Date < "2021-01-01")
 
-
-weeklyincidendeData <- incidenceData %>%
+#Turning weekly incidence Values into weekly values
+incidenceData <- incidenceData %>%
   mutate(week = week(Date)) %>%
   mutate(year = year(Date)) %>%
   group_by(year, week, Bundesland) %>%
   summarise(Date = min(Date) + 4, Incidence = mean(Incidence))
 
+#Adding the change of incidence to the data frame
+incidenceData <- incidenceData %>% group_by(Bundesland) %>%
+summarise(Date = Date, Incidence = Incidence, changeOfIncidence = Incidence/lag(Incidence))
 
-#Computing the change in incidence every week
-incidenceData <- weeklyincidendeData
-incidenceData <- mutate(incidenceData, changeOfIncidence = 1)
-for(row in 2:nrow(incidenceData)){
-  incidenceData[row, "changeOfIncidence"] <- incidenceData[row, "Incidence"]/incidenceData[row-1, "Incidence"]
-}
-
-for(maysixth in which(incidenceData$Date == "2020-05-12")){
-  incidenceData[maysixth, 4] <- 1
-}
-incidenceData$Bundesland <- as.character(incidenceData$Bundesland)
 
 ## Estimation for all states simultaneously
 
@@ -99,8 +91,9 @@ mobilityData <- read_delim("https://svn.vsp.tu-berlin.de/repos/public-svn/matsim
 mobilityData$date <- paste(substr(mobilityData$date, start = 1, stop = 4), substr(mobilityData$date, start = 5, stop = 6), as.character(substr(mobilityData$date, start = 7, stop = 8)), sep ="-" )
 mobilityData$date <- as.Date(mobilityData$date)
 colnames(mobilityData)[2] <- "Bundesland"
+colnames(mobilityData)[1] <- "Date"
 
-joinedDataFrame <- left_join(incidenceData, mobilityData, by = c("Bundesland", "date"))
+joinedDataFrame <- inner_join(incidenceData, mobilityData, by = c("Bundesland", "Date"))
 
 #Weather data
 weatherDataAll <- data.frame(matrix(nrow = 0, ncol = 3))
@@ -116,40 +109,72 @@ weatherData$Bundesland <- dictStateId[as.integer(state), 1]
 weatherDataAll <- rbind(weatherDataAll, weatherData)
 }
 
-colnames(weatherDataAll)[1] <- c("date")
-
 #Converting the weather data to an "outdoor fraction"
 #Below a certain temperature, everything happens indoords, above a certain temperature everything happens outdoors and in between we linearize
 weatherDataAll <- mutate(weatherDataAll, outdoorFraction = case_when(22.5 >= tmax & tmax >= 12.5 ~ 2 - 0.1*(22.5 - tmax),
                                                                    tmax < 12.5 ~ 2,
                                                                   tmax > 22.5 ~ 1))
 #Joining the data frames
-joinedDataFrame <- inner_join(joinedDataFrame, weatherDataAll, by = c("Bundesland", "date"))
+joinedDataFrame <- left_join(joinedDataFrame, weatherDataAll, by = c("Bundesland", "Date"))
 joinedDataFrame <- joinedDataFrame[,c("Date", "Bundesland", "Incidence", "changeOfIncidence", "outOfHomeDuration","tmax", "outdoorFraction")]
-joinedDataFrame <- mutate(joinedDataFrame, explanatory = outOfHomeDuration*outOfHomeDuration*(outdoorFraction))
-joinedDataFrame$Incidence <- as.double(joinedDataFrame$Incidence)
+joinedDataFrame <- mutate(joinedDataFrame, explanatory = outOfHomeDuration*outOfHomeDuration*(outdoorFraction)) #What am I using this one for?
 
 #Only for 2020 (and a bit of 2021, as not too many people were vaccinated and alpha wasn't dominant yet)
-joinedDataFrame <- filter(joinedDataFrame, date < "2021-02-22")
+joinedDataFrame <- filter(joinedDataFrame, Date < "2021-02-22") #Not quite sure why we are filtering again
 
 #Plotting changeOfIncidence over time and outOfHomeDuration over time and OutdoorFactor over time
-#Note : We're only displaying data for Berlin
-incidencePlot <- ggplot(data=filter(joinedDataFrame, Bundesland=="Bremen"), aes(x=date, y=Incidence)) +
+nestedplotlist <- list()
+
+for (federalstate in dictStateId$Bundesland){
+incidencePlot <- ggplot(data=filter(joinedDataFrame, Bundesland==federalstate), aes(x=Date, y=Incidence)) +
   geom_point() +
   theme_minimal()
-changeOfIncidencePlot <- ggplot(data=filter(joinedDataFrame, Bundesland=="Berlin"), aes(x=date, y=changeOfIncidence)) +
+changeOfIncidencePlot <- ggplot(data=filter(joinedDataFrame, Bundesland==federalstate), aes(x=Date, y=changeOfIncidence)) +
   geom_point() +
   theme_minimal()
-mobilityPlot <- ggplot(data=filter(joinedDataFrame, Bundesland=="Berlin"), aes(x=date, y=outOfHomeDuration)) +
+mobilityPlot <- ggplot(data=filter(joinedDataFrame, Bundesland==federalstate), aes(x=Date, y=outOfHomeDuration)) +
   geom_point() +
   theme_minimal()
-tempPlot <- ggplot(data=filter(joinedDataFrame, Bundesland=="Berlin"), aes(x=date, y=tmax)) +
+tempPlot <- ggplot(data=filter(joinedDataFrame, Bundesland==federalstate), aes(x=Date, y=tmax)) +
   geom_point() +
   geom_hline(yintercept = 22.5) +
   geom_hline(yintercept = 12.5) +
   theme_minimal() +
   ylab("Tmax")
-grid.arrange(incidencePlot, changeOfIncidencePlot, mobilityPlot, tempPlot , nrow=4)
+outOfHomevsIncidence <- ggplot(data=filter(joinedDataFrame, Bundesland==federalstate), aes(x=outOfHomeDuration, y=changeOfIncidence)) +
+  geom_point() +
+  theme_minimal()
+outOfHomeSquaredvsIncidence <- ggplot(data=filter(joinedDataFrame, Bundesland==federalstate), aes(x=outOfHomeDuration*outOfHomeDuration, y=changeOfIncidence)) +
+  geom_point() +
+  theme_minimal()
+outOfHomePolymvsIncidence <- ggplot(data=filter(joinedDataFrame, Bundesland==federalstate), aes(x=outOfHomeDuration*outOfHomeDuration+outOfHomeDuration, y=changeOfIncidence)) +
+  geom_point() +
+  theme_minimal()
+outOfHomeOutdoorIncidence <- ggplot(data=filter(joinedDataFrame, Bundesland==federalstate), aes(x=outOfHomeDuration+outdoorFraction, y=changeOfIncidence)) +
+  geom_point() +
+  theme_minimal()
+outdoorIncidence <- ggplot(data=filter(joinedDataFrame, Bundesland==federalstate), aes(x=outdoorFraction, y=changeOfIncidence)) +
+  geom_point() +
+  theme_minimal()
+nestedplotlist[[federalstate]] <- list()
+nestedplotlist[[federalstate]][["incidencePlot"]] <- incidencePlot
+nestedplotlist[[federalstate]][["changeOfIncidencePlot"]] <- changeOfIncidencePlot
+nestedplotlist[[federalstate]][["mobilityPlot"]] <- mobilityPlot
+nestedplotlist[[federalstate]][["tempPlot"]] <- tempPlot
+nestedplotlist[[federalstate]][["outOfHomevsIncidence"]] <- outOfHomevsIncidence
+nestedplotlist[[federalstate]][["outOfHomeSquaredvsIncidence"]] <- outOfHomeSquaredvsIncidence
+nestedplotlist[[federalstate]][["outOfHomePolymvsIncidence"]] <- outOfHomePolymvsIncidence
+nestedplotlist[[federalstate]][["outOfHomeOutdoorvsIncidence"]] <- outOfHomeOutdoorIncidence
+nestedplotlist[[federalstate]][["outdoorIncidence"]] <- outdoorIncidence
+}
+
+#Examplary plot for Berlin
+grid.arrange(nestedplotlist[["Berlin"]][["incidencePlot"]], nestedplotlist[["Berlin"]][["changeOfIncidencePlot"]], nestedplotlist[["Berlin"]][["mobilityPlot"]], nestedplotlist[["Berlin"]][["tempPlot"]], nrow=4)
+
+
+grid.arrange(nestedplotlist[["Berlin"]][["outOfHomevsIncidence"]],nestedplotlist[["Berlin"]][["outOfHomeSquaredvsIncidence"]],nestedplotlist[["Berlin"]][["outOfHomePolymvsIncidence"]], nestedplotlist[["Berlin"]][["outOfHomeOutdoorvsIncidence"]], nrow=4)
+
+
 
 #From here on Trying to explore correlations
 #Exploratory work, for now everything will remain. Later, whatever we deem unnecessary will be 
@@ -170,12 +195,14 @@ joinedDataFrameColdWeater <- filter(joinedDataFrameBerlin, tmax <= 12.5)
 cor(joinedDataFrameColdWeater$changeOfIncidence, joinedDataFrameColdWeater$outOfHomeDuration)
 joinedDataFrameWarmWeater <- filter(joinedDataFrameBerlin, tmax >= 22.5)
 cor(joinedDataFrameWarmWeater$changeOfIncidence, joinedDataFrameWarmWeater$outOfHomeDuration) #Smallest correlation, additional idea: maybe the school holidays influence this somehow?
+cor(joinedDataFrameWarmWeater$changeOfIncidence, joinedDataFrameWarmWeater$outdoorFraction) 
 joinedDataFrameMediocreWeather <- filter(joinedDataFrameBerlin, tmax > 12.5) %>%
                                   filter(tmax < 22.5)
 cor(joinedDataFrameMediocreWeather$changeOfIncidence, joinedDataFrameMediocreWeather$outOfHomeDuration)
+cor(joinedDataFrameMediocreWeather$changeOfIncidence, joinedDataFrameMediocreWeather$tmax)
 
 #3) 
-#Instead of splitting the whole thing by temperature, we go wave-wise
+#Instead of splitting the whole thing by temperature, we go wave-wise # 2023-01-01 : The filtered intervals are similar to the intervals in 2)
 #1st summer plateau from May - End ofSeptember
 joinedDataFrameSummer <- filter(joinedDataFrameBerlin, Date < "2020-09-21")
 cor(joinedDataFrameSummer$changeOfIncidence, joinedDataFrameSummer$outOfHomeDuration)
@@ -198,8 +225,33 @@ theme_minimal()
 #Computing the cross-corelation of the two time series, to get an idea about lag
 ccf(joinedDataFrameFall$outOfHomeDuration, joinedDataFrameFall$changeOfIncidence)
 
+
 #Performing linear regression
-joinedDataFrame.lm <- lm(changeOfIncidence ~ outOfHomeDuration, data=joinedDataFrame)
+ggplot(data=filter(joinedDataFrame, changeOfIncidence < 2 & outOfHomeDuration > 5.5)) +
+geom_point(aes(x=outOfHomeDuration, y = changeOfIncidence*changeOfIncidence)) +
+geom_smooth(aes(x= outOfHomeDuration, y = changeOfIncidence*changeOfIncidence), method = "lm") +
+facet_wrap(vars(Bundesland)) +
+theme_minimal()
+
+joinedDataFrame.pm1 <- lm(changeOfIncidence ~ outOfHomeDuration, data=filter(joinedDataFrame, Bundesland=="Bayern")) 
+ggplot(data=filter(joinedDataFrame, changeOfIncidence < 2), aes(x=outOfHomeDuration, y = changeOfIncidence)) +
+geom_point() +
+stat_smooth(formula = y ~ poly(x,2), method = "lm") +
+facet_wrap(vars(Bundesland)) +
+theme_minimal()
+
 
 #Performing multiple polynomial regression
-joinedDataFrame.pm1 <- lm(changeOfIncidence ~ polym(outOfHomeDuration, outdoorFraction, degree=2), data=joinedDataFrame) #ToDo: How to visualize this?
+joinedDataFrame.pm1 <- lm(changeOfIncidence ~ polym(outOfHomeDuration, outdoorFraction, degree=2), data=filter(joinedDataFrame, Bundesland=="Bayern")) #ToDo: How to visualize this?
+
+fpoly2<-function(x1,x2){
+  return(joinedDataFrame.pm1$coefficients["(Intercept)"]+
+  joinedDataFrame.pm1$coefficients["polym(outOfHomeDuration, outdoorFraction, degree = 2)1.0"]*x1+
+  joinedDataFrame.pm1$coefficients["polym(outOfHomeDuration, outdoorFraction, degree = 2)2.0"]*x1*x1+
+  joinedDataFrame.pm1$coefficients["polym(outOfHomeDuration, outdoorFraction, degree = 2)0.1"]*x2+
+  joinedDataFrame.pm1$coefficients["polym(outOfHomeDuration, outdoorFraction, degree = 2)1.1"]*x1*x2+
+  joinedDataFrame.pm1$coefficients["polym(outOfHomeDuration, outdoorFraction, degree = 2)0.2"]*x2*x2)
+}
+
+ggplot(data = data=filter(joinedDataFrame, Bundesland=="Bayern")) +
+geom_point
