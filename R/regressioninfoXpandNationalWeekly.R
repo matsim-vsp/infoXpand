@@ -68,7 +68,7 @@ incidenceData$Date <- as.Date(incidenceData$Date)
 incidenceData$Date <- incidenceData$Date
 incidenceData <- incidenceData %>% filter(Bundesland == "Gesamt")
 
-incidenceData2 <- incidenceData 
+# incidenceData2 <- incidenceData
 incidenceData <- rbind(incidenceDataArchiv, incidenceData)
 incidenceData$Incidence <- as.double(incidenceData$Incidence)
 incidenceData <- filter(incidenceData, Date < as.Date("2021-01-01") & Date > as.Date("2020-05-11"))
@@ -310,235 +310,559 @@ nestedplotlist <- list()
 
 joinedDataFrame <- joinedDataFrame[-nrow(joinedDataFrame), ]
 
-weekdays <- c("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun")
+weekdays <- c("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun", "Mon_1week_lag")
 for(weekday in weekdays){
+if(weekday == "Mon_1week_lag"){
+formula.lm <- "changeOfIncidencelaggedMon ~ outOfHomeDuration"
+} else {
 weekdayString <- paste0("changeOfIncidencelagged",weekday,"2")
 formula.lm <- paste0("changeOfIncidencelagged",weekday,"2", " ~ outOfHomeDuration")
+}
 DvsI.lm <- lm(formula=formula.lm , data=joinedDataFrame)
+if(weekday == "Mon"){
+title <- "14 Day lag" 
+} else if(weekday=="Tue"){
+title <- "13 Day lag" 
+} else if(weekday=="Wed"){
+title <- "12 Day lag"
+} else if(weekday=="Thu"){
+title <- "11 Day lag"
+} else if(weekday=="Fri"){
+title <- "10 Day lag"
+} else if(weekday=="Sat"){
+title <- "9 Day lag"
+} else if(weekday == "Sun"){
+title <- "8 Day lag"
+} else if(weekday == "Mon_1week_lag"){
+title <- "7 Day lag"   
+}
 plot22 <- ggplot(data=joinedDataFrame) +
 geom_point(aes(x=outOfHomeDuration, y = .data[[weekdayString]])) +
 geom_smooth(aes(x= outOfHomeDuration, y = .data[[weekdayString]]), method = "lm") +
-ggtitle(weekday) +
+ggtitle(title) +
 theme_minimal()
 nestedplotlist[[paste0("Regression_DvsI_", weekday)]] <- DvsI.lm
 nestedplotlist[[paste0("Plot_DvsI_", weekday)]] <- plot22
 }
 
-grid.arrange(nestedplotlist[["Plot_DvsI_Mon"]],nestedplotlist[["Plot_DvsI_Tue"]],nestedplotlist[["Plot_DvsI_Wed"]], nestedplotlist[["Plot_DvsI_Thu"]], nestedplotlist[["Plot_DvsI_Fri"]], nestedplotlist[["Plot_DvsI_Sat"]], nestedplotlist[["Plot_DvsI_Sun"]], nrow=3)
+grid.arrange(nestedplotlist[["Plot_DvsI_Mon_1week_lag"]],nestedplotlist[["Plot_DvsI_Sun"]],nestedplotlist[["Plot_DvsI_Sat"]],nestedplotlist[["Plot_DvsI_Fri"]], nestedplotlist[["Plot_DvsI_Thu"]], nestedplotlist[["Plot_DvsI_Wed"]], nestedplotlist[["Plot_DvsI_Tue"]], nestedplotlist[["Plot_DvsI_Mon"]], nrow=3)
 
 # 2) D^2 vs I
 for(weekday in weekdays){
 joinedDataFrame <- joinedDataFrame %>% mutate(outOfHomeDurationSquared = outOfHomeDuration*outOfHomeDuration)
-weekdayString <- paste0("changeOfIncidencelagged",weekday,"2")
+if(weekday == "Mon_1week_lag"){
+formula.lm <- "changeOfIncidencelaggedMon ~ outOfHomeDurationSquared"
+} else {weekdayString <- paste0("changeOfIncidencelagged",weekday,"2")
 formula.lm <- paste0("changeOfIncidencelagged",weekday,"2", " ~ outOfHomeDurationSquared")
+}
 D2vsI.lm <- lm(formula = formula.lm, data=filter(joinedDataFrame))
+if(weekday == "Mon"){
+title <- "14 Day lag"
+} else if(weekday=="Tue"){
+title <- "13 Day lag"
+} else if(weekday=="Wed"){
+title <- "12 Day lag"
+} else if(weekday=="Thu"){
+title <- "11 Day lag"
+} else if(weekday=="Fri"){
+title <- "10 Day lag"
+} else if(weekday=="Sat"){
+title <- "9 Day lag"
+} else if(weekday == "Sun"){
+title <- "8 Day lag"
+} else if(weekday == "Mon_1week_lag"){
+title <- "7 Day lag"
+}
 plot22 <- ggplot(joinedDataFrame) +
 geom_point(aes(x=outOfHomeDurationSquared, y = .data[[weekdayString]])) +
 geom_smooth(aes(x= outOfHomeDurationSquared, y = .data[[weekdayString]]), method = "lm") +
-ggtitle(weekday) +
+ggtitle(title) +
 theme_minimal()
 nestedplotlist[[paste0("Regression_D2vsI", weekday)]] <- D2vsI.lm
 nestedplotlist[[paste0("Plot_D2vsI", weekday)]] <- plot22
 }
 
-grid.arrange(nestedplotlist[["Plot_D2vsIMon"]],nestedplotlist[["Plot_D2vsITue"]],nestedplotlist[["Plot_D2vsIWed"]], nestedplotlist[["Plot_D2vsIThu"]], nestedplotlist[["Plot_D2vsIFri"]], nestedplotlist[["Plot_D2vsISat"]], nestedplotlist[["Plot_D2vsISun"]], nrow=3)
+grid.arrange(nestedplotlist[["Plot_D2vsIMon_1week_lag"]],nestedplotlist[["Plot_D2vsISun"]],nestedplotlist[["Plot_D2vsISat"]],nestedplotlist[["Plot_D2vsIFri"]], nestedplotlist[["Plot_D2vsIThu"]], nestedplotlist[["Plot_D2vsIWed"]], nestedplotlist[["Plot_D2vsITue"]], nestedplotlist[["Plot_D2vsIMon"]], nrow=3)
 
 
 # 3) D + D^2 vs I
 for(weekday in weekdays){
+if(weekday == "Mon_1week_lag"){
+formula.lm <- "changeOfIncidencelaggedMon ~ outOfHomeDurationSquared + outOfHomeDuration"
+} else {
 formula.lm <- paste0("changeOfIncidencelagged",weekday,"2", " ~ outOfHomeDurationSquared + outOfHomeDuration")
+}
 joinedDataFrame <- joinedDataFrame %>% mutate(outOfHomeDurationSquared = outOfHomeDuration*outOfHomeDuration)
 DplusD2vsI.lm <- lm(formula=formula.lm, data=joinedDataFrame) #Examplary regression for Bayern
+if(weekday == "Mon"){
+title <- "14 Day lag" 
+} else if(weekday=="Tue"){
+title <- "13 Day lag" 
+} else if(weekday=="Wed"){
+title <- "12 Day lag"
+} else if(weekday=="Thu"){
+title <- "11 Day lag"
+} else if(weekday=="Fri"){
+title <- "10 Day lag"
+} else if(weekday=="Sat"){
+title <- "9 Day lag"
+} else if(weekday == "Sun"){
+title <- "8 Day lag"
+} else if(weekday == "Mon_1week_lag"){
+title <- "7 Day lag"
+}
 plot22 <- ggplot(data=joinedDataFrame, aes(x=outOfHomeDurationSquared + outOfHomeDuration, y = .data[[weekdayString]])) +
 geom_point() +
 geom_smooth(method="lm") +
-ggtitle(weekday) +
+ggtitle(title) +
 theme_minimal()
 nestedplotlist[[paste0("Regression_DplusD2vsI", weekday)]] <- DplusD2vsI.lm
 nestedplotlist[[paste0("Plot_DplusD2vsI", weekday)]] <- plot22
 }
 
-grid.arrange(nestedplotlist[["Plot_DplusD2vsIMon"]],nestedplotlist[["Plot_DplusD2vsITue"]],nestedplotlist[["Plot_DplusD2vsIWed"]], nestedplotlist[["Plot_DplusD2vsIThu"]], nestedplotlist[["Plot_DplusD2vsIFri"]], nestedplotlist[["Plot_DplusD2vsISat"]], nestedplotlist[["Plot_DplusD2vsISun"]], nrow=3)
+grid.arrange(nestedplotlist[["Plot_DplusD2vsIMon_1week_lag"]],nestedplotlist[["Plot_DplusD2vsISun"]],nestedplotlist[["Plot_DplusD2vsISat"]],nestedplotlist[["Plot_DplusD2vsIFri"]], nestedplotlist[["Plot_DplusD2vsIThu"]], nestedplotlist[["Plot_DplusD2vsIWed"]], nestedplotlist[["Plot_DplusD2vsITue"]], nestedplotlist[["Plot_DplusD2vsIMon"]], nrow=3)
 
 
 # 4a) D + tmax vs I
 for(weekday in weekdays){
+if(weekday == "Mon_1week_lag"){
+formula.lm <- "changeOfIncidencelaggedMon ~ outOfHomeDuration + tmax" 
+} else {
 formula.lm <- paste0("changeOfIncidencelagged",weekday,"2", " ~ outOfHomeDuration + tmax")
-DplustmaxvsI.lm <- lm(formula=formula.lm, data=joinedDataFrame) #Examplary regression for Bayern
+}
+DplustmaxvsI.lm <- lm(formula=formula.lm, data=joinedDataFrame) 
+if(weekday == "Mon"){
+title <- "14 Day lag" 
+} else if(weekday=="Tue"){
+title <- "13 Day lag" 
+} else if(weekday=="Wed"){
+title <- "12 Day lag"
+} else if(weekday=="Thu"){
+title <- "11 Day lag"
+} else if(weekday=="Fri"){
+title <- "10 Day lag"
+} else if(weekday=="Sat"){
+title <- "9 Day lag"
+} else if(weekday == "Sun"){
+title <- "8 Day lag"
+} else if(weekday == "Mon_1week_lag"){
+title <- "7 Day lag"   
+}
 plot22 <- ggplot(data=joinedDataFrame, aes(x = outOfHomeDuration + tmax, y = .data[[weekdayString]])) +
 geom_point() +
 geom_smooth(method = "lm") +
-ggtitle(weekday) +
+ggtitle(title) +
 theme_minimal()
 nestedplotlist[[paste0("Regression_DplustmaxvsI", weekday)]] <- DplustmaxvsI.lm
 nestedplotlist[[paste0("Plot_DplustmaxvsI", weekday)]] <- plot22
 }
-grid.arrange(nestedplotlist[["Plot_DplustmaxvsIMon"]],nestedplotlist[["Plot_DplustmaxvsITue"]],nestedplotlist[["Plot_DplustmaxvsIWed"]], nestedplotlist[["Plot_DplustmaxvsIThu"]], nestedplotlist[["Plot_DplustmaxvsIFri"]], nestedplotlist[["Plot_DplustmaxvsISat"]], nestedplotlist[["Plot_DplustmaxvsISun"]], nrow=3)
+grid.arrange(nestedplotlist[["Plot_DplustmaxvsIMon_1week_lag"]],nestedplotlist[["Plot_DplustmaxvsISun"]],nestedplotlist[["Plot_DplustmaxvsISat"]],nestedplotlist[["Plot_DplustmaxvsIFri"]], nestedplotlist[["Plot_DplustmaxvsIThu"]], nestedplotlist[["Plot_DplustmaxvsIWed"]], nestedplotlist[["Plot_DplustmaxvsITue"]], nestedplotlist[["Plot_DplustmaxvsIMon"]], nrow=3)
 
 
 # 4b) D + tavg vs I
 for(weekday in weekdays){
+if(weekday == "Mon_1week_lag"){
+formula.lm <- "changeOfIncidencelaggedMon ~ outOfHomeDuration + tavg" 
+} else {
 formula.lm <- paste0("changeOfIncidencelagged",weekday,"2", " ~ outOfHomeDuration + tavg")
+}
 DplustavgvsI.lm <- lm(formula = formula.lm, data=joinedDataFrame)
+if(weekday == "Mon"){
+title <- "14 Day lag" 
+} else if(weekday=="Tue"){
+title <- "13 Day lag" 
+} else if(weekday=="Wed"){
+title <- "12 Day lag"
+} else if(weekday=="Thu"){
+title <- "11 Day lag"
+} else if(weekday=="Fri"){
+title <- "10 Day lag"
+} else if(weekday=="Sat"){
+title <- "9 Day lag"
+} else if(weekday == "Sun"){
+title <- "8 Day lag"
+} else if(weekday == "Mon_1week_lag"){
+title <- "7 Day lag"   
+}
 plot22 <- ggplot(data=joinedDataFrame) +
 geom_point(aes(x=outOfHomeDuration+tavg, y = .data[[weekdayString]])) +
 geom_smooth(aes(x= outOfHomeDuration+tavg, y = .data[[weekdayString]]), method = "lm") +
-ggtitle(weekday) +
+ggtitle(title) +
 theme_minimal()
 nestedplotlist[[paste0("Regression_DplustavgvsI", weekday)]] <- DplustavgvsI.lm
 nestedplotlist[[paste0("Plot_DplustavgvsI", weekday)]] <- plot22
 }
 
-grid.arrange(nestedplotlist[["Plot_DplustavgvsIMon"]],nestedplotlist[["Plot_DplustavgvsITue"]],nestedplotlist[["Plot_DplustavgvsIWed"]], nestedplotlist[["Plot_DplustavgvsIThu"]], nestedplotlist[["Plot_DplustavgvsIFri"]], nestedplotlist[["Plot_DplustavgvsISat"]], nestedplotlist[["Plot_DplustavgvsISun"]], nrow=3)
+grid.arrange(nestedplotlist[["Plot_DplustavgvsIMon_1week_lag"]],nestedplotlist[["Plot_DplustavgvsISun"]],nestedplotlist[["Plot_DplustavgvsISat"]],nestedplotlist[["Plot_DplustavgvsIFri"]], nestedplotlist[["Plot_DplustavgvsIThu"]], nestedplotlist[["Plot_DplustavgvsIWed"]], nestedplotlist[["Plot_DplustavgvsITue"]], nestedplotlist[["Plot_DplustavgvsIMon"]], nrow=3)
 
 
 # 5a) D*tmax vs I
 for(weekday in weekdays){
+if(weekday == "Mon_1week_lag"){
+formula.lm <- "changeOfIncidencelaggedMon ~ outOfHomeDuration * tmax" 
+} else {
 formula.lm <- paste0("changeOfIncidencelagged",weekday,"2", " ~ outOfHomeDuration*tmax")
+}
 DtimestmaxvsI.lm <- lm(formula = formula.lm, data=joinedDataFrame)
+if(weekday == "Mon"){
+title <- "14 Day lag" 
+} else if(weekday=="Tue"){
+title <- "13 Day lag" 
+} else if(weekday=="Wed"){
+title <- "12 Day lag"
+} else if(weekday=="Thu"){
+title <- "11 Day lag"
+} else if(weekday=="Fri"){
+title <- "10 Day lag"
+} else if(weekday=="Sat"){
+title <- "9 Day lag"
+} else if(weekday == "Sun"){
+title <- "8 Day lag"
+} else if(weekday == "Mon_1week_lag"){
+title <- "7 Day lag"   
+}
 plot22 <- ggplot(data=joinedDataFrame) +
 geom_point(aes(x=outOfHomeDuration*tmax, y = .data[[weekdayString]])) +
 geom_smooth(aes(x= outOfHomeDuration*tmax, y = .data[[weekdayString]]), method = "lm") +
+ggtitle(title) +
 theme_minimal()
 nestedplotlist[[paste0("Regression_DtimestmaxvsI", weekday)]] <- DtimestmaxvsI.lm
 nestedplotlist[[paste0("Plot_DtimestmaxvsI", weekday)]] <- plot22
 }
 
-grid.arrange(nestedplotlist[["Plot_DtimestmaxvsIMon"]],nestedplotlist[["Plot_DtimestmaxvsITue"]],nestedplotlist[["Plot_DtimestmaxvsIWed"]], nestedplotlist[["Plot_DtimestmaxvsIThu"]], nestedplotlist[["Plot_DtimestmaxvsIFri"]], nestedplotlist[["Plot_DtimestmaxvsISat"]], nestedplotlist[["Plot_DtimestmaxvsISun"]], nrow=3)
+grid.arrange(nestedplotlist[["Plot_DtimestmaxvsIMon_1week_lag"]],nestedplotlist[["Plot_DtimestmaxvsISun"]],nestedplotlist[["Plot_DtimestmaxvsISat"]],nestedplotlist[["Plot_DtimestmaxvsIFri"]], nestedplotlist[["Plot_DtimestmaxvsIThu"]], nestedplotlist[["Plot_DtimestmaxvsIWed"]], nestedplotlist[["Plot_DtimestmaxvsITue"]], nestedplotlist[["Plot_DtimestmaxvsIMon"]], nrow=3)
 
 
 # 5b) D*tavg vs I
 for(weekday in weekdays){
+if(weekday == "Mon_1week_lag"){
+formula.lm <- "changeOfIncidencelaggedMon ~ outOfHomeDuration * tavg" 
+} else {
 formula.lm <- paste0("changeOfIncidencelagged",weekday,"2", " ~ outOfHomeDuration*tavg")
+}
 DtimestavgvsI.lm <- lm(formula=formula.lm, data=joinedDataFrame)
+if(weekday == "Mon"){
+title <- "14 Day lag" 
+} else if(weekday=="Tue"){
+title <- "13 Day lag" 
+} else if(weekday=="Wed"){
+title <- "12 Day lag"
+} else if(weekday=="Thu"){
+title <- "11 Day lag"
+} else if(weekday=="Fri"){
+title <- "10 Day lag"
+} else if(weekday=="Sat"){
+title <- "9 Day lag"
+} else if(weekday == "Sun"){
+title <- "8 Day lag"
+} else if(weekday == "Mon_1week_lag"){
+title <- "7 Day lag"   
+}
 plot22 <- ggplot(data=joinedDataFrame) +
 geom_point(aes(x=outOfHomeDuration*tavg, y = .data[[weekdayString]])) +
 geom_smooth(aes(x= outOfHomeDuration*tavg, y = .data[[weekdayString]]), method = "lm") +
+ggtitle(title) +
 theme_minimal()
 nestedplotlist[[paste0("Regression_DtimestavgvsI", weekday)]] <- DtimestavgvsI.lm
 nestedplotlist[[paste0("Plot_DtimestavgvsI", weekday)]] <- plot22
 }
 
-grid.arrange(nestedplotlist[["Plot_DtimestavgvsIMon"]],nestedplotlist[["Plot_DtimestavgvsITue"]],nestedplotlist[["Plot_DtimestavgvsIWed"]], nestedplotlist[["Plot_DtimestavgvsIThu"]], nestedplotlist[["Plot_DtimestavgvsIFri"]], nestedplotlist[["Plot_DtimestavgvsISat"]], nestedplotlist[["Plot_DtimestavgvsISun"]], nrow=3)
+grid.arrange(nestedplotlist[["Plot_DtimestavgvsIMon_1week_lag"]],nestedplotlist[["Plot_DtimestavgvsISun"]],nestedplotlist[["Plot_DtimestavgvsISat"]],nestedplotlist[["Plot_DtimestavgvsIFri"]], nestedplotlist[["Plot_DtimestavgvsIThu"]], nestedplotlist[["Plot_DtimestavgvsIWed"]], nestedplotlist[["Plot_DtimestavgvsITue"]], nestedplotlist[["Plot_DtimestavgvsIMon"]], nrow=3)
 
 
 # 6a) D + out vs I
 for(weekday in weekdays){
+if(weekday == "Mon_1week_lag"){
+formula.lm <- "changeOfIncidencelaggedMon ~ outOfHomeDuration + outdoorFraction" 
+} else {
 formula.lm <- paste0("changeOfIncidencelagged",weekday,"2", " ~ outOfHomeDuration + outdoorFraction")
+}
 DplusoutvsI.lm <- lm(formula=formula.lm, data=joinedDataFrame)
+if(weekday == "Mon"){
+title <- "14 Day lag" 
+} else if(weekday=="Tue"){
+title <- "13 Day lag" 
+} else if(weekday=="Wed"){
+title <- "12 Day lag"
+} else if(weekday=="Thu"){
+title <- "11 Day lag"
+} else if(weekday=="Fri"){
+title <- "10 Day lag"
+} else if(weekday=="Sat"){
+title <- "9 Day lag"
+} else if(weekday == "Sun"){
+title <- "8 Day lag"
+} else if(weekday == "Mon_1week_lag"){
+title <- "7 Day lag"   
+}
 plot22 <- ggplot(data=joinedDataFrame) +
 geom_point(aes(x=outOfHomeDuration+outdoorFraction, y = .data[[weekdayString]])) +
 geom_smooth(aes(x= outOfHomeDuration+outdoorFraction, y = .data[[weekdayString]]), method = "lm") +
+ggtitle(title) +
 theme_minimal()
 nestedplotlist[[paste0("Regression_DplusoutvsI", weekday)]] <- DplusoutvsI.lm
 nestedplotlist[[paste0("Plot_DplusoutvsI", weekday)]] <- plot22
 }
 
-grid.arrange(nestedplotlist[["Plot_DplusoutvsIMon"]],nestedplotlist[["Plot_DplusoutvsITue"]],nestedplotlist[["Plot_DplusoutvsIWed"]], nestedplotlist[["Plot_DplusoutvsIThu"]], nestedplotlist[["Plot_DplusoutvsIFri"]], nestedplotlist[["Plot_DplusoutvsISat"]], nestedplotlist[["Plot_DplusoutvsISun"]], nrow=3)
+grid.arrange(nestedplotlist[["Plot_DplusoutvsI_Mon_1week_lag"]],nestedplotlist[["Plot_DplusoutvsISun"]],nestedplotlist[["Plot_DplusoutvsISat"]],nestedplotlist[["Plot_DplusoutvsIFri"]], nestedplotlist[["Plot_DplusoutvsIThu"]], nestedplotlist[["Plot_DplusoutvsIWed"]], nestedplotlist[["Plot_DplusoutvsITue"]], nestedplotlist[["Plot_DplusoutvsIMon"]], nrow=3)
 
 
 # 6b) D + out2 vs I
 for(weekday in weekdays){
-    formula.lm <- paste0("changeOfIncidencelagged",weekday,"2", " ~ outOfHomeDuration + outdoorFraction2")
+if(weekday == "Mon_1week_lag"){
+formula.lm <- "changeOfIncidencelaggedMon ~ outOfHomeDuration + outdoorFraction2" 
+} else {
+formula.lm <- paste0("changeOfIncidencelagged",weekday,"2", " ~ outOfHomeDuration + outdoorFraction2")
+}
 Dplusout2vsI.lm <- lm(formula = formula.lm, data=joinedDataFrame)
+if(weekday == "Mon"){
+title <- "14 Day lag" 
+} else if(weekday=="Tue"){
+title <- "13 Day lag" 
+} else if(weekday=="Wed"){
+title <- "12 Day lag"
+} else if(weekday=="Thu"){
+title <- "11 Day lag"
+} else if(weekday=="Fri"){
+title <- "10 Day lag"
+} else if(weekday=="Sat"){
+title <- "9 Day lag"
+} else if(weekday == "Sun"){
+title <- "8 Day lag"
+} else if(weekday == "Mon_1week_lag"){
+title <- "7 Day lag"   
+}
 plot22 <- ggplot(data=joinedDataFrame) +
 geom_point(aes(x=outOfHomeDuration+outdoorFraction2, y = .data[[weekdayString]])) +
 geom_smooth(aes(x= outOfHomeDuration+outdoorFraction2, y = .data[[weekdayString]]), method = "lm") +
+ggtitle(title) +
 theme_minimal()
 nestedplotlist[[paste0("Regression_Dplusout2vsI", weekday)]] <- DplusoutvsI.lm
 nestedplotlist[[paste0("Plot_Dplusout2vsI", weekday)]] <- plot22
 }
 
-grid.arrange(nestedplotlist[["Plot_Dplusout2vsIMon"]],nestedplotlist[["Plot_Dplusout2vsITue"]],nestedplotlist[["Plot_Dplusout2vsIWed"]], nestedplotlist[["Plot_Dplusout2vsIThu"]], nestedplotlist[["Plot_Dplusout2vsIFri"]], nestedplotlist[["Plot_Dplusout2vsISat"]], nestedplotlist[["Plot_Dplusout2vsISun"]], nrow=3)
+grid.arrange(nestedplotlist[["Plot_Dplusout2vsIMon_1week_lag"]],nestedplotlist[["Plot_Dplusout2vsISun"]],nestedplotlist[["Plot_Dplusout2vsISat"]],nestedplotlist[["Plot_Dplusout2vsIFri"]], nestedplotlist[["Plot_Dplusout2vsIThu"]], nestedplotlist[["Plot_Dplusout2vsIWed"]], nestedplotlist[["Plot_Dplusout2vsITue"]], nestedplotlist[["Plot_Dplusout2vsIMon"]], nrow=3)
 
 
 # 7a) D * out vs I
 for(weekday in weekdays){
+if(weekday == "Mon_1week_lag"){
+formula.lm <- "changeOfIncidencelaggedMon ~ outOfHomeDuration * outdoorFraction" 
+} else {
 formula.lm <- paste0("changeOfIncidencelagged",weekday,"2", " ~ outOfHomeDuration * outdoorFraction")
+}
 DtimesoutvsI.lm <- lm(formula = formula.lm, data=joinedDataFrame)
+if(weekday == "Mon"){
+title <- "14 Day lag" 
+} else if(weekday=="Tue"){
+title <- "13 Day lag" 
+} else if(weekday=="Wed"){
+title <- "12 Day lag"
+} else if(weekday=="Thu"){
+title <- "11 Day lag"
+} else if(weekday=="Fri"){
+title <- "10 Day lag"
+} else if(weekday=="Sat"){
+title <- "9 Day lag"
+} else if(weekday == "Sun"){
+title <- "8 Day lag"
+} else if(weekday == "Mon_1week_lag"){
+title <- "7 Day lag"   
+}
 plot22 <- ggplot(data=joinedDataFrame) +
 geom_point(aes(x=outOfHomeDuration*outdoorFraction+outOfHomeDuration+outdoorFraction, y = .data[[weekdayString]])) +
 geom_smooth(aes(x= outOfHomeDuration*outdoorFraction+outOfHomeDuration+outdoorFraction, y = .data[[weekdayString]]), method = "lm") +
+ggtitle(title) +
 theme_minimal()
 nestedplotlist[[paste0("Regression_DtimesoutvsI", weekday)]] <- plot22
 nestedplotlist[[paste0("Plot_DtimesoutvsI", weekday)]] <- plot22
 }
 
-grid.arrange(nestedplotlist[["Plot_DtimesoutvsIMon"]],nestedplotlist[["Plot_DtimesoutvsITue"]],nestedplotlist[["Plot_DtimesoutvsIWed"]], nestedplotlist[["Plot_DtimesoutvsIThu"]], nestedplotlist[["Plot_DtimesoutvsIFri"]], nestedplotlist[["Plot_DtimesoutvsISat"]], nestedplotlist[["Plot_DtimesoutvsISun"]], nrow=3)
+grid.arrange(nestedplotlist[["Plot_DtimesoutvsIMon_1week_lag"]], nestedplotlist[["Plot_DtimesoutvsISun"]],nestedplotlist[["Plot_DtimesoutvsISat"]],nestedplotlist[["Plot_DtimesoutvsIFri"]], nestedplotlist[["Plot_DtimesoutvsIThu"]], nestedplotlist[["Plot_DtimesoutvsIWed"]], nestedplotlist[["Plot_DtimesoutvsITue"]], nestedplotlist[["Plot_DtimesoutvsIMon"]], nrow=3)
 
 
 # 7b) D * out2 vs I
 for(weekday in weekdays){
+if(weekday == "Mon_1week_lag"){
+formula.lm <- "changeOfIncidencelaggedMon ~ outOfHomeDuration * outdoorFraction2" 
+} else {
 formula.lm <- paste0("changeOfIncidencelagged",weekday,"2", " ~ outOfHomeDuration * outdoorFraction2")
+}
 Dtimesout2vsI.lm <- lm(formula = formula.lm, data=joinedDataFrame)
+if(weekday == "Mon"){
+title <- "14 Day lag" 
+} else if(weekday=="Tue"){
+title <- "13 Day lag" 
+} else if(weekday=="Wed"){
+title <- "12 Day lag"
+} else if(weekday=="Thu"){
+title <- "11 Day lag"
+} else if(weekday=="Fri"){
+title <- "10 Day lag"
+} else if(weekday=="Sat"){
+title <- "9 Day lag"
+} else if(weekday == "Sun"){
+title <- "8 Day lag"
+} else if(weekday == "Mon_1week_lag"){
+title <- "7 Day lag"   
+}
 plot22 <- ggplot(data=joinedDataFrame) +
 geom_point(aes(x=outOfHomeDuration*outdoorFraction2+outOfHomeDuration+outdoorFraction2, y = .data[[weekdayString]])) +
 geom_smooth(aes(x= outOfHomeDuration*outdoorFraction2+outOfHomeDuration+outdoorFraction2, y = .data[[weekdayString]]), method = "lm") +
+ggtitle(title) +
 theme_minimal()
 nestedplotlist[[paste0("Regression_Dtimesout2vsI", weekday)]] <- plot22
 nestedplotlist[[paste0("Plot_Dtimesout2vsI", weekday)]] <- plot22
 }
 
-grid.arrange(nestedplotlist[["Plot_Dtimesout2vsIMon"]],nestedplotlist[["Plot_Dtimesout2vsITue"]],nestedplotlist[["Plot_Dtimesout2vsIWed"]], nestedplotlist[["Plot_Dtimesout2vsIThu"]], nestedplotlist[["Plot_Dtimesout2vsIFri"]], nestedplotlist[["Plot_Dtimesout2vsISat"]], nestedplotlist[["Plot_Dtimesout2vsISun"]], nrow=3)
+grid.arrange(nestedplotlist[["Plot_Dtimesout2vsIMon_1week_lag"]],nestedplotlist[["Plot_Dtimesout2vsISun"]],nestedplotlist[["Plot_Dtimesout2vsISat"]],nestedplotlist[["Plot_Dtimesout2vsIFri"]], nestedplotlist[["Plot_Dtimesout2vsIThu"]], nestedplotlist[["Plot_Dtimesout2vsIWed"]], nestedplotlist[["Plot_Dtimesout2vsITue"]], nestedplotlist[["Plot_Dtimesout2vsIMon"]], nrow=3)
 
 
 # 8) D + prcp
 for(weekday in weekdays){
+if(weekday == "Mon_1week_lag"){
+formula.lm <- "changeOfIncidencelaggedMon ~ outOfHomeDuration + prcp" 
+} else {
 formula.lm <- paste0("changeOfIncidencelagged",weekday,"2", " ~ outOfHomeDuration + prcp")
-DplusprcpvsI.lm <- lm(formula = formula.lm, data=joinedDataFrame) #Examplary regression for Bayern
+}
+DplusprcpvsI.lm <- lm(formula = formula.lm, data=joinedDataFrame) 
+if(weekday == "Mon"){
+title <- "14 Day lag" 
+} else if(weekday=="Tue"){
+title <- "13 Day lag" 
+} else if(weekday=="Wed"){
+title <- "12 Day lag"
+} else if(weekday=="Thu"){
+title <- "11 Day lag"
+} else if(weekday=="Fri"){
+title <- "10 Day lag"
+} else if(weekday=="Sat"){
+title <- "9 Day lag"
+} else if(weekday == "Sun"){
+title <- "8 Day lag"
+} else if(weekday == "Mon_1week_lag"){
+title <- "7 Day lag"   
+}
 plot22 <- ggplot(data=joinedDataFrame) +
 geom_point(aes(x=outOfHomeDuration+prcp, y = .data[[weekdayString]])) +
 geom_smooth(aes(x= outOfHomeDuration+prcp, y = .data[[weekdayString]]), method = "lm") +
+ggtitle(title) +
 theme_minimal()
 nestedplotlist[[paste0("Regression_DplusprcpvsI", weekday)]] <- DplustmaxvsI.lm
 nestedplotlist[[paste0("Plot_DplusprcpvsI", weekday)]] <- plot22
 }
 
-grid.arrange(nestedplotlist[["Plot_DplusprcpvsIMon"]],nestedplotlist[["Plot_DplusprcpvsITue"]],nestedplotlist[["Plot_DplusprcpvsIWed"]], nestedplotlist[["Plot_DplusprcpvsIThu"]], nestedplotlist[["Plot_DplusprcpvsIFri"]], nestedplotlist[["Plot_DplusprcpvsISat"]], nestedplotlist[["Plot_DplusprcpvsISun"]], nrow=3)
+grid.arrange(nestedplotlist[["Plot_DplusprcpvsIMon_1week_lag"]],nestedplotlist[["Plot_DplusprcpvsISun"]],nestedplotlist[["Plot_DplusprcpvsISat"]],nestedplotlist[["Plot_DplusprcpvsIFri"]], nestedplotlist[["Plot_DplusprcpvsIThu"]], nestedplotlist[["Plot_DplusprcpvsIWed"]], nestedplotlist[["Plot_DplusprcpvsITue"]], nestedplotlist[["Plot_DplusprcpvsIMon"]], nrow=3)
 
 # 9) D + tmax + prcp
 for(weekday in weekdays){
+if(weekday == "Mon_1week_lag"){
+formula.lm <- "changeOfIncidencelaggedMon ~ outOfHomeDuration * tmax * prcp" 
+} else {
 formula.lm <- paste0("changeOfIncidencelagged",weekday,"2", " ~ outOfHomeDuration * tmax * prcp")
+}
 DplustmaxprcpvsI.lm <- lm(formula = formula.lm, data=joinedDataFrame) 
+if(weekday == "Mon"){
+title <- "14 Day lag" 
+} else if(weekday=="Tue"){
+title <- "13 Day lag" 
+} else if(weekday=="Wed"){
+title <- "12 Day lag"
+} else if(weekday=="Thu"){
+title <- "11 Day lag"
+} else if(weekday=="Fri"){
+title <- "10 Day lag"
+} else if(weekday=="Sat"){
+title <- "9 Day lag"
+} else if(weekday == "Sun"){
+title <- "8 Day lag"
+} else if(weekday == "Mon_1week_lag"){
+title <- "7 Day lag"   
+}
 plot22 <- ggplot(data=joinedDataFrame) +
 geom_point(aes(x=outOfHomeDuration*tmax*prcp, y = .data[[weekdayString]])) +
 geom_smooth(aes(x= outOfHomeDuration*tmax*prcp, y = .data[[weekdayString]]), method = "lm") +
+ggtitle(title) +
 theme_minimal()
 nestedplotlist[[paste0("Regression_DplustmaxprcpvsI", weekday)]] <- DplustmaxprcpvsI.lm
 nestedplotlist[[paste0("Plot_DplustmaxprcpvsI", weekday)]] <- plot22
 }
 
-grid.arrange(nestedplotlist[["Plot_DplustmaxprcpvsIMon"]],nestedplotlist[["Plot_DplustmaxprcpvsITue"]],nestedplotlist[["Plot_DplustmaxprcpvsIWed"]], nestedplotlist[["Plot_DplustmaxprcpvsIThu"]], nestedplotlist[["Plot_DplustmaxprcpvsIFri"]], nestedplotlist[["Plot_DplustmaxprcpvsISat"]], nestedplotlist[["Plot_DplustmaxprcpvsISun"]], nrow=3)
+grid.arrange(nestedplotlist[["Plot_DplustmaxprcpvsIMon_1week_lag"]],nestedplotlist[["Plot_DplustmaxprcpvsISun"]],nestedplotlist[["Plot_DplustmaxprcpvsISat"]],nestedplotlist[["Plot_DplustmaxprcpvsIFri"]], nestedplotlist[["Plot_DplustmaxprcpvsIThu"]], nestedplotlist[["Plot_DplustmaxprcpvsIWed"]], nestedplotlist[["Plot_DplustmaxprcpvsITue"]], nestedplotlist[["Plot_DplustmaxprcpvsIMon"]], nrow=3)
 
 
 # 9) D + out + prcp
 for(weekday in weekdays){
+if(weekday == "Mon_1week_lag"){
+formula.lm <- "changeOfIncidencelaggedMon ~ outOfHomeDuration + outdoorFraction + prcp" 
+} else {
 formula.lm <- paste0("changeOfIncidencelagged",weekday,"2", " ~ outOfHomeDuration + outdoorFraction + prcp")
+}
 DplusoutplusprcpvsI.lm <- lm(formula = formula.lm, data=joinedDataFrame) #Examplary regression for Bayern
+if(weekday == "Mon"){
+title <- "14 Day lag" 
+} else if(weekday=="Tue"){
+title <- "13 Day lag" 
+} else if(weekday=="Wed"){
+title <- "12 Day lag"
+} else if(weekday=="Thu"){
+title <- "11 Day lag"
+} else if(weekday=="Fri"){
+title <- "10 Day lag"
+} else if(weekday=="Sat"){
+title <- "9 Day lag"
+} else if(weekday == "Sun"){
+title <- "8 Day lag"
+} else if(weekday == "Mon_1week_lag"){
+title <- "7 Day lag"   
+}
 plot22 <- ggplot(data=joinedDataFrame) +
 geom_point(aes(x=outOfHomeDuration+outdoorFraction+prcp, y = .data[[weekdayString]])) +
 geom_smooth(aes(x= outOfHomeDuration+outdoorFraction+prcp, y = .data[[weekdayString]]), method = "lm") +
+ggtitle(title) +
 theme_minimal()
 nestedplotlist[[paste0("Regressio_DplusoutplusprcpvsI", weekday)]] <- DplusoutplusprcpvsI.lm
 nestedplotlist[[paste0("Plot_DplusoutplusprcpvsI", weekday)]] <- plot22
 }
 
-grid.arrange(nestedplotlist[["Plot_DplusoutplusprcpvsIMon"]],nestedplotlist[["Plot_DplusoutplusprcpvsITue"]],nestedplotlist[["Plot_DplusoutplusprcpvsIWed"]], nestedplotlist[["Plot_DplusoutplusprcpvsIThu"]], nestedplotlist[["Plot_DplusoutplusprcpvsIFri"]], nestedplotlist[["Plot_DplusoutplusprcpvsISat"]], nestedplotlist[["Plot_DplusoutplusprcpvsISun"]], nrow=3)
+grid.arrange(nestedplotlist[["Plot_DplusoutplusprcpvsIMon_1week_lag"]],nestedplotlist[["Plot_DplusoutplusprcpvsISun"]],nestedplotlist[["Plot_DplusoutplusprcpvsISat"]],nestedplotlist[["Plot_DplusoutplusprcpvsIFri"]], nestedplotlist[["Plot_DplusoutplusprcpvsIThu"]], nestedplotlist[["Plot_DplusoutplusprcpvsIWed"]], nestedplotlist[["Plot_DplusoutplusprcpvsITue"]], nestedplotlist[["Plot_DplusoutplusprcpvsIMon"]], nrow=3)
 
 
 # 10) D + D:out2 + D:prcp
 for(weekday in weekdays){
+if(weekday == "Mon_1week_lag"){
+formula.lm <- "changeOfIncidencelaggedMon ~ outOfHomeDuration+outOfHomeDuration:outdoorFraction2+outOfHomeDuration:prcp" 
+} else {
 formula.lm <- paste0("changeOfIncidencelagged",weekday,"2", " ~ outOfHomeDuration+outOfHomeDuration:outdoorFraction2+outOfHomeDuration:prcp")
+}
 DplusoutplusprcpvsI.lm <- lm(formula = formula.lm, data=joinedDataFrame) #Examplary regression for Bayern
+if(weekday == "Mon"){
+title <- "14 Day lag" 
+} else if(weekday=="Tue"){
+title <- "13 Day lag" 
+} else if(weekday=="Wed"){
+title <- "12 Day lag"
+} else if(weekday=="Thu"){
+title <- "11 Day lag"
+} else if(weekday=="Fri"){
+title <- "10 Day lag"
+} else if(weekday=="Sat"){
+title <- "9 Day lag"
+} else if(weekday == "Sun"){
+title <- "8 Day lag"
+} else if(weekday == "Mon_1week_lag"){
+title <- "7 Day lag"   
+}
 plot22 <- ggplot(data=joinedDataFrame) +
 geom_point(aes(x=outOfHomeDuration+outOfHomeDuration:outdoorFraction+outOfHomeDuration:prcp, y = .data[[weekdayString]])) +
 geom_smooth(aes(x= outOfHomeDuration+outOfHomeDuration:outdoorFraction+outOfHomeDuration:prcp, y =.data[[weekdayString]]), method = "lm") +
+ggtitle(title) +
 theme_minimal()
 nestedplotlist[[paste0("Regression_DplusoutplusprcpvsI", weekday)]] <- DplusoutplusprcpvsI.lm 
 nestedplotlist[[paste0("Plot_DplusoutplusprcpvsI", weekday)]] <- plot22
 }
 
-grid.arrange(nestedplotlist[["Plot_DplusoutplusprcpvsIMon"]],nestedplotlist[["Plot_DplusoutplusprcpvsITue"]],nestedplotlist[["Plot_DplusoutplusprcpvsIWed"]], nestedplotlist[["Plot_DplusoutplusprcpvsIThu"]], nestedplotlist[["Plot_DplusoutplusprcpvsIFri"]], nestedplotlist[["Plot_DplusoutplusprcpvsISat"]], nestedplotlist[["Plot_DplusoutplusprcpvsISun"]], nrow=3)
+grid.arrange(nestedplotlist[["Plot_DplusoutplusprcpvsIMon_1week_lag"]],nestedplotlist[["Plot_DplusoutplusprcpvsISun"]],nestedplotlist[["Plot_DplusoutplusprcpvsISat"]],nestedplotlist[["Plot_DplusoutplusprcpvsIFri"]], nestedplotlist[["Plot_DplusoutplusprcpvsIThu"]], nestedplotlist[["Plot_DplusoutplusprcpvsIWed"]], nestedplotlist[["Plot_DplusoutplusprcpvsITue"]], nestedplotlist[["Plot_DplusoutplusprcpvsIMon"]], nrow=3)
 
 
 #Performing multiple polynomial regression
