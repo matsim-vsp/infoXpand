@@ -70,17 +70,23 @@ incidenceData <- rbind(incidenceDataArchiv, incidenceData)
 incidenceData$Incidence <- as.double(incidenceData$Incidence)
 incidendeData <- filter(incidenceData, Date < "2021-01-01")
 
-#Turning weekly incidence Values into weekly values
 incidenceData <- incidenceData %>%
   mutate(week = week(Date)) %>%
   mutate(year = year(Date)) %>%
   group_by(year, week, Bundesland) %>%
-  summarise(Date = min(Date) + 4, Incidence = mean(Incidence))
+  summarise(Date = max(Date), Incidence = mean(Incidence))
 
 #Adding the change of incidence to the data frame
 incidenceData <- incidenceData %>% group_by(Bundesland) %>%
 summarise(Date = Date, Incidence = Incidence, changeOfIncidence = Incidence/lag(Incidence))
 
+#Turning monthly incidence Values into monthly values
+incidenceData <- incidenceData %>%
+  mutate(month = month(Date)) %>%
+  mutate(year = year(Date)) %>%
+  group_by(year, month, Bundesland) %>%
+  summarise(Date = ceiling_date(max(Date), unit = "month")-1, Incidence = mean(Incidence), changeOfIncidence = mean(changeOfIncidence))
+ # summarise(Date = min(Date) + 4, Incidence = mean(Incidence)) #For weekly computation
 
 ## Estimation for all states simultaneously
 
@@ -92,6 +98,12 @@ mobilityData$date <- paste(substr(mobilityData$date, start = 1, stop = 4), subst
 mobilityData$date <- as.Date(mobilityData$date)
 colnames(mobilityData)[2] <- "Bundesland"
 colnames(mobilityData)[1] <- "Date"
+
+mobilityData <- mobilityData %>%
+  mutate(month = month(Date)) %>%
+  mutate(year = year(Date)) %>%
+  group_by(year, month, Bundesland) %>%
+  summarise(Date = ceiling_date(max(Date), unit = "month")-1, outOfHomeDuration = mean(outOfHomeDuration))
 
 joinedDataFrame <- inner_join(incidenceData, mobilityData, by = c("Bundesland", "Date"))
 
@@ -114,10 +126,10 @@ weatherDataAll <- rbind(weatherDataAll, weatherData)
 
 weatherDataAll <- filter(weatherDataAll, Date < "2021-01-01") %>%
 filter(Date > "2020-01-01") %>%
-  mutate(week = week(Date)) %>%
+  mutate(month = month(Date)) %>%
   mutate(year = year(Date)) %>%
-  group_by(year, week, Bundesland) %>%
-  summarise(Date = min(Date) + 4, tmax = mean(tmax))
+  group_by(year, month, Bundesland) %>%
+  summarise(Date = max(Date), tmax = mean(tmax), tavg = mean(tavg), prcp = mean(prcp))
 
 
 #Converting the weather data to an "outdoor fraction"
@@ -131,7 +143,6 @@ weatherDataAll <- mutate(weatherDataAll, outdoorFraction2 = case_when(22.5 >= tm
                                                                   tmax > 22.5 ~ 1))                                                                 
 #Joining the data frames
 joinedDataFrame <- left_join(joinedDataFrame, weatherDataAll, by = c("Bundesland", "Date"))
-joinedDataFrame <- joinedDataFrame[,c("Date", "Bundesland", "Incidence", "changeOfIncidence", "changeOfIncidencelagged", "outOfHomeDuration","tmax", "tavg", "prcp", "outdoorFraction", "outdoorFraction2")]
 joinedDataFrame <- mutate(joinedDataFrame, explanatory = outOfHomeDuration*outOfHomeDuration*(outdoorFraction)) #What am I using this one for?
 
 #Only for 2020 (and a bit of 2021, as not too many people were vaccinated and alpha wasn't dominant yet)
@@ -261,24 +272,37 @@ ccf(joinedDataFrameFall$outOfHomeDuration, joinedDataFrameFall$changeOfIncidence
 #Performing linear regression
 nestedplotlist <- list()
 for(federalstate in dictStateId$Bundesland){
-DvsI.lm <- lm(changeOfIncidencelagged2 ~ outOfHomeDuration, data=filter(joinedDataFrame, Bundesland==federalstate)) #Examplary regression for Bayern
-plot22 <- ggplot(data=filter(joinedDataFrame, changeOfIncidencelagged < 2 && Bundesland == federalstate)) +
+DvsI.lm <- lm(changeOfIncidencelagged ~ outOfHomeDuration, data=filter(joinedDataFrame, Bundesland==federalstate)) #Examplary regression for Bayern
+plot22 <- ggplot(data=filter(joinedDataFrame, changeOfIncidencelagged < 1.4 & Bundesland == federalstate)) +
 geom_point(aes(x=outOfHomeDuration, y = changeOfIncidencelagged)) +
 geom_smooth(aes(x= outOfHomeDuration, y = changeOfIncidencelagged), method = "lm") +
+labs(title = federalstate) +
 theme_minimal()
 nestedplotlist[[federalstate]] <- list()
 nestedplotlist[[federalstate]][["Regression"]] <- DvsI.lm
 nestedplotlist[[federalstate]][["Plot"]] <- plot22
 }
 
+DvsI.lm <- lm(changeOfIncidencelagged ~ outOfHomeDuration, data=filter(joinedDataFrame, changeOfIncidencelagged < 1.6))
+ggplot(data=filter(joinedDataFrame, changeOfIncidencelagged < 1.6)) +
+geom_point(aes(x=outOfHomeDuration, y = changeOfIncidencelagged)) +
+geom_smooth(aes(x= outOfHomeDuration, y = changeOfIncidencelagged), method = "lm") +
+facet_wrap(vars(Bundesland)) +
+theme_minimal()
+
+ggplot(data=filter(joinedDataFrame, changeOfIncidencelagged < 1.6)) +
+geom_point(aes(x=outOfHomeDuration, y = changeOfIncidencelagged, col = Bundesland)) +
+geom_smooth(aes(x= outOfHomeDuration, y = changeOfIncidencelagged), method = "lm") +
+theme_minimal()
+
 # 2) D^2 vs I
 nestedplotlist <- list()
 for(federalstate in dictStateId$Bundesland){
-D2vsI.lm <- lm(changeOfIncidencelagged2 ~ outOfHomeDuration*outOfHomeDuration, data=filter(joinedDataFrame, Bundesland==federalstate)) #Examplary regression for Bayern
+D2vsI.lm <- lm(changeOfIncidencelagged ~ outOfHomeDuration*outOfHomeDuration, data=filter(joinedDataFrame, Bundesland==federalstate)) #Examplary regression for Bayern
 plot22 <- ggplot(data=filter(joinedDataFrame, changeOfIncidencelagged < 2 && Bundesland == federalstate)) +
 geom_point(aes(x=outOfHomeDuration*outOfHomeDuration, y = changeOfIncidencelagged)) +
 geom_smooth(aes(x= outOfHomeDuration*outOfHomeDuration, y = changeOfIncidencelagged), method = "lm") +
-facet_wrap(vars(Bundesland)) +
+labs(title = federalstate) +
 theme_minimal()
 nestedplotlist[[federalstate]] <- list()
 nestedplotlist[[federalstate]][["Regression"]] <- D2vsI.lm
@@ -288,10 +312,11 @@ nestedplotlist[[federalstate]][["Plot"]] <- plot22
 # 3) D + D^2 vs I
 nestedplotlist <- list()
 for(federalstate in dictStateId$Bundesland){
-DplusD2vsI.lm <- lm(changeOfIncidencelagged2 ~ poly(outOfHomeDuration,2), data=filter(joinedDataFrame, Bundesland==federalstate)) #Examplary regression for Bayern
-ggplot(data=filter(joinedDataFrame, changeOfIncidencelagged2 < 2 && Bundesland == federalstate), aes(x=outOfHomeDuration, y = changeOfIncidencelagged2)) +
+DplusD2vsI.lm <- lm(changeOfIncidencelagged ~ poly(outOfHomeDuration,2), data=filter(joinedDataFrame, Bundesland==federalstate)) #Examplary regression for Bayern
+plot22 <- ggplot(data=filter(joinedDataFrame, Bundesland == federalstate), aes(x=outOfHomeDuration, y = changeOfIncidencelagged)) +
 geom_point() +
 stat_smooth(formula = y ~ poly(x,2), method = "lm") +
+labs(title = federalstate) +
 theme_minimal()
 nestedplotlist[[federalstate]] <- list()
 nestedplotlist[[federalstate]][["Regression"]] <- DplusD2vsI.lm
@@ -301,11 +326,11 @@ nestedplotlist[[federalstate]][["Plot"]] <- plot22
 # 4a) D + tmax vs I
 nestedplotlist <- list()
 for(federalstate in dictStateId$Bundesland){
-DplustmaxvsI.lm <- lm(changeOfIncidencelagged2 ~ outOfHomeDuration+tmax.x, data=filter(joinedDataFrame, Bundesland==federalstate)) #Examplary regression for Bayern
-plot <- ggplot(data=filter(joinedDataFrame, changeOfIncidencelagged2 < 2 && Bundesland == federalstate)) +
-geom_point(aes(x=outOfHomeDuration+tmax.x, y = changeOfIncidencelagged2)) +
-geom_smooth(aes(x= outOfHomeDuration+tmax.x, y = changeOfIncidencelagged2), method = "lm") +
-facet_wrap(vars(Bundesland)) +
+DplustmaxvsI.lm <- lm(changeOfIncidencelagged2 ~ outOfHomeDuration+tmax, data=filter(joinedDataFrame, Bundesland==federalstate)) #Examplary regression for Bayern
+plot22 <- ggplot(data=filter(joinedDataFrame, changeOfIncidencelagged2 < 2 && Bundesland == federalstate)) +
+geom_point(aes(x=outOfHomeDuration+tmax, y = changeOfIncidencelagged2)) +
+geom_smooth(aes(x= outOfHomeDuration+tmax, y = changeOfIncidencelagged2), method = "lm") +
+labs(title = federalstate) +
 theme_minimal()
 nestedplotlist[[federalstate]] <- list()
 nestedplotlist[[federalstate]][["Regression"]] <- DplustmaxvsI.lm
@@ -314,12 +339,12 @@ nestedplotlist[[federalstate]][["Plot"]] <- plot22
 
 # 4b) D + tavg vs I
 nestedplotlist <- list()
-for(federalstate in dictStateId$Bundesland){
+for (federalstate in dictStateId$Bundesland){
 DplustavgvsI.lm <- lm(changeOfIncidencelagged2 ~ outOfHomeDuration+tavg, data=filter(joinedDataFrame, Bundesland==federalstate)) #Examplary regression for Bayern
-plot22 <- ggplot(data=filter(joinedDataFrame, changeOfIncidence < 2 && Bundesland == federalstate)) +
-geom_point(aes(x=outOfHomeDuration+tavg, y = changeOfIncidence)) +
-geom_smooth(aes(x= outOfHomeDuration+tavg, y = changeOfIncidence), method = "lm") +
-facet_wrap(vars(Bundesland)) +
+plot22 <- ggplot(data=filter(joinedDataFrame, changeOfIncidencelagged2 < 2 && Bundesland == federalstate)) +
+geom_point(aes(x=outOfHomeDuration+tavg, y = changeOfIncidencelagged2)) +
+geom_smooth(aes(x= outOfHomeDuration+tavg, y = changeOfIncidencelagged2), method = "lm") +
+labs(title = federalstate) +
 theme_minimal()
 nestedplotlist[[federalstate]] <- list()
 nestedplotlist[[federalstate]][["Regression"]] <- DplustavgvsI.lm
@@ -329,20 +354,24 @@ nestedplotlist[[federalstate]][["Plot"]] <- plot22
 # 5a) D*tmax vs I
 nestedplotlist <- list()
 for(federalstate in dictStateId$Bundesland){
-plot22 <- ggplot(data=filter(joinedDataFrame, changeOfIncidencelagged2 < 2 && Bundesland == federalstate)) +
-geom_point(aes(x=outOfHomeDuration*tmax, y = changeOfIncidencelagged2)) +
-geom_smooth(aes(x= outOfHomeDuration*tmax, y = changeOfIncidencelagged2), method = "lm") +
+DtimestmaxvsI.lm <- lm(changeOfIncidencelagged ~ outOfHomeDuration*tmax, data=filter(joinedDataFrame, Bundesland==federalstate))
+plot22 <- ggplot(data=filter(joinedDataFrame, changeOfIncidencelagged < 1.5 & Bundesland == federalstate)) +
+geom_point(aes(x=outOfHomeDuration*tmax, y = changeOfIncidencelagged)) +
+geom_smooth(aes(x= outOfHomeDuration*tmax, y = changeOfIncidencelagged), method = "lm") +
+labs(title = federalstate) +
 theme_minimal()
 nestedplotlist[[federalstate]] <- list()
+nestedplotlist[[federalstate]][["Regression"]] <- DtimestmaxvsI.lm
 nestedplotlist[[federalstate]][["Plot"]] <- plot22
 }
 
 # 5b) D*tavg vs I
 nestedplotlist <- list()
 for(federalstate in dictStateId$Bundesland){
-plot22 <- ggplot(data=filter(joinedDataFrame, changeOfIncidencelagged2 < 2 && Bundesland == federlstate )) +
+plot22 <- ggplot(data=filter(joinedDataFrame, changeOfIncidencelagged2 < 2 && Bundesland == federalstate )) +
 geom_point(aes(x=outOfHomeDuration*tavg, y = changeOfIncidencelagged2)) +
 geom_smooth(aes(x= outOfHomeDuration*tavg, y = changeOfIncidencelagged2), method = "lm") +
+labs(title = federalstate) +
 theme_minimal()
 nestedplotlist[[federalstate]] <- list()
 nestedplotlist[[federalstate]][["Plot"]] <- plot22
@@ -354,7 +383,7 @@ for(federalstate in dictStateId$Bundesland){
 plot22 <- ggplot(data=filter(joinedDataFrame, changeOfIncidencelagged2 < 2 && Bundesland == federalstate)) +
 geom_point(aes(x=outOfHomeDuration+outdoorFraction, y = changeOfIncidencelagged2)) +
 geom_smooth(aes(x= outOfHomeDuration+outdoorFraction, y = changeOfIncidencelagged2), method = "lm") +
-facet_wrap(vars(Bundesland)) +
+labs(title = federalstate) +
 theme_minimal()
 nestedplotlist[[federalstate]] <- list()
 nestedplotlist[[federalstate]][["Plot"]] <- plot22
@@ -366,7 +395,7 @@ for(federalstate in dictStateId$Bundesland){
 plot22 <- ggplot(data=filter(joinedDataFrame, changeOfIncidencelagged2 < 2 && Bundesland == federalstate)) +
 geom_point(aes(x=outOfHomeDuration+outdoorFraction2, y = changeOfIncidencelagged2)) +
 geom_smooth(aes(x= outOfHomeDuration+outdoorFraction2, y = changeOfIncidencelagged2), method = "lm") +
-facet_wrap(vars(Bundesland)) +
+labs(title = federalstate) +
 theme_minimal()
 nestedplotlist[[federalstate]] <- list()
 nestedplotlist[[federalstate]][["Plot"]] <- plot22
@@ -376,9 +405,9 @@ nestedplotlist[[federalstate]][["Plot"]] <- plot22
 nestedplotlist <- list()
 for(federalstate in dictStateId$Bundesland){
 plot22 <- ggplot(data=filter(joinedDataFrame, changeOfIncidencelagged2 < 2 && Bundesland == federalstate)) +
-geom_point(aes(x=outOfHomeDuration*outdoorFraction, y = changeOfIncidencelagged2)) +
-geom_smooth(aes(x= outOfHomeDuration*outdoorFraction, y = changeOfIncidencelagged2), method = "lm") +
-facet_wrap(vars(Bundesland)) +
+geom_point(aes(x=outOfHomeDuration*outdoorFraction+outOfHomeDuration+outdoorFraction, y = changeOfIncidencelagged2)) +
+geom_smooth(aes(x= outOfHomeDuration*outdoorFraction+outOfHomeDuration+outdoorFraction, y = changeOfIncidencelagged2), method = "lm") +
+labs(title = federalstate) +
 theme_minimal()
 nestedplotlist[[federalstate]] <- list()
 nestedplotlist[[federalstate]][["Plot"]] <- plot22
@@ -388,20 +417,46 @@ nestedplotlist[[federalstate]][["Plot"]] <- plot22
 nestedplotlist <- list()
 for(federalstate in dictStateId$Bundesland){
 plot22 <- ggplot(data=filter(joinedDataFrame, changeOfIncidencelagged2 < 2 && Bundesland == federalstate )) +
-geom_point(aes(x=outOfHomeDuration*outdoorFraction2, y = changeOfIncidencelagged2)) +
-geom_smooth(aes(x= outOfHomeDuration*outdoorFraction2, y = changeOfIncidencelagged2), method = "lm") +
-facet_wrap(vars(Bundesland)) +
+geom_point(aes(x=outOfHomeDuration*outdoorFraction2+outOfHomeDuration+outdoorFraction2, y = changeOfIncidencelagged2)) +
+geom_smooth(aes(x= outOfHomeDuration*outdoorFraction2+outOfHomeDuration+outdoorFraction2, y = changeOfIncidencelagged2), method = "lm") +
+labs(title = federalstate) +
 theme_minimal()
 nestedplotlist[[federalstate]] <- list()
 nestedplotlist[[federalstate]][["Plot"]] <- plot22
 }
 
+# 8) D + prcp
+nestedplotlist <- list()
+for(federalstate in dictStateId$Bundesland){
+DplustmaxvsI.lm <- lm(changeOfIncidencelagged2 ~ outOfHomeDuration+prcp, data=filter(joinedDataFrame, Bundesland==federalstate)) #Examplary regression for Bayern
+plot22 <- ggplot(data=filter(joinedDataFrame, changeOfIncidencelagged2 < 2 && Bundesland == federalstate)) +
+geom_point(aes(x=outOfHomeDuration+prcp, y = changeOfIncidencelagged2)) +
+geom_smooth(aes(x= outOfHomeDuration+prcp, y = changeOfIncidencelagged2), method = "lm") +
+labs(title = federalstate) +
+theme_minimal()
+nestedplotlist[[federalstate]] <- list()
+nestedplotlist[[federalstate]][["Regression"]] <- DplustmaxvsI.lm
+nestedplotlist[[federalstate]][["Plot"]] <- plot22
+}
 
-
+# 9) D + outdoorFraction + prcp
+nestedplotlist <- list()
+for(federalstate in dictStateId$Bundesland){
+DplustmaxvsI.lm <- lm(changeOfIncidencelagged2 ~ outOfHomeDuration+tmax, data=filter(joinedDataFrame, Bundesland==federalstate)) #Examplary regression for Bayern
+plot22 <- ggplot(data=filter(joinedDataFrame, changeOfIncidencelagged2 < 2 && Bundesland == federalstate)) +
+geom_point(aes(x=outOfHomeDuration+prcp, y = changeOfIncidencelagged2)) +
+geom_smooth(aes(x= outOfHomeDuration+prcp, y = changeOfIncidencelagged2), method = "lm") +
+labs(title = federalstate) +
+theme_minimal()
+nestedplotlist[[federalstate]] <- list()
+nestedplotlist[[federalstate]][["Regression"]] <- DplustmaxvsI.lm
+nestedplotlist[[federalstate]][["Plot"]] <- plot22
+}
 
 
 #Performing multiple polynomial regression
-joinedDataFrame.pm1 <- lm(changeOfIncidence ~ polym(outOfHomeDuration, tmax, degree=2), data=filter(joinedDataFrame, Bundesland=="Bayern")) #ToDo: How to visualize this?
+ 
+ joinedDataFrame.pm1 <- lm(changeOfIncidence ~ polym(outOfHomeDuration, tmax, degree=2), data=filter(joinedDataFrame, Bundesland=="Bayern")) #ToDo: How to visualize this?
 
 fpoly2<-function(x1,x2){
   return(joinedDataFrame.pm1$coefficients["(Intercept)"]+
@@ -412,13 +467,14 @@ fpoly2<-function(x1,x2){
   joinedDataFrame.pm1$coefficients["polym(outOfHomeDuration, outdoorFraction2, degree = 2)0.2"]*x2*x2)
 }
 
-joinedDataFrameBayern <- filter(joinedDataFrame, Bundesland == Bayern)
+joinedDataFrameBayern <- filter(joinedDataFrame, Bundesland == "Bayern")
 x1x2_poly <- c(joinedDataFrameBayern$outOfHomeDuration, joinedDataFrameBayern$outdoorFraction)
 y_poly <- poly(x1x2_poly)
 dataframex1x2y <- data.frame(x1x2_poly, y_poly)
 
 ggplot() +
-geom_point(data=dataframex1x2y, aes(x= x1x2_poly, y = X1), color="blue")+
+geom_point(data=dataframex1x2y, aes(x= x1x2_poly, y = X1), color= "blue") +
+geom_point(data=joinedDataFrameBayern, aes(x=))
 theme_minimal()
 
 #Plotting the model(s)
@@ -438,4 +494,4 @@ nestedplotlist[["Saarland"]][["Plot"]],
 nestedplotlist[["Sachsen"]][["Plot"]],
 nestedplotlist[["Sachsen-Anhalt"]][["Plot"]],
 nestedplotlist[["Schleswig-Holstein"]][["Plot"]],
-nestedplotlist[["Thüringen"]][["Plot"]], nrow=4)
+nestedplotlist[["Thüringen"]][["Plot"]], nrow = 4)
