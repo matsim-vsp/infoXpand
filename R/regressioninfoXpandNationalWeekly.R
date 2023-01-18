@@ -25,56 +25,56 @@ library(ggiraphExtra)
 # Thüringen (Erfurt) 10554
 
 #Setting up da data frame containing the states and the corresponding weather IDs
-dictStateId <- data.frame(matrix(nrow = 0, ncol = 2))
-colnames(dictStateId) <- c("Bundesland", "ID")
-dictStateId[nrow(dictStateId) + 1, ] <- c("Baden-Württemberg", 10738)
-dictStateId[nrow(dictStateId) + 1, ] <- c("Bayern", 10865)
-dictStateId[nrow(dictStateId) + 1, ] <- c("Berlin", 10382)
-dictStateId[nrow(dictStateId) + 1, ] <- c("Brandenburg", 10379)
-dictStateId[nrow(dictStateId) + 1, ] <- c("Bremen", 10224)
-dictStateId[nrow(dictStateId) + 1, ] <- c("Hamburg", 10147)
-dictStateId[nrow(dictStateId) + 1, ] <- c("Hessen", 10633)
-dictStateId[nrow(dictStateId) + 1, ] <- c("Mecklenburg-Vorpommern", 10162)
-dictStateId[nrow(dictStateId) + 1, ] <- c("Niedersachsen", 10338)
-dictStateId[nrow(dictStateId) + 1, ] <- c("Nordrhein-Westfalen", 10400)
-dictStateId[nrow(dictStateId) + 1, ] <- c("Rheinland-Pfalz", "D3137")
-dictStateId[nrow(dictStateId) + 1, ] <- c("Saarland", "D6217")
-dictStateId[nrow(dictStateId) + 1, ] <- c("Sachsen", "D1051")
-dictStateId[nrow(dictStateId) + 1, ] <- c("Sachsen-Anhalt", 10361)
-dictStateId[nrow(dictStateId) + 1, ] <- c("Schleswig-Holstein", 10044)
-dictStateId[nrow(dictStateId) + 1, ] <- c("Thüringen", 10554)
+dict_state_id <- data.frame(matrix(nrow = 0, ncol = 2))
+colnames(dict_state_id) <- c("Bundesland", "ID")
+dict_state_id[nrow(dict_state_id) + 1, ] <- c("Baden-Württemberg", 10738)
+dict_state_id[nrow(dict_state_id) + 1, ] <- c("Bayern", 10865)
+dict_state_id[nrow(dict_state_id) + 1, ] <- c("Berlin", 10382)
+dict_state_id[nrow(dict_state_id) + 1, ] <- c("Brandenburg", 10379)
+dict_state_id[nrow(dict_state_id) + 1, ] <- c("Bremen", 10224)
+dict_state_id[nrow(dict_state_id) + 1, ] <- c("Hamburg", 10147)
+dict_state_id[nrow(dict_state_id) + 1, ] <- c("Hessen", 10633)
+dict_state_id[nrow(dict_state_id) + 1, ] <- c("Mecklenburg-Vorpommern", 10162)
+dict_state_id[nrow(dict_state_id) + 1, ] <- c("Niedersachsen", 10338)
+dict_state_id[nrow(dict_state_id) + 1, ] <- c("Nordrhein-Westfalen", 10400)
+dict_state_id[nrow(dict_state_id) + 1, ] <- c("Rheinland-Pfalz", "D3137")
+dict_state_id[nrow(dict_state_id) + 1, ] <- c("Saarland", "D6217")
+dict_state_id[nrow(dict_state_id) + 1, ] <- c("Sachsen", "D1051")
+dict_state_id[nrow(dict_state_id) + 1, ] <- c("Sachsen-Anhalt", 10361)
+dict_state_id[nrow(dict_state_id) + 1, ] <- c("Schleswig-Holstein", 10044)
+dict_state_id[nrow(dict_state_id) + 1, ] <- c("Thüringen", 10554)
 
 #Reading incidence data in, data hereby comes from RKI
 url1 <-'https://www.rki.de/DE/Content/InfAZ/N/Neuartiges_Coronavirus/Daten/Fallzahlen_Kum_Tab_Archiv.xlsx?__blob=publicationFile'
 GET(url1, write_disk(tf <- tempfile(fileext = ".xlsx")))
-incidenceDataArchiv <- read_excel(tf, 3)
-colnames(incidenceDataArchiv) <- incidenceDataArchiv[4, ]
-colnames(incidenceDataArchiv)[1] <- "Bundesland"
-incidenceDataArchiv <- incidenceDataArchiv[-(1:4), ]
-incidenceDataArchiv <- pivot_longer(incidenceDataArchiv, names_to="Date", values_to="Incidence", cols=colnames(incidenceDataArchiv)[2:ncol(incidenceDataArchiv)])
-incidenceDataArchiv$Date <- as.integer(incidenceDataArchiv$Date)
-incidenceDataArchiv$Date <- as.Date(incidenceDataArchiv$Date,origin="1899-12-30")
-incidenceDataArchiv <- incidenceDataArchiv %>% filter(Bundesland == "Gesamt")
+incidence_data_archiv <- read_excel(tf, 3)
+colnames(incidence_data_archiv) <- incidence_data_archiv[4, ]
+colnames(incidence_data_archiv)[1] <- "Bundesland"
+incidence_data_archiv <- incidence_data_archiv[-(1:4), ]
+incidence_data_archiv <- pivot_longer(incidence_data_archiv, names_to="Date", values_to="Incidence", cols=colnames(incidence_data_archiv)[2:ncol(incidence_data_archiv)])
+incidence_data_archiv$Date <- as.integer(incidence_data_archiv$Date)
+incidence_data_archiv$Date <- as.Date(incidence_data_archiv$Date,origin="1899-12-30")
+incidence_data_archiv <- incidence_data_archiv %>% filter(Bundesland == "Gesamt")
 
 url1 <- 'https://www.rki.de/DE/Content/InfAZ/N/Neuartiges_Coronavirus/Daten/Fallzahlen_Kum_Tab_aktuell.xlsx?__blob=publicationFile'
 GET(url1, write_disk(tf <- tempfile(fileext = ".xlsx")))
-incidenceData <- read_excel(tf, 4)
-colnames(incidenceData) <- incidenceData[4, ]
-colnames(incidenceData)[1] <- "Bundesland"
-incidenceData <- incidenceData[-(1:4),] #Removing the 1st line, as this solely contains the column names
+incidence_data <- read_excel(tf, 4)
+colnames(incidence_data) <- incidence_data[4, ]
+colnames(incidence_data)[1] <- "Bundesland"
+incidence_data <- incidence_data[-(1:4),] #Removing the 1st line, as this solely contains the column names
 # hospitalizationData <- mutate(hospitalizationData, BundeslandId=c("08", "09", "11", "12", "04", "02", "06", "13", "03", "05", "07", "10", "14", "15", "01", "16", "00"))
-incidenceData <- pivot_longer(incidenceData, names_to="Date", values_to="Incidence", cols=colnames(incidenceData)[2:ncol(incidenceData)])
-incidenceData$Date <- paste(substr(incidenceData$Date, start = 7, stop = 10), substr(incidenceData$Date, start = 4, stop = 5), as.character(substr(incidenceData$Date, start = 1, stop = 2)), sep ="-" )
-incidenceData$Date <- as.Date(incidenceData$Date)
-incidenceData$Date <- incidenceData$Date
-incidenceData <- incidenceData %>% filter(Bundesland == "Gesamt")
+incidence_data <- pivot_longer(incidence_data, names_to="Date", values_to="Incidence", cols=colnames(incidence_data)[2:ncol(incidence_data)])
+incidence_data$Date <- paste(substr(incidence_data$Date, start = 7, stop = 10), substr(incidence_data$Date, start = 4, stop = 5), as.character(substr(incidence_data$Date, start = 1, stop = 2)), sep ="-" )
+incidence_data$Date <- as.Date(incidence_data$Date)
+incidence_data$Date <- incidence_data$Date
+incidence_data <- incidence_data %>% filter(Bundesland == "Gesamt")
 
-# incidenceData2 <- incidenceData
-incidenceData <- rbind(incidenceDataArchiv, incidenceData)
-incidenceData$Incidence <- as.double(incidenceData$Incidence)
-incidenceData <- filter(incidenceData, Date < as.Date("2021-01-01") & Date > as.Date("2020-05-11"))
+# incidence_data2 <- incidence_data
+incidence_data <- rbind(incidence_data_archiv, incidence_data)
+incidence_data$Incidence <- as.double(incidence_data$Incidence)
+incidence_data <- filter(incidence_data, Date < as.Date("2021-01-01") & Date > as.Date("2020-05-11"))
 
-incidenceData <- incidenceData %>%
+incidence_data <- incidence_data %>%
   mutate(weekMon = cut(Date, "week")) %>% #Weeks start on Monday
   mutate(weekTue = cut(Date - 1, "week")) %>% #Weeks start on Tuesday
   mutate(weekWed = cut(Date - 2, "week")) %>% #Weeks start on Wednesday
@@ -84,54 +84,54 @@ incidenceData <- incidenceData %>%
   mutate(weekSun = cut(Date - 6, "week")) %>% #Weeks start on Sunday
   mutate(year = year(Date))
 
-incidenceData <- incidenceData[-1,]
+incidence_data <- incidence_data[-1, ]
 
-incidenceDataMon <- incidenceData %>%  group_by(year, weekMon, Bundesland) %>%
-  summarise(Date = min(Date)+6, IncidenceMon = mean(Incidence))
-incidenceDataTue <- incidenceData %>%  group_by(year, weekTue, Bundesland) %>%
-  summarise(Date = min(Date)+5, IncidenceTue = mean(Incidence))
-incidenceDataWed <- incidenceData %>%  group_by(year, weekWed, Bundesland) %>%
-  summarise(Date = min(Date)+4, IncidenceWed = mean(Incidence))
-incidenceDataThu <- incidenceData %>%  group_by(year, weekThu, Bundesland) %>%
-  summarise(Date = min(Date)+3, IncidenceThu = mean(Incidence))
-incidenceDataFri <- incidenceData %>%  group_by(year, weekFri, Bundesland) %>%
-  summarise(Date = min(Date)+2, IncidenceFri = mean(Incidence))
-incidenceDataSat <- incidenceData %>%  group_by(year, weekSat, Bundesland) %>%
-  summarise(Date = min(Date)+1, IncidenceSat = mean(Incidence))
-incidenceDataSun <- incidenceData %>%  group_by(year, weekSun, Bundesland) %>%
+incidence_dataMon <- incidence_data %>%  group_by(year, weekMon, Bundesland) %>%
+  summarise(Date = min(Date) + 6, IncidenceMon = mean(Incidence))
+incidence_dataTue <- incidence_data %>%  group_by(year, weekTue, Bundesland) %>%
+  summarise(Date = min(Date) + 5, IncidenceTue = mean(Incidence))
+incidence_dataWed <- incidence_data %>%  group_by(year, weekWed, Bundesland) %>%
+  summarise(Date = min(Date) + 4, IncidenceWed = mean(Incidence))
+incidence_dataThu <- incidence_data %>%  group_by(year, weekThu, Bundesland) %>%
+  summarise(Date = min(Date) + 3, IncidenceThu = mean(Incidence))
+incidence_dataFri <- incidence_data %>%  group_by(year, weekFri, Bundesland) %>%
+  summarise(Date = min(Date) + 2, IncidenceFri = mean(Incidence))
+incidence_dataSat <- incidence_data %>%  group_by(year, weekSat, Bundesland) %>%
+  summarise(Date = min(Date) + 1, IncidenceSat = mean(Incidence))
+incidence_dataSun <- incidence_data %>%  group_by(year, weekSun, Bundesland) %>%
   summarise(Date = min(Date), IncidenceSun = mean(Incidence))
 
-incidenceData <- inner_join(incidenceDataMon, incidenceDataTue, by = "Date")
-incidenceData <- inner_join(incidenceData, incidenceDataWed, by = "Date")
-incidenceData <- inner_join(incidenceData, incidenceDataThu, by = "Date")
-incidenceData <- inner_join(incidenceData, incidenceDataFri, by = "Date")
-incidenceData <- inner_join(incidenceData, incidenceDataSat, by = "Date")
-incidenceData <- inner_join(incidenceData, incidenceDataSun, by = "Date")
+incidence_data <- inner_join(incidence_dataMon, incidence_dataTue, by = "Date")
+incidence_data <- inner_join(incidence_data, incidence_dataWed, by = "Date")
+incidence_data <- inner_join(incidence_data, incidence_dataThu, by = "Date")
+incidence_data <- inner_join(incidence_data, incidence_dataFri, by = "Date")
+incidence_data <- inner_join(incidence_data, incidence_dataSat, by = "Date")
+incidence_data <- inner_join(incidence_data, incidence_dataSun, by = "Date")
 
-incidenceData <- select(incidenceData, c("Date", "year", "IncidenceMon", "IncidenceTue", "IncidenceWed", "IncidenceThu", "IncidenceFri", "IncidenceSat", "IncidenceSun"))
+incidence_data <- select(incidence_data, c("Date", "year", "IncidenceMon", "IncidenceTue", "IncidenceWed", "IncidenceThu", "IncidenceFri", "IncidenceSat", "IncidenceSun"))
 #Adding the change of incidence to the data frame
-incidenceData[, "changeOfIncidenceMon"] <- as.double(incidenceData$IncidenceMon/lag(incidenceData$IncidenceMon))
-incidenceData[, "changeOfIncidenceTue"] <- incidenceData$IncidenceTue/lag(incidenceData$IncidenceTue)
-incidenceData[, "changeOfIncidenceWed"] <- incidenceData$IncidenceWed/lag(incidenceData$IncidenceWed)
-incidenceData[, "changeOfIncidenceThu"] <- incidenceData$IncidenceThu/lag(incidenceData$IncidenceThu)
-incidenceData[, "changeOfIncidenceFri"] <- incidenceData$IncidenceFri/lag(incidenceData$IncidenceFri)
-incidenceData[, "changeOfIncidenceSat"] <- incidenceData$IncidenceSat/lag(incidenceData$IncidenceSat)
-incidenceData[, "changeOfIncidenceSun"] <- incidenceData$IncidenceSun/lag(incidenceData$IncidenceSun)
+incidence_data[, "changeOfIncidenceMon"] <- as.double(incidence_data$IncidenceMon/lag(incidence_data$IncidenceMon))
+incidence_data[, "changeOfIncidenceTue"] <- incidence_data$IncidenceTue/lag(incidence_data$IncidenceTue)
+incidence_data[, "changeOfIncidenceWed"] <- incidence_data$IncidenceWed/lag(incidence_data$IncidenceWed)
+incidence_data[, "changeOfIncidenceThu"] <- incidence_data$IncidenceThu/lag(incidence_data$IncidenceThu)
+incidence_data[, "changeOfIncidenceFri"] <- incidence_data$IncidenceFri/lag(incidence_data$IncidenceFri)
+incidence_data[, "changeOfIncidenceSat"] <- incidence_data$IncidenceSat/lag(incidence_data$IncidenceSat)
+incidence_data[, "changeOfIncidenceSun"] <- incidence_data$IncidenceSun/lag(incidence_data$IncidenceSun)
 
 ## Estimation for all states simultaneously
 
 #Reading in Mobility data on federal state level, using weekly data
-mobilityData <- read_delim("https://svn.vsp.tu-berlin.de/repos/public-svn/matsim/scenarios/countries/de/episim/mobilityData/bundeslaender/mobilityData_OverviewBL_weekly.csv")
+mobility_data <- read_delim("https://svn.vsp.tu-berlin.de/repos/public-svn/matsim/scenarios/countries/de/episim/mobility_data/bundeslaender/mobility_data_OverviewBL_weekly.csv")
 
 #Little bit of cleaning, turning date column into right format, renaming columns
-mobilityData$date <- paste(substr(mobilityData$date, start = 1, stop = 4), substr(mobilityData$date, start = 5, stop = 6), as.character(substr(mobilityData$date, start = 7, stop = 8)), sep ="-" )
-mobilityData$date <- as.Date(mobilityData$date)
-colnames(mobilityData)[2] <- "Bundesland"
-colnames(mobilityData)[1] <- "Date"
+mobility_data$date <- paste(substr(mobility_data$date, start = 1, stop = 4), substr(mobility_data$date, start = 5, stop = 6), as.character(substr(mobility_data$date, start = 7, stop = 8)), sep ="-" )
+mobility_data$date <- as.Date(mobility_data$date)
+colnames(mobility_data)[2] <- "Bundesland"
+colnames(mobility_data)[1] <- "Date"
 
-mobilityData <- mobilityData %>% filter(Bundesland == "Deutschland") %>% select(-Bundesland)
+mobility_data <- mobility_data %>% filter(Bundesland == "Deutschland") %>% select(-Bundesland)
 
-joinedDataFrame <- inner_join(incidenceData, mobilityData, by = "Date")
+joinedDataFrame <- inner_join(incidence_data, mobility_data, by = "Date")
 
 joinedDataFrame <- ungroup(joinedDataFrame)
 
@@ -151,20 +151,20 @@ joinedDataFrame <- ungroup(joinedDataFrame)
  joinedDataFrame <- mutate(joinedDataFrame, changeOfIncidencelaggedSun2 = lead(changeOfIncidencelaggedSun))
 
 #Weather data
-weatherDataAll <- data.frame(matrix(nrow = 0, ncol = 3))
-for (state in 1:length(dictStateId$Bundesland)){
-ID <- dictStateId[as.integer(state), 2]
-weatherData <- read_delim(paste0("https://bulk.meteostat.net/daily/", ID, ".csv.gz"))
-colnames(weatherData) <- c("Date", "tavg", "tmin", "tmax", "prcp", "snow", "wdir", "wspd", "wpgt", "pres", "tsun")
+weather_data_all <- data.frame(matrix(nrow = 0, ncol = 3))
+for (state in 1:length(dict_state_id$Bundesland)){
+ID <- dict_state_id[as.integer(state), 2]
+weather_data <- read_delim(paste0("https://bulk.meteostat.net/daily/", ID, ".csv.gz"))
+colnames(weather_data) <- c("Date", "tavg", "tmin", "tmax", "prcp", "snow", "wdir", "wspd", "wpgt", "pres", "tsun")
 
-weatherData$Date <- as.Date(weatherData$Date)
-weatherData <- weatherData[, c("Date", "tmax", "tavg", "prcp")]
-weatherData$Bundesland <- dictStateId[as.integer(state), 1]
+weather_data$Date <- as.Date(weather_data$Date)
+weather_data <- weather_data[, c("Date", "tmax", "tavg", "prcp")]
+weather_data$Bundesland <- dict_state_id[as.integer(state), 1]
 
-weatherDataAll <- rbind(weatherDataAll, weatherData)
+weather_data_all <- rbind(weather_data_all, weather_data)
 }
 
-weatherDataAll <- filter(weatherDataAll, Date < "2021-01-01") %>%
+weather_data_all <- filter(weather_data_all, Date < "2021-01-01") %>%
 filter(Date > "2020-01-01") %>%
   mutate(week = week(Date)) %>%
   mutate(year = year(Date)) %>%
@@ -174,15 +174,15 @@ filter(Date > "2020-01-01") %>%
 
 #Converting the weather data to an "outdoor fraction"
 #Below a certain temperature, everything happens indoords, above a certain temperature everything happens outdoors and in between we linearize
-weatherDataAll <- mutate(weatherDataAll, outdoorFraction = case_when(22.5 >= tmax & tmax >= 12.5 ~ 2 - 0.1*(22.5 - tmax),
+weather_data_all <- mutate(weather_data_all, outdoorFraction = case_when(22.5 >= tmax & tmax >= 12.5 ~ 2 - 0.1*(22.5 - tmax),
                                                                    tmax < 12.5 ~ 2,
                                                                   tmax > 22.5 ~ 1))
 #Alternative to compute outdoor fraction
-weatherDataAll <- mutate(weatherDataAll, outdoorFraction2 = case_when(22.5 >= tmax & tmax >= 12.5 ~ 0.1*(22.5 - tmax),
+weather_data_all <- mutate(weather_data_all, outdoorFraction2 = case_when(22.5 >= tmax & tmax >= 12.5 ~ 0.1*(22.5 - tmax),
                                                                    tmax < 12.5 ~ 0,
                                                                   tmax > 22.5 ~ 1))                                                                 
 #Joining the data frames
-joinedDataFrame <- left_join(joinedDataFrame, weatherDataAll, by = "Date")
+joinedDataFrame <- left_join(joinedDataFrame, weather_data_all, by = "Date")
 joinedDataFrame <- mutate(joinedDataFrame, explanatory = outOfHomeDuration*outOfHomeDuration*(outdoorFraction)) #What am I using this one for?
 
 #Only for 2020 (and a bit of 2021, as not too many people were vaccinated and alpha wasn't dominant yet)
@@ -191,16 +191,16 @@ joinedDataFrame <- filter(joinedDataFrame, Date < "2021-02-22") #Not quite sure 
 #Plotting changeOfIncidence over time and outOfHomeDuration over time and OutdoorFactor over time
 nestedplotlist <- list()
 
-incidencePlot <- ggplot(data=joinedDataFrame, aes(x=Date, y=Incidence)) +
+incidencePlot <- ggplot(data = joinedDataFrame, aes(x = Date, y = Incidence)) +
   geom_point() +
   theme_minimal()
-changeOfIncidencePlot <- ggplot(data=joinedDataFrame, aes(x=Date, y=changeOfIncidence)) +
+changeOfIncidencePlot <- ggplot(data = joinedDataFrame, aes(x = Date, y = changeOfIncidence)) +
   geom_point() +
   theme_minimal()
-mobilityPlot <- ggplot(data=joinedDataFrame, aes(x=Date, y=outOfHomeDuration)) +
+mobilityPlot <- ggplot(data = joinedDataFrame, aes(x = Date, y = outOfHomeDuration)) +
   geom_point() +
   theme_minimal()
-tempPlot <- ggplot(data=joinedDataFrame, aes(x=Date, y=tmax)) +
+tempPlot <- ggplot(data = joinedDataFrame, aes(x = Date, y = tmax)) +
   geom_point() +
   geom_hline(yintercept = 22.5) +
   geom_hline(yintercept = 12.5) +
@@ -271,7 +271,7 @@ joinedDataFrameMediocreWeather <- filter(joinedDataFrameBerlin, tmax > 12.5) %>%
 cor(joinedDataFrameMediocreWeather$changeOfIncidence, joinedDataFrameMediocreWeather$outOfHomeDuration)
 cor(joinedDataFrameMediocreWeather$changeOfIncidence, joinedDataFrameMediocreWeather$tmax)
 
-#3) 
+#3)
 #Instead of splitting the whole thing by temperature, we go wave-wise # 2023-01-01 : The filtered intervals are similar to the intervals in 2)
 #1st summer plateau from May - End ofSeptember
 joinedDataFrameSummer <- filter(joinedDataFrameBerlin, Date < "2020-09-21")
@@ -304,7 +304,7 @@ ccf(joinedDataFrameFall$outOfHomeDuration, joinedDataFrameFall$changeOfIncidence
 # tavg = tavg
 # out = outdoorFraction
 # out2 = outdoorFraction2
- 
+
 # 1) D vs I
 #Performing linear regression
 nestedplotlist <- list()
@@ -312,39 +312,39 @@ nestedplotlist <- list()
 joinedDataFrame <- joinedDataFrame[-nrow(joinedDataFrame), ]
 
 weekdays <- c("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun", "Mon_1week_lag")
-for(weekday in weekdays){
-if(weekday == "Mon_1week_lag"){
+for (weekday in weekdays){
+if (weekday == "Mon_1week_lag") {
 weekdayString <- "changeOfIncidencelaggedMon"
 formula.lm <- "changeOfIncidencelaggedMon ~ outOfHomeDuration"
 } else {
-weekdayString <- paste0("changeOfIncidencelagged",weekday,"2")
-formula.lm <- paste0("changeOfIncidencelagged",weekday,"2", " ~ outOfHomeDuration")
+weekdayString <- paste0("changeOfIncidencelagged", weekday, "2")
+formula.lm <- paste0("changeOfIncidencelagged", weekday, "2", " ~ outOfHomeDuration")
 }
-DvsI.lm <- lm(formula=formula.lm , data=joinedDataFrame)
-if(weekday == "Mon"){
-title <- "14 Day lag" 
-} else if(weekday=="Tue"){
-title <- "13 Day lag" 
-} else if(weekday=="Wed"){
+DvsI.lm <- lm(formula = formula.lm, data = joinedDataFrame) #Regression
+if (weekday == "Mon") {
+title <- "14 Day lag"
+} else if (weekday == "Tue") {
+title <- "13 Day lag"
+} else if (weekday == "Wed") {
 title <- "12 Day lag"
-} else if(weekday=="Thu"){
+} else if (weekday == "Thu") {
 title <- "11 Day lag"
-} else if(weekday=="Fri"){
+} else if (weekday == "Fri") {
 title <- "10 Day lag"
-} else if(weekday=="Sat"){
+} else if (weekday == "Sat") {
 title <- "9 Day lag"
-} else if(weekday == "Sun"){
+} else if (weekday == "Sun") {
 title <- "8 Day lag"
-} else if(weekday == "Mon_1week_lag"){
+} else if (weekday == "Mon_1week_lag") {
 title <- "7 Day lag"
 }
-plot22 <- ggplot(data=joinedDataFrame) +
-geom_point(aes(x=outOfHomeDuration, y = .data[[weekdayString]])) +
+plot22 <- ggplot(data = joinedDataFrame) + #First plot; x = outOfHomeDuration, y = changeOfIncidence
+geom_point(aes(x = outOfHomeDuration, y = .data[[weekdayString]])) +
 geom_smooth(aes(x= outOfHomeDuration, y = .data[[weekdayString]]), method = "lm") +
 ggtitle(title) +
 theme_minimal()
 
-plot23 <- ggplot(data=joinedDataFrame) +
+plot23 <- ggplot(data = joinedDataFrame) + #2nd plot; x = model estimate, y = actual changeOfIncidence
 geom_point(aes(x=coefficients(DvsI.lm)["(Intercept)"] + coefficients(DvsI.lm)["outOfHomeDuration"] * outOfHomeDuration, y = .data[[weekdayString]], color = tmax)) +
 ggtitle(title) +
 xlab("Intercept + a * outOfHomeDuration ") +
@@ -363,40 +363,40 @@ grid.arrange(nestedplotlist[["ActualvsEstimation_DvsI_Mon_1week_lag"]],nestedplo
 
 
 # 2) D^2 vs I
-for(weekday in weekdays){
+for (weekday in weekdays){
 joinedDataFrame <- joinedDataFrame %>% mutate(outOfHomeDurationSquared = outOfHomeDuration*outOfHomeDuration)
-if(weekday == "Mon_1week_lag"){
+if (weekday == "Mon_1week_lag") {
 weekdayString <- "changeOfIncidencelaggedMon"
 formula.lm <- "changeOfIncidencelaggedMon ~ outOfHomeDurationSquared"
-} else {weekdayString <- paste0("changeOfIncidencelagged",weekday,"2")
-formula.lm <- paste0("changeOfIncidencelagged",weekday,"2", " ~ outOfHomeDurationSquared")
-weekdayString <- paste0("changeOfIncidencelagged",weekday,"2")
+} else {weekdayString <- paste0("changeOfIncidencelagged", weekday, "2")
+formula.lm <- paste0("changeOfIncidencelagged", weekday, "2", " ~ outOfHomeDurationSquared")
+weekdayString <- paste0("changeOfIncidencelagged", weekday, "2")
 }
-D2vsI.lm <- lm(formula = formula.lm, data=filter(joinedDataFrame))
-if(weekday == "Mon"){
+D2vsI.lm <- lm(formula = formula.lm, data = filter(joinedDataFrame)) # Regression
+if (weekday == "Mon") {
 title <- "14 Day lag"
-} else if(weekday=="Tue"){
+} else if (weekday == "Tue") {
 title <- "13 Day lag"
-} else if(weekday=="Wed"){
+} else if (weekday == "Wed") {
 title <- "12 Day lag"
-} else if(weekday=="Thu"){
+} else if (weekday == "Thu") {
 title <- "11 Day lag"
-} else if(weekday=="Fri"){
+} else if (weekday == "Fri") {
 title <- "10 Day lag"
-} else if(weekday=="Sat"){
+} else if (weekday == "Sat") {
 title <- "9 Day lag"
-} else if(weekday == "Sun"){
+} else if (weekday == "Sun") {
 title <- "8 Day lag"
-} else if(weekday == "Mon_1week_lag"){
+} else if (weekday == "Mon_1week_lag") {
 title <- "7 Day lag"
 }
-plot22 <- ggplot(joinedDataFrame) +
-geom_point(aes(x=outOfHomeDurationSquared, y = .data[[weekdayString]])) +
+plot22 <- ggplot(joinedDataFrame) + #1st plot; x = outOfHomeDurationSquared, y = changeOfIncidence
+geom_point(aes(x = outOfHomeDurationSquared, y = .data[[weekdayString]])) +
 geom_smooth(aes(x= outOfHomeDurationSquared, y = .data[[weekdayString]]), method = "lm") +
 ggtitle(title) +
 theme_minimal()
 
-plot23 <- ggplot(data=joinedDataFrame) +
+plot23 <- ggplot(data = joinedDataFrame) + #2nd plot; x = model estimate, y = actual changeOfIncidence
 geom_point(aes(x=coefficients(D2vsI.lm)["(Intercept)"] + coefficients(D2vsI.lm)["outOfHomeDurationSquared"] * outOfHomeDurationSquared, y = .data[[weekdayString]], color = tmax)) +
 ggtitle(title) +
 xlab("Intercept + a * outOfHomeDuration^2") +
@@ -415,40 +415,42 @@ grid.arrange(nestedplotlist[["ActualvsEstimation_D2vsIMon_1week_lag"]],nestedplo
 
 
 # 3) D + D^2 vs I
-for(weekday in weekdays){
-if(weekday == "Mon_1week_lag"){
+for (weekday in weekdays){
+if (weekday == "Mon_1week_lag") {
 weekdayString <- "changeOfIncidencelaggedMon"
 formula.lm <- "changeOfIncidencelaggedMon ~ outOfHomeDurationSquared + outOfHomeDuration"
 } else {
 formula.lm <- paste0("changeOfIncidencelagged",weekday,"2", " ~ outOfHomeDurationSquared + outOfHomeDuration")
-weekdayString <- paste0("changeOfIncidencelagged",weekday,"2")
+weekdayString <- paste0("changeOfIncidencelagged", weekday, "2")
 }
 joinedDataFrame <- joinedDataFrame %>% mutate(outOfHomeDurationSquared = outOfHomeDuration*outOfHomeDuration)
-DplusD2vsI.lm <- lm(formula=formula.lm, data=joinedDataFrame) #Examplary regression for Bayern
-if(weekday == "Mon"){
-title <- "14 Day lag" 
-} else if(weekday=="Tue"){
-title <- "13 Day lag" 
-} else if(weekday=="Wed"){
+DplusD2vsI.lm <- lm(formula=formula.lm, data=joinedDataFrame) #Regression
+if (weekday == "Mon") {
+title <- "14 Day lag"
+} else if (weekday == "Tue") {
+title <- "13 Day lag"
+} else if (weekday == "Wed") {
 title <- "12 Day lag"
-} else if(weekday=="Thu"){
+} else if (weekday == "Thu") {
 title <- "11 Day lag"
-} else if(weekday=="Fri"){
+} else if (weekday == "Fri") {
 title <- "10 Day lag"
-} else if(weekday=="Sat"){
+} else if (weekday == "Sat") {
 title <- "9 Day lag"
-} else if(weekday == "Sun"){
+} else if (weekday == "Sun") {
 title <- "8 Day lag"
-} else if(weekday == "Mon_1week_lag"){
+} else if (weekday == "Mon_1week_lag") {
 title <- "7 Day lag"
 }
-plot22 <- ggplot(data=joinedDataFrame, aes(x=outOfHomeDurationSquared + outOfHomeDuration, y = .data[[weekdayString]])) +
+
+#1st plot; x = outOfHomeDurationSquared, y = changeOfIncidence
+plot22 <- ggplot(data=joinedDataFrame, aes(x=outOfHomeDurationSquared + outOfHomeDuration, y = .data[[weekdayString]])) + 
 geom_point() +
-geom_smooth(method="lm") +
+geom_smooth(method = "lm") +
 ggtitle(title) +
 theme_minimal()
 
-plot23 <- ggplot(data=joinedDataFrame) +
+plot23 <- ggplot(data = joinedDataFrame) + #2nd plot; x = model estimate, y = actual changeOfIncidence
 geom_point(aes(x=coefficients(DplusD2vsI.lm)["(Intercept)"] + coefficients(DplusD2vsI.lm)["outOfHomeDurationSquared"] * outOfHomeDurationSquared + coefficients(DplusD2vsI.lm)["outOfHomeDuration"] * outOfHomeDuration, y = .data[[weekdayString]], color = tmax)) +
 ggtitle(title) +
 xlab("Intercept + a * outOfHomeDuration^2 + b * outOfHomeDuration") +
@@ -467,39 +469,41 @@ grid.arrange(nestedplotlist[["ActualvsEstimation_DplusD2vsIMon_1week_lag"]],nest
 
 
 # 4a) D + tmax vs I
-for(weekday in weekdays){
-if(weekday == "Mon_1week_lag"){
+for (weekday in weekdays){
+if (weekday == "Mon_1week_lag") {
 weekdayString <- "changeOfIncidencelaggedMon"
-formula.lm <- "changeOfIncidencelaggedMon ~ outOfHomeDuration + tmax" 
+formula.lm <- "changeOfIncidencelaggedMon ~ outOfHomeDuration + tmax"
 } else {
-formula.lm <- paste0("changeOfIncidencelagged",weekday,"2", " ~ outOfHomeDuration + tmax")
-weekdayString <- paste0("changeOfIncidencelagged",weekday,"2")
+formula.lm <- paste0("changeOfIncidencelagged", weekday,"2", " ~ outOfHomeDuration + tmax")
+weekdayString <- paste0("changeOfIncidencelagged", weekday, "2")
 }
-DplustmaxvsI.lm <- lm(formula=formula.lm, data=joinedDataFrame) 
-if(weekday == "Mon"){
-title <- "14 Day lag" 
-} else if(weekday=="Tue"){
-title <- "13 Day lag" 
-} else if(weekday=="Wed"){
+DplustmaxvsI.lm <- lm(formula = formula.lm, data = joinedDataFrame) #Regression
+if (weekday == "Mon") {
+title <- "14 Day lag"
+} else if (weekday == "Tue") {
+title <- "13 Day lag"
+} else if (weekday == "Wed") {
 title <- "12 Day lag"
-} else if(weekday=="Thu"){
+} else if (weekday == "Thu") {
 title <- "11 Day lag"
-} else if(weekday=="Fri"){
+} else if (weekday == "Fri") {
 title <- "10 Day lag"
-} else if(weekday=="Sat"){
+} else if (weekday == "Sat") {
 title <- "9 Day lag"
-} else if(weekday == "Sun"){
+} else if (weekday == "Sun") {
 title <- "8 Day lag"
-} else if(weekday == "Mon_1week_lag"){
-title <- "7 Day lag"   
+} else if (weekday == "Mon_1week_lag") {
+title <- "7 Day lag"
 }
+
+#1st plot; x = outOfHomeDuration, y = changeOfIncidence, color = tmax
 plot22 <- ggplot(data=joinedDataFrame, aes(x = outOfHomeDuration, color= tmax, y = .data[[weekdayString]])) +
 geom_point() +
 geom_smooth(method = "lm") +
 ggtitle(title) +
 theme_minimal()
 
-plot23 <- ggplot(data=joinedDataFrame) +
+plot23 <- ggplot(data = joinedDataFrame) + #2nd plot; x = model estimate, y = actual changeOfIncidence
 geom_point(aes(x=coefficients(DplustmaxvsI.lm)["(Intercept)"] + coefficients(DplustmaxvsI.lm)["outOfHomeDuration"] * outOfHomeDuration + coefficients(DplustmaxvsI.lm)["tmax"] * tmax, y = .data[[weekdayString]], color = tmax)) +
 ggtitle(title) +
 xlab("Intercept + a * outOfHomeDuration + b * tmax") +
@@ -516,39 +520,41 @@ grid.arrange(nestedplotlist[["ActualvsEstimation_DplustmaxvsIMon_1week_lag"]],ne
 #g <- arrangeGrob(nestedplotlist[["Plot_DplustmaxvsIMon_1week_lag"]],nestedplotlist[["Plot_DplustmaxvsISun"]],nestedplotlist[["Plot_DplustmaxvsISat"]],nestedplotlist[["Plot_DplustmaxvsIFri"]], nestedplotlist[["Plot_DplustmaxvsIThu"]], nestedplotlist[["Plot_DplustmaxvsIWed"]], nestedplotlist[["Plot_DplustmaxvsITue"]], nestedplotlist[["Plot_DplustmaxvsIMon"]], nrow=3)
 
 # 4b) D + tavg vs I
-for(weekday in weekdays){
-if(weekday == "Mon_1week_lag"){
+for (weekday in weekdays){
+if (weekday == "Mon_1week_lag") {
 weekdayString <- "changeOfIncidencelaggedMon"
-formula.lm <- "changeOfIncidencelaggedMon ~ outOfHomeDuration + tavg" 
+formula.lm <- "changeOfIncidencelaggedMon ~ outOfHomeDuration + tavg"
 } else {
 formula.lm <- paste0("changeOfIncidencelagged",weekday,"2", " ~ outOfHomeDuration + tavg")
-weekdayString <- paste0("changeOfIncidencelagged",weekday,"2")
+weekdayString <- paste0("changeOfIncidencelagged", weekday, "2")
 }
-DplustavgvsI.lm <- lm(formula = formula.lm, data=joinedDataFrame)
-if(weekday == "Mon"){
-title <- "14 Day lag" 
-} else if(weekday=="Tue"){
-title <- "13 Day lag" 
-} else if(weekday=="Wed"){
+DplustavgvsI.lm <- lm(formula = formula.lm, data = joinedDataFrame) #Regression
+if (weekday == "Mon") {
+title <- "14 Day lag"
+} else if (weekday == "Tue") {
+title <- "13 Day lag"
+} else if (weekday == "Wed") {
 title <- "12 Day lag"
-} else if(weekday=="Thu"){
+} else if (weekday == "Thu") {
 title <- "11 Day lag"
-} else if(weekday=="Fri"){
+} else if (weekday == "Fri") {
 title <- "10 Day lag"
-} else if(weekday=="Sat"){
+} else if (weekday == "Sat") {
 title <- "9 Day lag"
-} else if(weekday == "Sun"){
+} else if (weekday == "Sun") {
 title <- "8 Day lag"
-} else if(weekday == "Mon_1week_lag"){
-title <- "7 Day lag"   
+} else if (weekday == "Mon_1week_lag") {
+title <- "7 Day lag"
 }
+
+#1st plot; x = outOfHomeDuration, y = changeOfIncidence, color = tavg
 plot22 <- ggplot(data=joinedDataFrame, aes(x=outOfHomeDuration, color = tavg, y = .data[[weekdayString]])) +
 geom_point() +
 geom_smooth(method = "lm") +
 ggtitle(title) +
 theme_minimal()
 
-plot23 <- ggplot(data=joinedDataFrame) +
+plot23 <- ggplot(data = joinedDataFrame) + #2nd plot; x = model estimate, y = actual changeOfIncidence
 geom_point(aes(x=coefficients(DplustavgvsI.lm)["(Intercept)"] + coefficients(DplustavgvsI.lm)["outOfHomeDuration"] * outOfHomeDuration + coefficients(DplustavgvsI.lm)["tavg"] * tavg, y = .data[[weekdayString]], color = tavg)) +
 ggtitle(title) +
 xlab("Intercept + a * outOfHomeDuration + b * tavg") +
@@ -566,39 +572,40 @@ grid.arrange(nestedplotlist[["ActualvsEstimation_DplustavgvsIMon_1week_lag"]],ne
 #g <- arrangeGrob(nestedplotlist[["Plot_DplustavgvsIMon_1week_lag"]],nestedplotlist[["Plot_DplustavgvsISun"]],nestedplotlist[["Plot_DplustavgvsISat"]],nestedplotlist[["Plot_DplustavgvsIFri"]], nestedplotlist[["Plot_DplustavgvsIThu"]], nestedplotlist[["Plot_DplustavgvsIWed"]], nestedplotlist[["Plot_DplustavgvsITue"]], nestedplotlist[["Plot_DplustavgvsIMon"]], nrow=3)
 
 # 5a) D*tmax vs I
-for(weekday in weekdays){
-if(weekday == "Mon_1week_lag"){
+for (weekday in weekdays){
+if (weekday == "Mon_1week_lag") {
 weekdayString <- "changeOfIncidencelaggedMon"
-formula.lm <- "changeOfIncidencelaggedMon ~ outOfHomeDuration * tmax" 
+formula.lm <- "changeOfIncidencelaggedMon ~ outOfHomeDuration * tmax"
 } else {
-formula.lm <- paste0("changeOfIncidencelagged",weekday,"2", " ~ outOfHomeDuration*tmax")
-weekdayString <- paste0("changeOfIncidencelagged",weekday,"2")
+formula.lm <- paste0("changeOfIncidencelagged", weekday, "2", " ~ outOfHomeDuration*tmax")
+weekdayString <- paste0("changeOfIncidencelagged", weekday, "2")
 }
-DtimestmaxvsI.lm <- lm(formula = formula.lm, data=joinedDataFrame)
-if(weekday == "Mon"){
-title <- "14 Day lag" 
-} else if(weekday=="Tue"){
-title <- "13 Day lag" 
-} else if(weekday=="Wed"){
+DtimestmaxvsI.lm <- lm(formula = formula.lm, data = joinedDataFrame) #Regression
+if (weekday == "Mon") {
+title <- "14 Day lag"
+} else if (weekday == "Tue") {
+title <- "13 Day lag"
+} else if (weekday == "Wed") {
 title <- "12 Day lag"
-} else if(weekday=="Thu"){
+} else if (weekday == "Thu") {
 title <- "11 Day lag"
-} else if(weekday=="Fri"){
+} else if (weekday == "Fri") {
 title <- "10 Day lag"
-} else if(weekday=="Sat"){
+} else if (weekday == "Sat") {
 title <- "9 Day lag"
-} else if(weekday == "Sun"){
+} else if (weekday == "Sun") {
 title <- "8 Day lag"
-} else if(weekday == "Mon_1week_lag"){
-title <- "7 Day lag"   
+} else if (weekday == "Mon_1week_lag") {
+title <- "7 Day lag"
 }
+#1st plot; x = outOfHomeDuration, y = changeOfIncidence, color = tmax
 plot22 <- ggplot(data=joinedDataFrame, aes(y = .data[[weekdayString]], x = outOfHomeDuration, color = tmax)) +
 geom_point() +
 geom_smooth(method = "lm") +
 ggtitle(title) +
 theme_minimal()
 
-plot23 <- ggplot(data=joinedDataFrame) +
+plot23 <- ggplot(data = joinedDataFrame) + #2nd plot; x = model estimate, y = actual changeOfIncidence
 geom_point(aes(x=coefficients(DtimestmaxvsI.lm)["(Intercept)"] + coefficients(DtimestmaxvsI.lm)["outOfHomeDuration"] * outOfHomeDuration + coefficients(DtimestmaxvsI.lm)["tmax"] * tmax + coefficients(DtimestmaxvsI.lm)["outOfHomeDuration:tmax"] * outOfHomeDuration * tmax , y = .data[[weekdayString]], color = tavg)) +
 ggtitle(title) +
 xlab("Intercept + a * outOfHomeDuration + b * tmax + c * oOHD * tmax") +
@@ -616,39 +623,40 @@ grid.arrange(nestedplotlist[["ActualvsEstimation_DtimestmaxvsIMon_1week_lag"]],n
 #g <- arrangeGrob(nestedplotlist[["Plot_DtimestmaxvsIMon_1week_lag"]],nestedplotlist[["Plot_DtimestmaxvsISun"]],nestedplotlist[["Plot_DtimestmaxvsISat"]],nestedplotlist[["Plot_DtimestmaxvsIFri"]], nestedplotlist[["Plot_DtimestmaxvsIThu"]], nestedplotlist[["Plot_DtimestmaxvsIWed"]], nestedplotlist[["Plot_DtimestmaxvsITue"]], nestedplotlist[["Plot_DtimestmaxvsIMon"]], nrow=3)
 
 # 5b) D*tavg vs I
-for(weekday in weekdays){
-if(weekday == "Mon_1week_lag"){
+for (weekday in weekdays){
+if (weekday == "Mon_1week_lag") {
 weekdayString <- "changeOfIncidencelaggedMon"
-formula.lm <- "changeOfIncidencelaggedMon ~ outOfHomeDuration * tavg" 
+formula.lm <- "changeOfIncidencelaggedMon ~ outOfHomeDuration * tavg"
 } else {
-formula.lm <- paste0("changeOfIncidencelagged",weekday,"2", " ~ outOfHomeDuration*tavg")
-weekdayString <- paste0("changeOfIncidencelagged",weekday,"2")
+formula.lm <- paste0("changeOfIncidencelagged", weekday, "2", " ~ outOfHomeDuration*tavg")
+weekdayString <- paste0("changeOfIncidencelagged", weekday, "2")
 }
-DtimestavgvsI.lm <- lm(formula=formula.lm, data=joinedDataFrame)
-if(weekday == "Mon"){
-title <- "14 Day lag" 
-} else if(weekday=="Tue"){
-title <- "13 Day lag" 
-} else if(weekday=="Wed"){
+DtimestavgvsI.lm <- lm(formula = formula.lm, data = joinedDataFrame) #Regression
+if (weekday == "Mon") {
+title <- "14 Day lag"
+} else if (weekday == "Tue") {
+title <- "13 Day lag"
+} else if (weekday == "Wed") {
 title <- "12 Day lag"
-} else if(weekday=="Thu"){
+} else if (weekday == "Thu") {
 title <- "11 Day lag"
-} else if(weekday=="Fri"){
+} else if (weekday == "Fri") {
 title <- "10 Day lag"
-} else if(weekday=="Sat"){
+} else if (weekday == "Sat") {
 title <- "9 Day lag"
-} else if(weekday == "Sun"){
+} else if (weekday == "Sun") {
 title <- "8 Day lag"
-} else if(weekday == "Mon_1week_lag"){
-title <- "7 Day lag"   
+} else if (weekday == "Mon_1week_lag") {
+title <- "7 Day lag"
 }
+#1st plot; x = outOfHomeDuration, y = changeOfIncidence, color = tavg
 plot22 <- ggplot(data=joinedDataFrame, aes(y = .data[[weekdayString]], x = outOfHomeDuration, color = tavg))  +
 geom_point() +
 geom_smooth(method = "lm") +
 ggtitle(title) +
 theme_minimal()
 
-plot23 <- ggplot(data=joinedDataFrame) +
+plot23 <- ggplot(data = joinedDataFrame) + #2nd plot; x = model estimate, y = actual changeOfIncidence
 geom_point(aes(x=coefficients(DtimestavgvsI.lm)["(Intercept)"] + coefficients(DtimestavgvsI.lm)["outOfHomeDuration"] * outOfHomeDuration + coefficients(DtimestavgvsI.lm)["tavg"] * tavg + coefficients(DtimestavgvsI.lm)["outOfHomeDuration:tavg"] * outOfHomeDuration * tavg , y = .data[[weekdayString]], color = tavg)) +
 ggtitle(title) +
 xlab("Intercept + a * outOfHomeDuration + b * tavg + c * oOHD * tavg") +
@@ -666,39 +674,40 @@ grid.arrange(nestedplotlist[["ActualvsEstimation_DtimestavgvsIMon_1week_lag"]],n
 #g <- arrangeGrob(nestedplotlist[["Plot_DtimestavgvsIMon_1week_lag"]],nestedplotlist[["Plot_DtimestavgvsISun"]],nestedplotlist[["Plot_DtimestavgvsISat"]],nestedplotlist[["Plot_DtimestavgvsIFri"]], nestedplotlist[["Plot_DtimestavgvsIThu"]], nestedplotlist[["Plot_DtimestavgvsIWed"]], nestedplotlist[["Plot_DtimestavgvsITue"]], nestedplotlist[["Plot_DtimestavgvsIMon"]], nrow=3)
 
 # 6a) D + out vs I
-for(weekday in weekdays){
-if(weekday == "Mon_1week_lag"){
+for(weekday in weekdays) {
+if(weekday == "Mon_1week_lag") {
 weekdayString <- "changeOfIncidencelaggedMon"
-formula.lm <- "changeOfIncidencelaggedMon ~ outOfHomeDuration + outdoorFraction" 
+formula.lm <- "changeOfIncidencelaggedMon ~ outOfHomeDuration + outdoorFraction"
 } else {
-formula.lm <- paste0("changeOfIncidencelagged",weekday,"2", " ~ outOfHomeDuration + outdoorFraction")
-weekdayString <- paste0("changeOfIncidencelagged",weekday,"2")
+formula.lm <- paste0("changeOfIncidencelagged", weekday, "2", " ~ outOfHomeDuration + outdoorFraction")
+weekdayString <- paste0("changeOfIncidencelagged", weekday, "2")
 }
-DplusoutvsI.lm <- lm(formula=formula.lm, data=joinedDataFrame)
-if(weekday == "Mon"){
-title <- "14 Day lag" 
-} else if(weekday=="Tue"){
-title <- "13 Day lag" 
-} else if(weekday=="Wed"){
+DplusoutvsI.lm <- lm(formula = formula.lm, data = joinedDataFrame) #Regression
+if (weekday == "Mon") {
+title <- "14 Day lag"
+} else if (weekday == "Tue") {
+title <- "13 Day lag"
+} else if (weekday == "Wed") {
 title <- "12 Day lag"
-} else if(weekday=="Thu"){
+} else if (weekday == "Thu") {
 title <- "11 Day lag"
-} else if(weekday=="Fri"){
+} else if (weekday == "Fri") {
 title <- "10 Day lag"
-} else if(weekday=="Sat"){
+} else if (weekday == "Sat") {
 title <- "9 Day lag"
-} else if(weekday == "Sun"){
+} else if (weekday == "Sun") {
 title <- "8 Day lag"
-} else if(weekday == "Mon_1week_lag"){
-title <- "7 Day lag"   
+} else if (weekday == "Mon_1week_lag") {
+title <- "7 Day lag"
 }
+#1st plot; x = outOfHomeDuration, y = changeOfIncidence, color = outdoorFraction
 plot22 <- ggplot(data=joinedDataFrame, aes(x=outOfHomeDuration, color =outdoorFraction, y = .data[[weekdayString]])) +
 geom_point() +
 geom_smooth(method = "lm") +
 ggtitle(title) +
 theme_minimal()
 
-plot23 <- ggplot(data=joinedDataFrame) +
+plot23 <- ggplot(data=joinedDataFrame) + #2nd plot; x = model estimate, y = actual changeOfIncidence
 geom_point(aes(x=coefficients(DplusoutvsI.lm )["(Intercept)"] + coefficients(DplusoutvsI.lm )["outOfHomeDuration"] * outOfHomeDuration + coefficients(DplusoutvsI.lm )["outdoorFraction"] * outdoorFraction , y = .data[[weekdayString]], color = tavg)) +
 ggtitle(title) +
 xlab("Intercept + a * outOfHomeDuration + b * outdoorFraction") +
@@ -716,39 +725,40 @@ grid.arrange(nestedplotlist[["ActualvsEstimation_DplusoutvsIMon_1week_lag"]],nes
 #g <- arrangeGrob(nestedplotlist[["Plot_DplusoutvsIMon_1week_lag"]],nestedplotlist[["Plot_DplusoutvsISun"]],nestedplotlist[["Plot_DplusoutvsISat"]],nestedplotlist[["Plot_DplusoutvsIFri"]], nestedplotlist[["Plot_DplusoutvsIThu"]], nestedplotlist[["Plot_DplusoutvsIWed"]], nestedplotlist[["Plot_DplusoutvsITue"]], nestedplotlist[["Plot_DplusoutvsIMon"]], nrow=3)
 
 # 6b) D + out2 vs I
-for(weekday in weekdays){
-if(weekday == "Mon_1week_lag"){
+for(weekday in weekdays) {
+if(weekday == "Mon_1week_lag") {
 weekdayString <- "changeOfIncidencelaggedMon"
-formula.lm <- "changeOfIncidencelaggedMon ~ outOfHomeDuration + outdoorFraction2" 
+formula.lm <- "changeOfIncidencelaggedMon ~ outOfHomeDuration + outdoorFraction2"
 } else {
 formula.lm <- paste0("changeOfIncidencelagged",weekday,"2", " ~ outOfHomeDuration + outdoorFraction2")
-weekdayString <- paste0("changeOfIncidencelagged",weekday,"2")
+weekdayString <- paste0("changeOfIncidencelagged", weekday, "2")
 }
-Dplusout2vsI.lm <- lm(formula = formula.lm, data=joinedDataFrame)
-if(weekday == "Mon"){
-title <- "14 Day lag" 
-} else if(weekday=="Tue"){
-title <- "13 Day lag" 
-} else if(weekday=="Wed"){
+Dplusout2vsI.lm <- lm(formula = formula.lm, data = joinedDataFrame) #Regression
+if (weekday == "Mon") {
+title <- "14 Day lag"
+} else if (weekday == "Tue") {
+title <- "13 Day lag"
+} else if (weekday == "Wed") {
 title <- "12 Day lag"
-} else if(weekday=="Thu"){
+} else if (weekday == "Thu") {
 title <- "11 Day lag"
-} else if(weekday=="Fri"){
+} else if (weekday == "Fri") {
 title <- "10 Day lag"
-} else if(weekday=="Sat"){
+} else if (weekday == "Sat") {
 title <- "9 Day lag"
-} else if(weekday == "Sun"){
+} else if (weekday == "Sun") {
 title <- "8 Day lag"
-} else if(weekday == "Mon_1week_lag"){
-title <- "7 Day lag"   
+} else if (weekday == "Mon_1week_lag") {
+title <- "7 Day lag"
 }
+#1st plot; x = outOfHomeDuration, y = changeOfIncidence, color = outdoorFraction2
 plot22 <- ggplot(data=joinedDataFrame, aes(x=outOfHomeDuration, color =outdoorFraction2, y = .data[[weekdayString]])) +
 geom_point() +
 geom_smooth(method = "lm") +
 ggtitle(title) +
 theme_minimal()
 
-plot23 <- ggplot(data=joinedDataFrame) +
+plot23 <- ggplot(data=joinedDataFrame) + #2nd plot; x = model estimate, y = actual changeOfIncidence
 geom_point(aes(x=coefficients(Dplusout2vsI.lm )["(Intercept)"] + coefficients(Dplusout2vsI.lm )["outOfHomeDuration"] * outOfHomeDuration + coefficients(Dplusout2vsI.lm )["outdoorFraction2"] * outdoorFraction2 , y = .data[[weekdayString]], color = tavg)) +
 ggtitle(title) +
 xlab("Intercept + a * outOfHomeDuration + b * outdoorFraction2") +
@@ -765,39 +775,40 @@ grid.arrange(nestedplotlist[["ActualvsEstimation_Dplusout2vsIMon_1week_lag"]],ne
 #g <- arrangeGrob(nestedplotlist[["Plot_Dplusout2vsIMon_1week_lag"]],nestedplotlist[["Plot_Dplusout2vsISun"]],nestedplotlist[["Plot_Dplusout2vsISat"]],nestedplotlist[["Plot_Dplusout2vsIFri"]], nestedplotlist[["Plot_Dplusout2vsIThu"]], nestedplotlist[["Plot_Dplusout2vsIWed"]], nestedplotlist[["Plot_Dplusout2vsITue"]], nestedplotlist[["Plot_Dplusout2vsIMon"]], nrow=3)
 
 # 7a) D * out vs I
-for(weekday in weekdays){
-if(weekday == "Mon_1week_lag"){
+for (weekday in weekdays) {
+if (weekday == "Mon_1week_lag") {
 weekdayString <- "changeOfIncidencelaggedMon"
-formula.lm <- "changeOfIncidencelaggedMon ~ outOfHomeDuration * outdoorFraction" 
+formula.lm <- "changeOfIncidencelaggedMon ~ outOfHomeDuration * outdoorFraction"
 } else {
-formula.lm <- paste0("changeOfIncidencelagged",weekday,"2", " ~ outOfHomeDuration * outdoorFraction")
-weekdayString <- paste0("changeOfIncidencelagged",weekday,"2")
+formula.lm <- paste0("changeOfIncidencelagged", weekday, "2", " ~ outOfHomeDuration * outdoorFraction")
+weekdayString <- paste0("changeOfIncidencelagged", weekday, "2")
 }
-DtimesoutvsI.lm <- lm(formula = formula.lm, data=joinedDataFrame)
-if(weekday == "Mon"){
-title <- "14 Day lag" 
-} else if(weekday=="Tue"){
-title <- "13 Day lag" 
-} else if(weekday=="Wed"){
+DtimesoutvsI.lm <- lm(formula = formula.lm, data = joinedDataFrame) #Regression
+if (weekday == "Mon") {
+title <- "14 Day lag"
+} else if (weekday == "Tue") {
+title <- "13 Day lag"
+} else if (weekday == "Wed") {
 title <- "12 Day lag"
-} else if(weekday=="Thu"){
+} else if (weekday == "Thu") {
 title <- "11 Day lag"
-} else if(weekday=="Fri"){
+} else if (weekday == "Fri") {
 title <- "10 Day lag"
-} else if(weekday=="Sat"){
+} else if (weekday == "Sat") {
 title <- "9 Day lag"
-} else if(weekday == "Sun"){
+} else if (weekday == "Sun") {
 title <- "8 Day lag"
-} else if(weekday == "Mon_1week_lag"){
-title <- "7 Day lag"   
+} else if (weekday == "Mon_1week_lag") {
+title <- "7 Day lag"
 }
+#1st plot; x = outOfHomeDuration, y = changeOfIncidence, color = outdoorFraction
 plot22 <- ggplot(data=joinedDataFrame, aes(x=outOfHomeDuration, color =outdoorFraction, y = .data[[weekdayString]])) +
 geom_point() +
 geom_smooth(method = "lm") +
 ggtitle(title) +
 theme_minimal()
 
-plot23 <- ggplot(data=joinedDataFrame) +
+plot23 <- ggplot(data = joinedDataFrame) + #2nd plot; x = model estimate, y = actual changeOfIncidence
 geom_point(aes(x=coefficients(DtimesoutvsI.lm)["(Intercept)"] + coefficients(DtimesoutvsI.lm)["outOfHomeDuration"] * outOfHomeDuration + coefficients(DtimesoutvsI.lm)["outdoorFraction"] * outdoorFraction + coefficients(DtimesoutvsI.lm)["outOfHomeDuration:outdoorFraction"] * outOfHomeDuration * outdoorFraction, y = .data[[weekdayString]], color = tavg)) +
 ggtitle(title) +
 xlab("Intercept + a*outOfHomeDuration + b*outdoorFraction + c*oOHD*oF") +
@@ -816,38 +827,39 @@ grid.arrange(nestedplotlist[["ActualvsEstimation_DtimesoutvsIMon_1week_lag"]], n
 
 # 7b) D * out2 vs I
 for(weekday in weekdays){
-if(weekday == "Mon_1week_lag"){
+if(weekday == "Mon_1week_lag") {
 weekdayString <- "changeOfIncidencelaggedMon"
-formula.lm <- "changeOfIncidencelaggedMon ~ outOfHomeDuration * outdoorFraction2" 
+formula.lm <- "changeOfIncidencelaggedMon ~ outOfHomeDuration * outdoorFraction2"
 } else {
-formula.lm <- paste0("changeOfIncidencelagged",weekday,"2", " ~ outOfHomeDuration * outdoorFraction2")
-weekdayString <- paste0("changeOfIncidencelagged",weekday,"2")
+formula.lm <- paste0("changeOfIncidencelagged", weekday, "2", " ~ outOfHomeDuration * outdoorFraction2")
+weekdayString <- paste0("changeOfIncidencelagged", weekday, "2")
 }
-Dtimesout2vsI.lm <- lm(formula = formula.lm, data=joinedDataFrame)
-if(weekday == "Mon"){
-title <- "14 Day lag" 
-} else if(weekday=="Tue"){
-title <- "13 Day lag" 
-} else if(weekday=="Wed"){
+Dtimesout2vsI.lm <- lm(formula = formula.lm, data = joinedDataFrame) #Regression
+if (weekday == "Mon") {
+title <- "14 Day lag"
+} else if (weekday == "Tue") {
+title <- "13 Day lag"
+} else if (weekday == "Wed") {
 title <- "12 Day lag"
-} else if(weekday=="Thu"){
+} else if (weekday == "Thu") {
 title <- "11 Day lag"
-} else if(weekday=="Fri"){
+} else if (weekday == "Fri") {
 title <- "10 Day lag"
-} else if(weekday=="Sat"){
+} else if (weekday == "Sat") {
 title <- "9 Day lag"
-} else if(weekday == "Sun"){
+} else if (weekday == "Sun") {
 title <- "8 Day lag"
-} else if(weekday == "Mon_1week_lag"){
-title <- "7 Day lag"   
+} else if (weekday == "Mon_1week_lag") {
+title <- "7 Day lag"
 }
+#1st plot; x = outOfHomeDuration, y = changeOfIncidence, color = outdoorFraction2
 plot22 <- ggplot(data=joinedDataFrame, aes(x=outOfHomeDuration, color = outdoorFraction2, y = .data[[weekdayString]])) +
 geom_point() +
 geom_smooth(method = "lm") +
 ggtitle(title) +
 theme_minimal()
 
-plot23 <- ggplot(data=joinedDataFrame) +
+plot23 <- ggplot(data = joinedDataFrame) + #2nd plot; x = model estimate, y = actual changeOfIncidence
 geom_point(aes(x=coefficients(Dtimesout2vsI.lm)["(Intercept)"] + coefficients(Dtimesout2vsI.lm)["outOfHomeDuration"] * outOfHomeDuration + coefficients(Dtimesout2vsI.lm)["outdoorFraction2"] * outdoorFraction2 + coefficients(Dtimesout2vsI.lm)["outOfHomeDuration:outdoorFraction2"] * outOfHomeDuration * outdoorFraction2, y = .data[[weekdayString]], color = tavg)) +
 ggtitle(title) +
 xlab("Intercept + a * outOfHomeDuration + b * outdoorFraction2 + c * oOHD * oF2") +
@@ -866,38 +878,39 @@ grid.arrange(nestedplotlist[["ActualvsEstimation_Dtimesout2vsIMon_1week_lag"]],n
 
 # 8) D + prcp
 for(weekday in weekdays){
-if(weekday == "Mon_1week_lag"){
+if(weekday == "Mon_1week_lag") {
 weekdayString <- "changeOfIncidencelaggedMon"
-formula.lm <- "changeOfIncidencelaggedMon ~ outOfHomeDuration + prcp" 
+formula.lm <- "changeOfIncidencelaggedMon ~ outOfHomeDuration + prcp"
 } else {
-formula.lm <- paste0("changeOfIncidencelagged",weekday,"2", " ~ outOfHomeDuration + prcp")
-weekdayString <- paste0("changeOfIncidencelagged",weekday,"2")
+formula.lm <- paste0("changeOfIncidencelagged", weekday, "2", " ~ outOfHomeDuration + prcp")
+weekdayString <- paste0("changeOfIncidencelagged", weekday, "2")
 }
-DplusprcpvsI.lm <- lm(formula = formula.lm, data=joinedDataFrame) 
-if(weekday == "Mon"){
-title <- "14 Day lag" 
-} else if(weekday=="Tue"){
-title <- "13 Day lag" 
-} else if(weekday=="Wed"){
+DplusprcpvsI.lm <- lm(formula = formula.lm, data=joinedDataFrame) #Regression
+if(weekday == "Mon") {
+title <- "14 Day lag"
+} else if (weekday == "Tue") {
+title <- "13 Day lag"
+} else if (weekday == "Wed") {
 title <- "12 Day lag"
-} else if(weekday=="Thu"){
+} else if (weekday == "Thu") {
 title <- "11 Day lag"
-} else if(weekday=="Fri"){
+} else if (weekday == "Fri") {
 title <- "10 Day lag"
-} else if(weekday=="Sat"){
+} else if (weekday == "Sat") {
 title <- "9 Day lag"
-} else if(weekday == "Sun"){
+} else if (weekday == "Sun") {
 title <- "8 Day lag"
 } else if(weekday == "Mon_1week_lag"){
-title <- "7 Day lag"   
+title <- "7 Day lag"
 }
+#1st plot; x = outOfHomeDuration, y = changeOfIncidence, color = prcp
 plot22 <- ggplot(data=joinedDataFrame, aes(x=outOfHomeDuration, color = prcp, y = .data[[weekdayString]])) +
 geom_point() +
 geom_smooth(method = "lm") +
 ggtitle(title) +
 theme_minimal()
 
-plot23 <- ggplot(data=joinedDataFrame) +
+plot23 <- ggplot(data=joinedDataFrame) + #2nd plot; x = model estimate, y = actual changeOfIncidence
 geom_point(aes(x=coefficients(DplusprcpvsI.lm)["(Intercept)"] + coefficients(DplusprcpvsI.lm)["outOfHomeDuration"] * outOfHomeDuration + coefficients(DplusprcpvsI.lm)["prcp"] * prcp, y = .data[[weekdayString]], color = tavg)) +
 ggtitle(title) +
 xlab("Intercept + a * outOfHomeDuration + b * prcp") +
@@ -922,30 +935,30 @@ if(weekday == "Mon_1week_lag"){
 weekdayString <- "changeOfIncidencelaggedMon"
 formula.lm <- "changeOfIncidencelaggedMon ~ outOfHomeDuration + tmax + prcpRound" 
 } else {
-formula.lm <- paste0("changeOfIncidencelagged",weekday,"2", " ~ outOfHomeDuration + tmax + prcpRound")
-weekdayString <- paste0("changeOfIncidencelagged",weekday,"2")
+formula.lm <- paste0("changeOfIncidencelagged", weekday, "2", " ~ outOfHomeDuration + tmax + prcpRound")
+weekdayString <- paste0("changeOfIncidencelagged", weekday, "2")
 }
-DplustmaxprcpvsI.lm <- lm(formula = formula.lm, data=joinedDataFrame) 
-if(weekday == "Mon"){
+DplustmaxprcpvsI.lm <- lm(formula = formula.lm, data=joinedDataFrame) #Regression
+if(weekday == "Mon") {
 title <- "14 Day lag" 
-} else if(weekday=="Tue"){
+} else if (weekday == "Tue") {
 title <- "13 Day lag" 
-} else if(weekday=="Wed"){
+} else if (weekday == "Wed") {
 title <- "12 Day lag"
-} else if(weekday=="Thu"){
+} else if (weekday == "Thu") {
 title <- "11 Day lag"
-} else if(weekday=="Fri"){
+} else if (weekday == "Fri") {
 title <- "10 Day lag"
-} else if(weekday=="Sat"){
+} else if (weekday == "Sat") {
 title <- "9 Day lag"
-} else if(weekday == "Sun"){
+} else if (weekday == "Sun") {
 title <- "8 Day lag"
-} else if(weekday == "Mon_1week_lag"){
+} else if (weekday == "Mon_1week_lag") {
 title <- "7 Day lag"   
 }
 plot22 <- ggPredict(DplustmaxprcpvsI.lm, interactive=TRUE)
 
-plot23 <- ggplot(data=joinedDataFrame) +
+plot23 <- ggplot(data=joinedDataFrame) + #2nd plot; x = model estimate, y = actual changeOfIncidence
 geom_point(aes(x=coefficients(DplustmaxprcpvsI.lm)["(Intercept)"] + coefficients(DplustmaxprcpvsI.lm)["outOfHomeDuration"] * outOfHomeDuration + coefficients(DplustmaxprcpvsI.lm)["tmax"] * tmax + coefficients(DplustmaxprcpvsI.lm)["prcpRound"] * prcpRound, y = .data[[weekdayString]], color = tavg)) +
 ggtitle(title) +
 xlab("Intercept + a * outOfHomeDuration + b * tmax + c * prcp") +
@@ -971,27 +984,27 @@ formula.lm <- "changeOfIncidencelaggedMon ~ outOfHomeDuration + outdoorFraction 
 formula.lm <- paste0("changeOfIncidencelagged",weekday,"2", " ~ outOfHomeDuration + outdoorFraction + prcpRound")
 weekdayString <- paste0("changeOfIncidencelagged",weekday,"2")
 }
-DplusoutplusprcpvsI.lm <- lm(formula = formula.lm, data=joinedDataFrame) 
-if(weekday == "Mon"){
+DplusoutplusprcpvsI.lm <- lm(formula = formula.lm, data=joinedDataFrame) #Regression
+if(weekday == "Mon") {
 title <- "14 Day lag" 
-} else if(weekday=="Tue"){
+} else if(weekday=="Tue") {
 title <- "13 Day lag" 
-} else if(weekday=="Wed"){
+} else if(weekday=="Wed") {
 title <- "12 Day lag"
-} else if(weekday=="Thu"){
+} else if(weekday=="Thu") {
 title <- "11 Day lag"
-} else if(weekday=="Fri"){
+} else if(weekday=="Fri") {
 title <- "10 Day lag"
-} else if(weekday=="Sat"){
+} else if(weekday=="Sat") {
 title <- "9 Day lag"
-} else if(weekday == "Sun"){
+} else if(weekday == "Sun") {
 title <- "8 Day lag"
-} else if(weekday == "Mon_1week_lag"){
+} else if(weekday == "Mon_1week_lag") {
 title <- "7 Day lag"   
 }
 plot22 <- ggPredict(DplustmaxprcpvsI.lm, interactive=TRUE)
 
-plot23 <- ggplot(data=joinedDataFrame) +
+plot23 <- ggplot(data=joinedDataFrame) + #2nd plot; x = model estimate, y = actual changeOfIncidence
 geom_point(aes(x=coefficients(DplusoutplusprcpvsI.lm)["(Intercept)"] + coefficients(DplusoutplusprcpvsI.lm)["outOfHomeDuration"] * outOfHomeDuration + coefficients(DplusoutplusprcpvsI.lm)["outdoorFraction"] * outdoorFraction + coefficients(DplusoutplusprcpvsI.lm)["prcpRound"] * prcpRound, y = .data[[weekdayString]], color = tavg)) +
 ggtitle(title) +
 xlab("Intercept + a * outOfHomeDuration + b * outdoorFraction + c * prcp") +
@@ -1015,29 +1028,29 @@ if(weekday == "Mon_1week_lag"){
 weekdayString <- "changeOfIncidencelaggedMon"
 formula.lm <- "changeOfIncidencelaggedMon ~ outOfHomeDuration+outOfHomeDuration:outdoorFraction2+outOfHomeDuration:prcpRound" 
 } else {
-formula.lm <- paste0("changeOfIncidencelagged",weekday,"2", " ~ outOfHomeDuration+outOfHomeDuration:outdoorFraction2+outOfHomeDuration:prcpRound")
+formula.lm <- paste0("changeOfIncidencelagged", weekday, "2", " ~ outOfHomeDuration+outOfHomeDuration:outdoorFraction2+outOfHomeDuration:prcpRound")
 }
-DplusoutplusprcpvsI.lm <- lm(formula = formula.lm, data=joinedDataFrame) #Examplary regression for Bayern
-if(weekday == "Mon"){
-title <- "14 Day lag" 
-} else if(weekday=="Tue"){
-title <- "13 Day lag" 
-} else if(weekday=="Wed"){
+DplusoutplusprcpvsI.lm <- lm(formula = formula.lm, data=joinedDataFrame) #Regression
+if(weekday == "Mon") {
+title <- "14 Day lag"
+} else if(weekday == "Tue") {
+title <- "13 Day lag"
+} else if(weekday == "Wed") {
 title <- "12 Day lag"
-} else if(weekday=="Thu"){
+} else if(weekday == "Thu") {
 title <- "11 Day lag"
-} else if(weekday=="Fri"){
+} else if(weekday == "Fri") {
 title <- "10 Day lag"
-} else if(weekday=="Sat"){
+} else if(weekday == "Sat") {
 title <- "9 Day lag"
-} else if(weekday == "Sun"){
+} else if(weekday == "Sun") {
 title <- "8 Day lag"
 } else if(weekday == "Mon_1week_lag"){
-title <- "7 Day lag"   
+title <- "7 Day lag"
 }
 plot22 <- ggPredict(DplusoutplusprcpvsI.lm, interactive = TRUE)
 
-plot23 <- ggplot(data=joinedDataFrame) +
+plot23 <- ggplot(data=joinedDataFrame) + #2nd plot; x = model estimate, y = actual changeOfIncidence
 geom_point(aes(x=coefficients(DplusoutplusprcpvsI.lm)["(Intercept)"] + coefficients(DplusoutplusprcpvsI.lm)["outOfHomeDuration"] * outOfHomeDuration + coefficients(DplusoutplusprcpvsI.lm)["outOfHomeDuration:outdoorFraction2"] * outOfHomeDuration* outdoorFraction2 + coefficients(DplusoutplusprcpvsI.lm)["outOfHomeDuration:prcpRound"] * outOfHomeDuration * prcpRound, y = .data[[weekdayString]], color = tavg)) +
 ggtitle(title) +
 xlab("Intercept + a * outOfHomeDuration + b * oOHD * oF2 + c * oOHD * prcp") +
@@ -1064,31 +1077,32 @@ weekdayString <- "changeOfIncidencelaggedMon"
 formula.lm <- paste0("changeOfIncidencelagged",weekday,"2", " ~ outOfHomeDurationSquared * outdoorFraction")
 weekdayString <- paste0("changeOfIncidencelagged",weekday,"2")
 }
-DSquaredtimesoutvsI.lm <- lm(formula = formula.lm, data=joinedDataFrame)
-if(weekday == "Mon"){
-title <- "14 Day lag" 
-} else if(weekday=="Tue"){
-title <- "13 Day lag" 
-} else if(weekday=="Wed"){
+DSquaredtimesoutvsI.lm <- lm(formula = formula.lm, data=joinedDataFrame) #Regression
+if(weekday == "Mon") {
+title <- "14 Day lag"
+} else if(weekday == "Tue") {
+title <- "13 Day lag"
+} else if(weekday == "Wed") {
 title <- "12 Day lag"
-} else if(weekday=="Thu"){
+} else if(weekday == "Thu") {
 title <- "11 Day lag"
-} else if(weekday=="Fri"){
+} else if(weekday == "Fri") {
 title <- "10 Day lag"
-} else if(weekday=="Sat"){
+} else if(weekday == "Sat") {
 title <- "9 Day lag"
-} else if(weekday == "Sun"){
+} else if(weekday == "Sun") {
 title <- "8 Day lag"
-} else if(weekday == "Mon_1week_lag"){
-title <- "7 Day lag"   
+} else if(weekday == "Mon_1week_lag") {
+title <- "7 Day lag"
 }
+#1st plot; x = outOfHomeDurationSquared, y = changeOfIncidence, color = outdoorFraction
 plot22 <- ggplot(data=joinedDataFrame, aes(x=outOfHomeDurationSquared, color =outdoorFraction, y = .data[[weekdayString]])) +
 geom_point() +
 geom_smooth(method = "lm") +
 ggtitle(title) +
 theme_minimal()
 
-plot23 <- ggplot(data=joinedDataFrame) +
+plot23 <- ggplot(data=joinedDataFrame) + #2nd plot; x = model estimate, y = actual changeOfIncidence
 geom_point(aes(x=coefficients(DSquaredtimesoutvsI.lm)["(Intercept)"] + coefficients(DSquaredtimesoutvsI.lm)["outOfHomeDurationSquared"] * outOfHomeDurationSquared + coefficients(DSquaredtimesoutvsI.lm)["outdoorFraction"] * outdoorFraction + coefficients(DSquaredtimesoutvsI.lm)["outOfHomeDurationSquared:outdoorFraction"] * outOfHomeDurationSquared * outdoorFraction, y = .data[[weekdayString]], color = tavg)) +
 ggtitle(title) +
 xlab("Intercept + a * outOfHomeDuration^2 * outdoorFraction") +
@@ -1117,31 +1131,32 @@ weekdayString <- "changeOfIncidencelaggedMon"
 formula.lm <- paste0("changeOfIncidencelagged",weekday,"2", " ~ outOfHomeDuration * tmaxSquared")
 weekdayString <- paste0("changeOfIncidencelagged",weekday,"2")
 }
-DtimestmaxSquaredvsI.lm <- lm(formula = formula.lm, data=joinedDataFrame)
-if(weekday == "Mon"){
+DtimestmaxSquaredvsI.lm <- lm(formula = formula.lm, data=joinedDataFrame) #Regression
+if(weekday == "Mon") {
 title <- "14 Day lag" 
-} else if(weekday=="Tue"){
+} else if (weekday == "Tue") {
 title <- "13 Day lag" 
-} else if(weekday=="Wed"){
+} else if (weekday == "Wed") {
 title <- "12 Day lag"
-} else if(weekday=="Thu"){
+} else if (weekday == "Thu") {
 title <- "11 Day lag"
-} else if(weekday=="Fri"){
+} else if (weekday == "Fri") {
 title <- "10 Day lag"
-} else if(weekday=="Sat"){
+} else if (weekday == "Sat") {
 title <- "9 Day lag"
-} else if(weekday == "Sun"){
+} else if (weekday == "Sun") {
 title <- "8 Day lag"
-} else if(weekday == "Mon_1week_lag"){
+} else if (weekday == "Mon_1week_lag") {
 title <- "7 Day lag"   
 }
-plot22 <- ggplot(data=joinedDataFrame, aes(x=outOfHomeDurationSquared, color =tmaxSquared, y = .data[[weekdayString]])) +
+#1st plot; x = outOfHomeDuration, y = changeOfIncidence, color = tmaxSquared
+plot22 <- ggplot(data=joinedDataFrame, aes(x=outOfHomeDuration, color =tmaxSquared, y = .data[[weekdayString]])) +
 geom_point() +
 geom_smooth(method = "lm") +
 ggtitle(title) +
 theme_minimal()
 
-plot23 <- ggplot(data=joinedDataFrame) +
+plot23 <- ggplot(data=joinedDataFrame) + #2nd plot; x = model estimate, y = actual changeOfIncidence
 geom_point(aes(x=coefficients(DtimestmaxSquaredvsI.lm)["(Intercept)"] + coefficients(DtimestmaxSquaredvsI.lm)["outOfHomeDuration"] * outOfHomeDuration + coefficients(DtimestmaxSquaredvsI.lm)["tmaxSquared"] * tmaxSquared + coefficients(DtimestmaxSquaredvsI.lm)["outOfHomeDuration:tmaxSquared"] * outOfHomeDuration * tmaxSquared, y = .data[[weekdayString]], color = tavg)) +
 ggtitle(title) +
 xlab("Intercept + a*outOfHomeDuration + b*tmax^2 + c*oOHD*tmax^2") +
