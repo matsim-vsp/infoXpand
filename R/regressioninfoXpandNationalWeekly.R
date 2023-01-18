@@ -343,11 +343,22 @@ geom_point(aes(x=outOfHomeDuration, y = .data[[weekdayString]])) +
 geom_smooth(aes(x= outOfHomeDuration, y = .data[[weekdayString]]), method = "lm") +
 ggtitle(title) +
 theme_minimal()
+
+plot23 <- ggplot(data=joinedDataFrame) +
+geom_point(aes(x=coefficients(DvsI.lm)["(Intercept)"] + coefficients(DvsI.lm)["outOfHomeDuration"] * outOfHomeDuration, y = .data[[weekdayString]], color = tmax)) +
+ggtitle(title) +
+xlab("Intercept + a * outOfHomeDuration ") +
+ylab("changeOfIncidence") +
+geom_abline(intercept = 0, slope = 1) +
+theme_minimal()
+
 nestedplotlist[[paste0("Regression_DvsI_", weekday)]] <- DvsI.lm
 nestedplotlist[[paste0("Plot_DvsI_", weekday)]] <- plot22
+nestedplotlist[[paste0("ActualvsEstimation_DvsI_", weekday)]] <- plot23
 }
 
 grid.arrange(nestedplotlist[["Plot_DvsI_Mon_1week_lag"]],nestedplotlist[["Plot_DvsI_Sun"]],nestedplotlist[["Plot_DvsI_Sat"]],nestedplotlist[["Plot_DvsI_Fri"]], nestedplotlist[["Plot_DvsI_Thu"]], nestedplotlist[["Plot_DvsI_Wed"]], nestedplotlist[["Plot_DvsI_Tue"]], nestedplotlist[["Plot_DvsI_Mon"]], nrow=3)
+grid.arrange(nestedplotlist[["ActualvsEstimation_DvsI_Mon_1week_lag"]],nestedplotlist[["ActualvsEstimation_DvsI_Sun"]],nestedplotlist[["ActualvsEstimation_DvsI_Sat"]],nestedplotlist[["ActualvsEstimation_DvsI_Fri"]], nestedplotlist[["ActualvsEstimation_DvsI_Thu"]], nestedplotlist[["ActualvsEstimation_DvsI_Wed"]], nestedplotlist[["ActualvsEstimation_DvsI_Tue"]], nestedplotlist[["ActualvsEstimation_DvsI_Mon"]], nrow=3)
 # g <- arrangeGrob(nestedplotlist[["Plot_DvsI_Mon_1week_lag"]],nestedplotlist[["Plot_DvsI_Sun"]],nestedplotlist[["Plot_DvsI_Sat"]],nestedplotlist[["Plot_DvsI_Fri"]], nestedplotlist[["Plot_DvsI_Thu"]], nestedplotlist[["Plot_DvsI_Wed"]], nestedplotlist[["Plot_DvsI_Tue"]], nestedplotlist[["Plot_DvsI_Mon"]], nrow=3)
 
 
@@ -384,11 +395,22 @@ geom_point(aes(x=outOfHomeDurationSquared, y = .data[[weekdayString]])) +
 geom_smooth(aes(x= outOfHomeDurationSquared, y = .data[[weekdayString]]), method = "lm") +
 ggtitle(title) +
 theme_minimal()
+
+plot23 <- ggplot(data=joinedDataFrame) +
+geom_point(aes(x=coefficients(D2vsI.lm)["(Intercept)"] + coefficients(D2vsI.lm)["outOfHomeDurationSquared"] * outOfHomeDurationSquared, y = .data[[weekdayString]], color = tmax)) +
+ggtitle(title) +
+xlab("Intercept + a * outOfHomeDuration^2") +
+ylab("changeOfIncidence") +
+geom_abline(intercept = 0, slope = 1) +
+theme_minimal()
+
 nestedplotlist[[paste0("Regression_D2vsI", weekday)]] <- D2vsI.lm
 nestedplotlist[[paste0("Plot_D2vsI", weekday)]] <- plot22
+nestedplotlist[[paste0("ActualvsEstimation_D2vsI", weekday)]] <- plot23
 }
 
 grid.arrange(nestedplotlist[["Plot_D2vsIMon_1week_lag"]],nestedplotlist[["Plot_D2vsISun"]],nestedplotlist[["Plot_D2vsISat"]],nestedplotlist[["Plot_D2vsIFri"]], nestedplotlist[["Plot_D2vsIThu"]], nestedplotlist[["Plot_D2vsIWed"]], nestedplotlist[["Plot_D2vsITue"]], nestedplotlist[["Plot_D2vsIMon"]], nrow=3)
+grid.arrange(nestedplotlist[["ActualvsEstimation_D2vsIMon_1week_lag"]],nestedplotlist[["ActualvsEstimation_D2vsISun"]],nestedplotlist[["ActualvsEstimation_D2vsISat"]],nestedplotlist[["ActualvsEstimation_D2vsIFri"]], nestedplotlist[["ActualvsEstimation_D2vsIThu"]], nestedplotlist[["ActualvsEstimation_D2vsIWed"]], nestedplotlist[["ActualvsEstimation_D2vsITue"]], nestedplotlist[["ActualvsEstimation_D2vsIMon"]], nrow=3)
 #g <- arrangeGrob(nestedplotlist[["Plot_D2vsIMon_1week_lag"]],nestedplotlist[["Plot_D2vsISun"]],nestedplotlist[["Plot_D2vsISat"]],nestedplotlist[["Plot_D2vsIFri"]], nestedplotlist[["Plot_D2vsIThu"]], nestedplotlist[["Plot_D2vsIWed"]], nestedplotlist[["Plot_D2vsITue"]], nestedplotlist[["Plot_D2vsIMon"]], nrow=3)
 
 
@@ -425,11 +447,22 @@ geom_point() +
 geom_smooth(method="lm") +
 ggtitle(title) +
 theme_minimal()
+
+plot23 <- ggplot(data=joinedDataFrame) +
+geom_point(aes(x=coefficients(DplusD2vsI.lm)["(Intercept)"] + coefficients(DplusD2vsI.lm)["outOfHomeDurationSquared"] * outOfHomeDurationSquared + coefficients(DplusD2vsI.lm)["outOfHomeDuration"] * outOfHomeDuration, y = .data[[weekdayString]], color = tmax)) +
+ggtitle(title) +
+xlab("Intercept + a * outOfHomeDuration^2 + b * outOfHomeDuration") +
+ylab("changeOfIncidence") +
+geom_abline(intercept = 0, slope = 1) +
+theme_minimal()
+
 nestedplotlist[[paste0("Regression_DplusD2vsI", weekday)]] <- DplusD2vsI.lm
 nestedplotlist[[paste0("Plot_DplusD2vsI", weekday)]] <- plot22
+nestedplotlist[[paste0("ActualvsEstimation_DplusD2vsI", weekday)]] <- plot23
 }
 
 grid.arrange(nestedplotlist[["Plot_DplusD2vsIMon_1week_lag"]],nestedplotlist[["Plot_DplusD2vsISun"]],nestedplotlist[["Plot_DplusD2vsISat"]],nestedplotlist[["Plot_DplusD2vsIFri"]], nestedplotlist[["Plot_DplusD2vsIThu"]], nestedplotlist[["Plot_DplusD2vsIWed"]], nestedplotlist[["Plot_DplusD2vsITue"]], nestedplotlist[["Plot_DplusD2vsIMon"]], nrow=3)
+grid.arrange(nestedplotlist[["ActualvsEstimation_DplusD2vsIMon_1week_lag"]],nestedplotlist[["ActualvsEstimation_DplusD2vsISun"]],nestedplotlist[["ActualvsEstimation_DplusD2vsISat"]],nestedplotlist[["ActualvsEstimation_DplusD2vsIFri"]], nestedplotlist[["ActualvsEstimation_DplusD2vsIThu"]], nestedplotlist[["ActualvsEstimation_DplusD2vsIWed"]], nestedplotlist[["ActualvsEstimation_DplusD2vsITue"]], nestedplotlist[["ActualvsEstimation_DplusD2vsIMon"]], nrow=3)
 #g <- arrangeGrob(nestedplotlist[["Plot_DplusD2vsIMon_1week_lag"]],nestedplotlist[["Plot_DplusD2vsISun"]],nestedplotlist[["Plot_DplusD2vsISat"]],nestedplotlist[["Plot_DplusD2vsIFri"]], nestedplotlist[["Plot_DplusD2vsIThu"]], nestedplotlist[["Plot_DplusD2vsIWed"]], nestedplotlist[["Plot_DplusD2vsITue"]], nestedplotlist[["Plot_DplusD2vsIMon"]], nrow=3)
 
 
@@ -465,10 +498,21 @@ geom_point() +
 geom_smooth(method = "lm") +
 ggtitle(title) +
 theme_minimal()
+
+plot23 <- ggplot(data=joinedDataFrame) +
+geom_point(aes(x=coefficients(DplustmaxvsI.lm)["(Intercept)"] + coefficients(DplustmaxvsI.lm)["outOfHomeDuration"] * outOfHomeDuration + coefficients(DplustmaxvsI.lm)["tmax"] * tmax, y = .data[[weekdayString]], color = tmax)) +
+ggtitle(title) +
+xlab("Intercept + a * outOfHomeDuration + b * tmax") +
+ylab("changeOfIncidence") +
+geom_abline(intercept = 0, slope = 1) +
+theme_minimal()
+
 nestedplotlist[[paste0("Regression_DplustmaxvsI", weekday)]] <- DplustmaxvsI.lm
 nestedplotlist[[paste0("Plot_DplustmaxvsI", weekday)]] <- plot22
+nestedplotlist[[paste0("ActualvsEstimation_DplustmaxvsI", weekday)]] <- plot23
 }
 grid.arrange(nestedplotlist[["Plot_DplustmaxvsIMon_1week_lag"]],nestedplotlist[["Plot_DplustmaxvsISun"]],nestedplotlist[["Plot_DplustmaxvsISat"]],nestedplotlist[["Plot_DplustmaxvsIFri"]], nestedplotlist[["Plot_DplustmaxvsIThu"]], nestedplotlist[["Plot_DplustmaxvsIWed"]], nestedplotlist[["Plot_DplustmaxvsITue"]], nestedplotlist[["Plot_DplustmaxvsIMon"]], nrow=3)
+grid.arrange(nestedplotlist[["ActualvsEstimation_DplustmaxvsIMon_1week_lag"]],nestedplotlist[["ActualvsEstimation_DplustmaxvsISun"]],nestedplotlist[["ActualvsEstimation_DplustmaxvsISat"]],nestedplotlist[["ActualvsEstimation_DplustmaxvsIFri"]], nestedplotlist[["ActualvsEstimation_DplustmaxvsIThu"]], nestedplotlist[["ActualvsEstimation_DplustmaxvsIWed"]], nestedplotlist[["ActualvsEstimation_DplustmaxvsITue"]], nestedplotlist[["ActualvsEstimation_DplustmaxvsIMon"]], nrow=3)
 #g <- arrangeGrob(nestedplotlist[["Plot_DplustmaxvsIMon_1week_lag"]],nestedplotlist[["Plot_DplustmaxvsISun"]],nestedplotlist[["Plot_DplustmaxvsISat"]],nestedplotlist[["Plot_DplustmaxvsIFri"]], nestedplotlist[["Plot_DplustmaxvsIThu"]], nestedplotlist[["Plot_DplustmaxvsIWed"]], nestedplotlist[["Plot_DplustmaxvsITue"]], nestedplotlist[["Plot_DplustmaxvsIMon"]], nrow=3)
 
 # 4b) D + tavg vs I
@@ -503,11 +547,22 @@ geom_point() +
 geom_smooth(method = "lm") +
 ggtitle(title) +
 theme_minimal()
+
+plot23 <- ggplot(data=joinedDataFrame) +
+geom_point(aes(x=coefficients(DplustavgvsI.lm)["(Intercept)"] + coefficients(DplustavgvsI.lm)["outOfHomeDuration"] * outOfHomeDuration + coefficients(DplustavgvsI.lm)["tavg"] * tavg, y = .data[[weekdayString]], color = tavg)) +
+ggtitle(title) +
+xlab("Intercept + a * outOfHomeDuration + b * tavg") +
+ylab("changeOfIncidence") +
+geom_abline(intercept = 0, slope = 1) +
+theme_minimal()
+
 nestedplotlist[[paste0("Regression_DplustavgvsI", weekday)]] <- DplustavgvsI.lm
 nestedplotlist[[paste0("Plot_DplustavgvsI", weekday)]] <- plot22
+nestedplotlist[[paste0("ActualvsEstimation_DplustavgvsI", weekday)]] <- plot23
 }
 
 grid.arrange(nestedplotlist[["Plot_DplustavgvsIMon_1week_lag"]],nestedplotlist[["Plot_DplustavgvsISun"]],nestedplotlist[["Plot_DplustavgvsISat"]],nestedplotlist[["Plot_DplustavgvsIFri"]], nestedplotlist[["Plot_DplustavgvsIThu"]], nestedplotlist[["Plot_DplustavgvsIWed"]], nestedplotlist[["Plot_DplustavgvsITue"]], nestedplotlist[["Plot_DplustavgvsIMon"]], nrow=3)
+grid.arrange(nestedplotlist[["ActualvsEstimation_DplustavgvsIMon_1week_lag"]],nestedplotlist[["ActualvsEstimation_DplustavgvsISun"]],nestedplotlist[["ActualvsEstimation_DplustavgvsISat"]],nestedplotlist[["ActualvsEstimation_DplustavgvsIFri"]], nestedplotlist[["ActualvsEstimation_DplustavgvsIThu"]], nestedplotlist[["ActualvsEstimation_DplustavgvsIWed"]], nestedplotlist[["ActualvsEstimation_DplustavgvsITue"]], nestedplotlist[["ActualvsEstimation_DplustavgvsIMon"]], nrow=3)
 #g <- arrangeGrob(nestedplotlist[["Plot_DplustavgvsIMon_1week_lag"]],nestedplotlist[["Plot_DplustavgvsISun"]],nestedplotlist[["Plot_DplustavgvsISat"]],nestedplotlist[["Plot_DplustavgvsIFri"]], nestedplotlist[["Plot_DplustavgvsIThu"]], nestedplotlist[["Plot_DplustavgvsIWed"]], nestedplotlist[["Plot_DplustavgvsITue"]], nestedplotlist[["Plot_DplustavgvsIMon"]], nrow=3)
 
 # 5a) D*tmax vs I
@@ -542,11 +597,22 @@ geom_point() +
 geom_smooth(method = "lm") +
 ggtitle(title) +
 theme_minimal()
+
+plot23 <- ggplot(data=joinedDataFrame) +
+geom_point(aes(x=coefficients(DtimestmaxvsI.lm)["(Intercept)"] + coefficients(DtimestmaxvsI.lm)["outOfHomeDuration"] * outOfHomeDuration + coefficients(DtimestmaxvsI.lm)["tmax"] * tmax + coefficients(DtimestmaxvsI.lm)["outOfHomeDuration:tmax"] * outOfHomeDuration * tmax , y = .data[[weekdayString]], color = tavg)) +
+ggtitle(title) +
+xlab("Intercept + a * outOfHomeDuration + b * tmax + c * oOHD * tmax") +
+ylab("changeOfIncidence") +
+geom_abline(intercept = 0, slope = 1) +
+theme_minimal()
+
 nestedplotlist[[paste0("Regression_DtimestmaxvsI", weekday)]] <- DtimestmaxvsI.lm
 nestedplotlist[[paste0("Plot_DtimestmaxvsI", weekday)]] <- plot22
+nestedplotlist[[paste0("ActualvsEstimation_DtimestmaxvsI", weekday)]] <- plot23
 }
 
 grid.arrange(nestedplotlist[["Plot_DtimestmaxvsIMon_1week_lag"]],nestedplotlist[["Plot_DtimestmaxvsISun"]],nestedplotlist[["Plot_DtimestmaxvsISat"]],nestedplotlist[["Plot_DtimestmaxvsIFri"]], nestedplotlist[["Plot_DtimestmaxvsIThu"]], nestedplotlist[["Plot_DtimestmaxvsIWed"]], nestedplotlist[["Plot_DtimestmaxvsITue"]], nestedplotlist[["Plot_DtimestmaxvsIMon"]], nrow=3)
+grid.arrange(nestedplotlist[["ActualvsEstimation_DtimestmaxvsIMon_1week_lag"]],nestedplotlist[["ActualvsEstimation_DtimestmaxvsISun"]],nestedplotlist[["ActualvsEstimation_DtimestmaxvsISat"]],nestedplotlist[["ActualvsEstimation_DtimestmaxvsIFri"]], nestedplotlist[["ActualvsEstimation_DtimestmaxvsIThu"]], nestedplotlist[["ActualvsEstimation_DtimestmaxvsIWed"]], nestedplotlist[["ActualvsEstimation_DtimestmaxvsITue"]], nestedplotlist[["ActualvsEstimation_DtimestmaxvsIMon"]], nrow=3)
 #g <- arrangeGrob(nestedplotlist[["Plot_DtimestmaxvsIMon_1week_lag"]],nestedplotlist[["Plot_DtimestmaxvsISun"]],nestedplotlist[["Plot_DtimestmaxvsISat"]],nestedplotlist[["Plot_DtimestmaxvsIFri"]], nestedplotlist[["Plot_DtimestmaxvsIThu"]], nestedplotlist[["Plot_DtimestmaxvsIWed"]], nestedplotlist[["Plot_DtimestmaxvsITue"]], nestedplotlist[["Plot_DtimestmaxvsIMon"]], nrow=3)
 
 # 5b) D*tavg vs I
@@ -581,11 +647,22 @@ geom_point() +
 geom_smooth(method = "lm") +
 ggtitle(title) +
 theme_minimal()
+
+plot23 <- ggplot(data=joinedDataFrame) +
+geom_point(aes(x=coefficients(DtimestavgvsI.lm)["(Intercept)"] + coefficients(DtimestavgvsI.lm)["outOfHomeDuration"] * outOfHomeDuration + coefficients(DtimestavgvsI.lm)["tavg"] * tavg + coefficients(DtimestavgvsI.lm)["outOfHomeDuration:tavg"] * outOfHomeDuration * tavg , y = .data[[weekdayString]], color = tavg)) +
+ggtitle(title) +
+xlab("Intercept + a * outOfHomeDuration + b * tavg + c * oOHD * tavg") +
+ylab("changeOfIncidence") +
+geom_abline(intercept = 0, slope = 1) +
+theme_minimal()
+
 nestedplotlist[[paste0("Regression_DtimestavgvsI", weekday)]] <- DtimestavgvsI.lm
 nestedplotlist[[paste0("Plot_DtimestavgvsI", weekday)]] <- plot22
+nestedplotlist[[paste0("ActualvsEstimation_DtimestavgvsI", weekday)]] <- plot23
 }
 
 grid.arrange(nestedplotlist[["Plot_DtimestavgvsIMon_1week_lag"]],nestedplotlist[["Plot_DtimestavgvsISun"]],nestedplotlist[["Plot_DtimestavgvsISat"]],nestedplotlist[["Plot_DtimestavgvsIFri"]], nestedplotlist[["Plot_DtimestavgvsIThu"]], nestedplotlist[["Plot_DtimestavgvsIWed"]], nestedplotlist[["Plot_DtimestavgvsITue"]], nestedplotlist[["Plot_DtimestavgvsIMon"]], nrow=3)
+grid.arrange(nestedplotlist[["ActualvsEstimation_DtimestavgvsIMon_1week_lag"]],nestedplotlist[["ActualvsEstimation_DtimestavgvsISun"]],nestedplotlist[["ActualvsEstimation_DtimestavgvsISat"]],nestedplotlist[["ActualvsEstimation_DtimestavgvsIFri"]], nestedplotlist[["ActualvsEstimation_DtimestavgvsIThu"]], nestedplotlist[["ActualvsEstimation_DtimestavgvsIWed"]], nestedplotlist[["ActualvsEstimation_DtimestavgvsITue"]], nestedplotlist[["ActualvsEstimation_DtimestavgvsIMon"]], nrow=3)
 #g <- arrangeGrob(nestedplotlist[["Plot_DtimestavgvsIMon_1week_lag"]],nestedplotlist[["Plot_DtimestavgvsISun"]],nestedplotlist[["Plot_DtimestavgvsISat"]],nestedplotlist[["Plot_DtimestavgvsIFri"]], nestedplotlist[["Plot_DtimestavgvsIThu"]], nestedplotlist[["Plot_DtimestavgvsIWed"]], nestedplotlist[["Plot_DtimestavgvsITue"]], nestedplotlist[["Plot_DtimestavgvsIMon"]], nrow=3)
 
 # 6a) D + out vs I
@@ -620,11 +697,22 @@ geom_point() +
 geom_smooth(method = "lm") +
 ggtitle(title) +
 theme_minimal()
+
+plot23 <- ggplot(data=joinedDataFrame) +
+geom_point(aes(x=coefficients(DplusoutvsI.lm )["(Intercept)"] + coefficients(DplusoutvsI.lm )["outOfHomeDuration"] * outOfHomeDuration + coefficients(DplusoutvsI.lm )["outdoorFraction"] * outdoorFraction , y = .data[[weekdayString]], color = tavg)) +
+ggtitle(title) +
+xlab("Intercept + a * outOfHomeDuration + b * outdoorFraction") +
+ylab("changeOfIncidence") +
+geom_abline(intercept = 0, slope = 1) +
+theme_minimal()
+
 nestedplotlist[[paste0("Regression_DplusoutvsI", weekday)]] <- DplusoutvsI.lm
 nestedplotlist[[paste0("Plot_DplusoutvsI", weekday)]] <- plot22
+nestedplotlist[[paste0("ActualvsEstimation_DplusoutvsI", weekday)]] <- plot23
 }
 
 grid.arrange(nestedplotlist[["Plot_DplusoutvsIMon_1week_lag"]],nestedplotlist[["Plot_DplusoutvsISun"]],nestedplotlist[["Plot_DplusoutvsISat"]],nestedplotlist[["Plot_DplusoutvsIFri"]], nestedplotlist[["Plot_DplusoutvsIThu"]], nestedplotlist[["Plot_DplusoutvsIWed"]], nestedplotlist[["Plot_DplusoutvsITue"]], nestedplotlist[["Plot_DplusoutvsIMon"]], nrow=3)
+grid.arrange(nestedplotlist[["ActualvsEstimation_DplusoutvsIMon_1week_lag"]],nestedplotlist[["ActualvsEstimation_DplusoutvsISun"]],nestedplotlist[["ActualvsEstimation_DplusoutvsISat"]],nestedplotlist[["ActualvsEstimation_DplusoutvsIFri"]], nestedplotlist[["ActualvsEstimation_DplusoutvsIThu"]], nestedplotlist[["ActualvsEstimation_DplusoutvsIWed"]], nestedplotlist[["ActualvsEstimation_DplusoutvsITue"]], nestedplotlist[["ActualvsEstimation_DplusoutvsIMon"]], nrow=3)
 #g <- arrangeGrob(nestedplotlist[["Plot_DplusoutvsIMon_1week_lag"]],nestedplotlist[["Plot_DplusoutvsISun"]],nestedplotlist[["Plot_DplusoutvsISat"]],nestedplotlist[["Plot_DplusoutvsIFri"]], nestedplotlist[["Plot_DplusoutvsIThu"]], nestedplotlist[["Plot_DplusoutvsIWed"]], nestedplotlist[["Plot_DplusoutvsITue"]], nestedplotlist[["Plot_DplusoutvsIMon"]], nrow=3)
 
 # 6b) D + out2 vs I
@@ -659,11 +747,21 @@ geom_point() +
 geom_smooth(method = "lm") +
 ggtitle(title) +
 theme_minimal()
-nestedplotlist[[paste0("Regression_Dplusout2vsI", weekday)]] <- DplusoutvsI.lm
+
+plot23 <- ggplot(data=joinedDataFrame) +
+geom_point(aes(x=coefficients(Dplusout2vsI.lm )["(Intercept)"] + coefficients(Dplusout2vsI.lm )["outOfHomeDuration"] * outOfHomeDuration + coefficients(Dplusout2vsI.lm )["outdoorFraction2"] * outdoorFraction2 , y = .data[[weekdayString]], color = tavg)) +
+ggtitle(title) +
+xlab("Intercept + a * outOfHomeDuration + b * outdoorFraction2") +
+ylab("changeOfIncidence") +
+geom_abline(intercept = 0, slope = 1) +
+theme_minimal()
+
+nestedplotlist[[paste0("Regression_Dplusout2vsI", weekday)]] <- Dplusout2vsI.lm
 nestedplotlist[[paste0("Plot_Dplusout2vsI", weekday)]] <- plot22
+nestedplotlist[[paste0("ActualvsEstimation_Dplusout2vsI", weekday)]] <- plot23
 }
 
-grid.arrange(nestedplotlist[["Plot_Dplusout2vsIMon_1week_lag"]],nestedplotlist[["Plot_Dplusout2vsISun"]],nestedplotlist[["Plot_Dplusout2vsISat"]],nestedplotlist[["Plot_Dplusout2vsIFri"]], nestedplotlist[["Plot_Dplusout2vsIThu"]], nestedplotlist[["Plot_Dplusout2vsIWed"]], nestedplotlist[["Plot_Dplusout2vsITue"]], nestedplotlist[["Plot_Dplusout2vsIMon"]], nrow=3)
+grid.arrange(nestedplotlist[["ActualvsEstimation_Dplusout2vsIMon_1week_lag"]],nestedplotlist[["ActualvsEstimation_Dplusout2vsISun"]],nestedplotlist[["ActualvsEstimation_Dplusout2vsISat"]],nestedplotlist[["ActualvsEstimation_Dplusout2vsIFri"]], nestedplotlist[["ActualvsEstimation_Dplusout2vsIThu"]], nestedplotlist[["ActualvsEstimation_Dplusout2vsIWed"]], nestedplotlist[["ActualvsEstimation_Dplusout2vsITue"]], nestedplotlist[["ActualvsEstimation_Dplusout2vsIMon"]], nrow=3)
 #g <- arrangeGrob(nestedplotlist[["Plot_Dplusout2vsIMon_1week_lag"]],nestedplotlist[["Plot_Dplusout2vsISun"]],nestedplotlist[["Plot_Dplusout2vsISat"]],nestedplotlist[["Plot_Dplusout2vsIFri"]], nestedplotlist[["Plot_Dplusout2vsIThu"]], nestedplotlist[["Plot_Dplusout2vsIWed"]], nestedplotlist[["Plot_Dplusout2vsITue"]], nestedplotlist[["Plot_Dplusout2vsIMon"]], nrow=3)
 
 # 7a) D * out vs I
@@ -698,11 +796,22 @@ geom_point() +
 geom_smooth(method = "lm") +
 ggtitle(title) +
 theme_minimal()
+
+plot23 <- ggplot(data=joinedDataFrame) +
+geom_point(aes(x=coefficients(DtimesoutvsI.lm)["(Intercept)"] + coefficients(DtimesoutvsI.lm)["outOfHomeDuration"] * outOfHomeDuration + coefficients(DtimesoutvsI.lm)["outdoorFraction"] * outdoorFraction + coefficients(DtimesoutvsI.lm)["outOfHomeDuration:outdoorFraction"] * outOfHomeDuration * outdoorFraction, y = .data[[weekdayString]], color = tavg)) +
+ggtitle(title) +
+xlab("Intercept + a*outOfHomeDuration + b*outdoorFraction + c*oOHD*oF") +
+ylab("changeOfIncidence") +
+geom_abline(intercept = 0, slope = 1) +
+theme_minimal()
+
 nestedplotlist[[paste0("Regression_DtimesoutvsI", weekday)]] <- DtimesoutvsI.lm
 nestedplotlist[[paste0("Plot_DtimesoutvsI", weekday)]] <- plot22
+nestedplotlist[[paste0("ActualvsEstimation_DtimesoutvsI", weekday)]] <- plot23
 }
 
 grid.arrange(nestedplotlist[["Plot_DtimesoutvsIMon_1week_lag"]], nestedplotlist[["Plot_DtimesoutvsISun"]],nestedplotlist[["Plot_DtimesoutvsISat"]],nestedplotlist[["Plot_DtimesoutvsIFri"]], nestedplotlist[["Plot_DtimesoutvsIThu"]], nestedplotlist[["Plot_DtimesoutvsIWed"]], nestedplotlist[["Plot_DtimesoutvsITue"]], nestedplotlist[["Plot_DtimesoutvsIMon"]], nrow=3)
+grid.arrange(nestedplotlist[["ActualvsEstimation_DtimesoutvsIMon_1week_lag"]], nestedplotlist[["ActualvsEstimation_DtimesoutvsISun"]],nestedplotlist[["ActualvsEstimation_DtimesoutvsISat"]],nestedplotlist[["ActualvsEstimation_DtimesoutvsIFri"]], nestedplotlist[["ActualvsEstimation_DtimesoutvsIThu"]], nestedplotlist[["ActualvsEstimation_DtimesoutvsIWed"]], nestedplotlist[["ActualvsEstimation_DtimesoutvsITue"]], nestedplotlist[["ActualvsEstimation_DtimesoutvsIMon"]], nrow=3)
 #g <- arrangeGrob(nestedplotlist[["Plot_DtimesoutvsIMon_1week_lag"]], nestedplotlist[["Plot_DtimesoutvsISun"]],nestedplotlist[["Plot_DtimesoutvsISat"]],nestedplotlist[["Plot_DtimesoutvsIFri"]], nestedplotlist[["Plot_DtimesoutvsIThu"]], nestedplotlist[["Plot_DtimesoutvsIWed"]], nestedplotlist[["Plot_DtimesoutvsITue"]], nestedplotlist[["Plot_DtimesoutvsIMon"]], nrow=3)
 
 # 7b) D * out2 vs I
@@ -737,11 +846,22 @@ geom_point() +
 geom_smooth(method = "lm") +
 ggtitle(title) +
 theme_minimal()
-nestedplotlist[[paste0("Regression_Dtimesout2vsI", weekday)]] <- plot22
+
+plot23 <- ggplot(data=joinedDataFrame) +
+geom_point(aes(x=coefficients(Dtimesout2vsI.lm)["(Intercept)"] + coefficients(Dtimesout2vsI.lm)["outOfHomeDuration"] * outOfHomeDuration + coefficients(Dtimesout2vsI.lm)["outdoorFraction2"] * outdoorFraction2 + coefficients(Dtimesout2vsI.lm)["outOfHomeDuration:outdoorFraction2"] * outOfHomeDuration * outdoorFraction2, y = .data[[weekdayString]], color = tavg)) +
+ggtitle(title) +
+xlab("Intercept + a * outOfHomeDuration + b * outdoorFraction2 + c * oOHD * oF2") +
+ylab("changeOfIncidence") +
+geom_abline(intercept = 0, slope = 1) +
+theme_minimal()
+
+nestedplotlist[[paste0("Regression_Dtimesout2vsI", weekday)]] <- Dtimesout2vsI.lm
 nestedplotlist[[paste0("Plot_Dtimesout2vsI", weekday)]] <- plot22
+nestedplotlist[[paste0("ActualvsEstimation_Dtimesout2vsI", weekday)]] <- plot23
 }
 
 grid.arrange(nestedplotlist[["Plot_Dtimesout2vsIMon_1week_lag"]],nestedplotlist[["Plot_Dtimesout2vsISun"]],nestedplotlist[["Plot_Dtimesout2vsISat"]],nestedplotlist[["Plot_Dtimesout2vsIFri"]], nestedplotlist[["Plot_Dtimesout2vsIThu"]], nestedplotlist[["Plot_Dtimesout2vsIWed"]], nestedplotlist[["Plot_Dtimesout2vsITue"]], nestedplotlist[["Plot_Dtimesout2vsIMon"]], nrow=3)
+grid.arrange(nestedplotlist[["ActualvsEstimation_Dtimesout2vsIMon_1week_lag"]],nestedplotlist[["ActualvsEstimation_Dtimesout2vsISun"]],nestedplotlist[["ActualvsEstimation_Dtimesout2vsISat"]],nestedplotlist[["ActualvsEstimation_Dtimesout2vsIFri"]], nestedplotlist[["ActualvsEstimation_Dtimesout2vsIThu"]], nestedplotlist[["ActualvsEstimation_Dtimesout2vsIWed"]], nestedplotlist[["ActualvsEstimation_Dtimesout2vsITue"]], nestedplotlist[["ActualvsEstimation_Dtimesout2vsIMon"]], nrow=3)
 #g <- arrangeGrob(nestedplotlist[["Plot_Dtimesout2vsIMon_1week_lag"]],nestedplotlist[["Plot_Dtimesout2vsISun"]],nestedplotlist[["Plot_Dtimesout2vsISat"]],nestedplotlist[["Plot_Dtimesout2vsIFri"]], nestedplotlist[["Plot_Dtimesout2vsIThu"]], nestedplotlist[["Plot_Dtimesout2vsIWed"]], nestedplotlist[["Plot_Dtimesout2vsITue"]], nestedplotlist[["Plot_Dtimesout2vsIMon"]], nrow=3)
 
 # 8) D + prcp
@@ -776,22 +896,33 @@ geom_point() +
 geom_smooth(method = "lm") +
 ggtitle(title) +
 theme_minimal()
-nestedplotlist[[paste0("Regression_DplusprcpvsI", weekday)]] <- DplustmaxvsI.lm
+
+plot23 <- ggplot(data=joinedDataFrame) +
+geom_point(aes(x=coefficients(DplusprcpvsI.lm)["(Intercept)"] + coefficients(DplusprcpvsI.lm)["outOfHomeDuration"] * outOfHomeDuration + coefficients(DplusprcpvsI.lm)["prcp"] * prcp, y = .data[[weekdayString]], color = tavg)) +
+ggtitle(title) +
+xlab("Intercept + a * outOfHomeDuration + b * prcp") +
+ylab("changeOfIncidence") +
+geom_abline(intercept = 0, slope = 1) +
+theme_minimal()
+
+nestedplotlist[[paste0("Regression_DplusprcpvsI", weekday)]] <- DplusprcpvsI.lm
 nestedplotlist[[paste0("Plot_DplusprcpvsI", weekday)]] <- plot22
+nestedplotlist[[paste0("ActualvsEstimation_DplusprcpvsI", weekday)]] <- plot23
 }
 
 grid.arrange(nestedplotlist[["Plot_DplusprcpvsIMon_1week_lag"]],nestedplotlist[["Plot_DplusprcpvsISun"]],nestedplotlist[["Plot_DplusprcpvsISat"]],nestedplotlist[["Plot_DplusprcpvsIFri"]], nestedplotlist[["Plot_DplusprcpvsIThu"]], nestedplotlist[["Plot_DplusprcpvsIWed"]], nestedplotlist[["Plot_DplusprcpvsITue"]], nestedplotlist[["Plot_DplusprcpvsIMon"]], nrow=3)
+grid.arrange(nestedplotlist[["ActualvsEstimation_DplusprcpvsIMon_1week_lag"]],nestedplotlist[["ActualvsEstimation_DplusprcpvsISun"]],nestedplotlist[["ActualvsEstimation_DplusprcpvsISat"]],nestedplotlist[["ActualvsEstimation_DplusprcpvsIFri"]], nestedplotlist[["ActualvsEstimation_DplusprcpvsIThu"]], nestedplotlist[["ActualvsEstimation_DplusprcpvsIWed"]], nestedplotlist[["ActualvsEstimation_DplusprcpvsITue"]], nestedplotlist[["ActualvsEstimation_DplusprcpvsIMon"]], nrow=3)
 #g <- arrangeGrob(nestedplotlist[["Plot_DplusprcpvsIMon_1week_lag"]],nestedplotlist[["Plot_DplusprcpvsISun"]],nestedplotlist[["Plot_DplusprcpvsISat"]],nestedplotlist[["Plot_DplusprcpvsIFri"]], nestedplotlist[["Plot_DplusprcpvsIThu"]], nestedplotlist[["Plot_DplusprcpvsIWed"]], nestedplotlist[["Plot_DplusprcpvsITue"]], nestedplotlist[["Plot_DplusprcpvsIMon"]], nrow=3)
 
 
 # 9a) D + tmax + prcp
-joinedDataFrame <- joinedDataFrame %>% mutate(prpcRound = round(prcp))
+joinedDataFrame <- joinedDataFrame %>% mutate(prcpRound = round(prcp))
 for(weekday in weekdays){
 if(weekday == "Mon_1week_lag"){
 weekdayString <- "changeOfIncidencelaggedMon"
-formula.lm <- "changeOfIncidencelaggedMon ~ outOfHomeDuration * tmax * prpcRound" 
+formula.lm <- "changeOfIncidencelaggedMon ~ outOfHomeDuration + tmax + prcpRound" 
 } else {
-formula.lm <- paste0("changeOfIncidencelagged",weekday,"2", " ~ outOfHomeDuration * tmax * prpcRound")
+formula.lm <- paste0("changeOfIncidencelagged",weekday,"2", " ~ outOfHomeDuration + tmax + prcpRound")
 weekdayString <- paste0("changeOfIncidencelagged",weekday,"2")
 }
 DplustmaxprcpvsI.lm <- lm(formula = formula.lm, data=joinedDataFrame) 
@@ -813,20 +944,31 @@ title <- "8 Day lag"
 title <- "7 Day lag"   
 }
 plot22 <- ggPredict(DplustmaxprcpvsI.lm, interactive=TRUE)
+
+plot23 <- ggplot(data=joinedDataFrame) +
+geom_point(aes(x=coefficients(DplustmaxprcpvsI.lm)["(Intercept)"] + coefficients(DplustmaxprcpvsI.lm)["outOfHomeDuration"] * outOfHomeDuration + coefficients(DplustmaxprcpvsI.lm)["tmax"] * tmax + coefficients(DplustmaxprcpvsI.lm)["prcpRound"] * prcpRound, y = .data[[weekdayString]], color = tavg)) +
+ggtitle(title) +
+xlab("Intercept + a * outOfHomeDuration + b * tmax + c * prcp") +
+ylab("changeOfIncidence") +
+geom_abline(intercept = 0, slope = 1) +
+theme_minimal()
+
 nestedplotlist[[paste0("Regression_DplustmaxprcpvsI", weekday)]] <- DplustmaxprcpvsI.lm
 nestedplotlist[[paste0("Plot_DplustmaxprcpvsI", weekday)]] <- plot22
+nestedplotlist[[paste0("ActualvsEstimation_DplustmaxprcpvsI", weekday)]] <- plot23
 }
 
-grid.arrange(nestedplotlist[["Plot_DplustmaxprcpvsIMon_1week_lag"]],nestedplotlist[["Plot_DplustmaxprcpvsISun"]],nestedplotlist[["Plot_DplustmaxprcpvsISat"]],nestedplotlist[["Plot_DplustmaxprcpvsIFri"]], nestedplotlist[["Plot_DplustmaxprcpvsIThu"]], nestedplotlist[["Plot_DplustmaxprcpvsIWed"]], nestedplotlist[["Plot_DplustmaxprcpvsITue"]], nestedplotlist[["Plot_DplustmaxprcpvsIMon"]], nrow=3)
+#grid.arrange(nestedplotlist[["Plot_DplustmaxprcpvsIMon_1week_lag"]],nestedplotlist[["Plot_DplustmaxprcpvsISun"]],nestedplotlist[["Plot_DplustmaxprcpvsISat"]],nestedplotlist[["Plot_DplustmaxprcpvsIFri"]], nestedplotlist[["Plot_DplustmaxprcpvsIThu"]], nestedplotlist[["Plot_DplustmaxprcpvsIWed"]], nestedplotlist[["Plot_DplustmaxprcpvsITue"]], nestedplotlist[["Plot_DplustmaxprcpvsIMon"]], nrow=3)
+grid.arrange(nestedplotlist[["ActualvsEstimation_DplustmaxprcpvsIMon_1week_lag"]],nestedplotlist[["ActualvsEstimation_DplustmaxprcpvsISun"]],nestedplotlist[["ActualvsEstimation_DplustmaxprcpvsISat"]],nestedplotlist[["ActualvsEstimation_DplustmaxprcpvsIFri"]], nestedplotlist[["ActualvsEstimation_DplustmaxprcpvsIThu"]], nestedplotlist[["ActualvsEstimation_DplustmaxprcpvsIWed"]], nestedplotlist[["ActualvsEstimation_DplustmaxprcpvsITue"]], nestedplotlist[["ActualvsEstimation_DplustmaxprcpvsIMon"]], nrow=3)
 #g <- arrangeGrob(nestedplotlist[["Plot_DplustmaxprcpvsIMon_1week_lag"]],nestedplotlist[["Plot_DplustmaxprcpvsISun"]],nestedplotlist[["Plot_DplustmaxprcpvsISat"]],nestedplotlist[["Plot_DplustmaxprcpvsIFri"]], nestedplotlist[["Plot_DplustmaxprcpvsIThu"]], nestedplotlist[["Plot_DplustmaxprcpvsIWed"]], nestedplotlist[["Plot_DplustmaxprcpvsITue"]], nestedplotlist[["Plot_DplustmaxprcpvsIMon"]], nrow=3)
 
 # 9b) D + out + prcp
 for(weekday in weekdays){
 if(weekday == "Mon_1week_lag"){
 weekdayString <- "changeOfIncidencelaggedMon"
-formula.lm <- "changeOfIncidencelaggedMon ~ outOfHomeDuration + outdoorFraction + prpcRound" 
+formula.lm <- "changeOfIncidencelaggedMon ~ outOfHomeDuration + outdoorFraction + prcpRound" 
 } else {
-formula.lm <- paste0("changeOfIncidencelagged",weekday,"2", " ~ outOfHomeDuration + outdoorFraction + prpcRound")
+formula.lm <- paste0("changeOfIncidencelagged",weekday,"2", " ~ outOfHomeDuration + outdoorFraction + prcpRound")
 weekdayString <- paste0("changeOfIncidencelagged",weekday,"2")
 }
 DplusoutplusprcpvsI.lm <- lm(formula = formula.lm, data=joinedDataFrame) 
@@ -848,11 +990,22 @@ title <- "8 Day lag"
 title <- "7 Day lag"   
 }
 plot22 <- ggPredict(DplustmaxprcpvsI.lm, interactive=TRUE)
+
+plot23 <- ggplot(data=joinedDataFrame) +
+geom_point(aes(x=coefficients(DplusoutplusprcpvsI.lm)["(Intercept)"] + coefficients(DplusoutplusprcpvsI.lm)["outOfHomeDuration"] * outOfHomeDuration + coefficients(DplusoutplusprcpvsI.lm)["outdoorFraction"] * outdoorFraction + coefficients(DplusoutplusprcpvsI.lm)["prcpRound"] * prcpRound, y = .data[[weekdayString]], color = tavg)) +
+ggtitle(title) +
+xlab("Intercept + a * outOfHomeDuration + b * outdoorFraction + c * prcp") +
+ylab("changeOfIncidence") +
+geom_abline(intercept = 0, slope = 1) +
+theme_minimal()
+
 nestedplotlist[[paste0("Regressio_DplusoutplusprcpvsI", weekday)]] <- DplusoutplusprcpvsI.lm
 nestedplotlist[[paste0("Plot_DplusoutplusprcpvsI", weekday)]] <- plot22
+nestedplotlist[[paste0("ActualvsEstimate_DplusoutplusprcpvsI", weekday)]] <- plot23
 }
 
 grid.arrange(nestedplotlist[["Plot_DplusoutplusprcpvsIMon_1week_lag"]],nestedplotlist[["Plot_DplusoutplusprcpvsISun"]],nestedplotlist[["Plot_DplusoutplusprcpvsISat"]],nestedplotlist[["Plot_DplusoutplusprcpvsIFri"]], nestedplotlist[["Plot_DplusoutplusprcpvsIThu"]], nestedplotlist[["Plot_DplusoutplusprcpvsIWed"]], nestedplotlist[["Plot_DplusoutplusprcpvsITue"]], nestedplotlist[["Plot_DplusoutplusprcpvsIMon"]], nrow=3)
+grid.arrange(nestedplotlist[["ActualvsEstimate_DplusoutplusprcpvsIMon_1week_lag"]],nestedplotlist[["ActualvsEstimate_DplusoutplusprcpvsISun"]],nestedplotlist[["ActualvsEstimate_DplusoutplusprcpvsISat"]],nestedplotlist[["ActualvsEstimate_DplusoutplusprcpvsIFri"]], nestedplotlist[["ActualvsEstimate_DplusoutplusprcpvsIThu"]], nestedplotlist[["ActualvsEstimate_DplusoutplusprcpvsIWed"]], nestedplotlist[["ActualvsEstimate_DplusoutplusprcpvsITue"]], nestedplotlist[["ActualvsEstimate_DplusoutplusprcpvsIMon"]], nrow=3)
 #g <- arrangeGrob(nestedplotlist[["Plot_DplusoutplusprcpvsIMon_1week_lag"]],nestedplotlist[["Plot_DplusoutplusprcpvsISun"]],nestedplotlist[["Plot_DplusoutplusprcpvsISat"]],nestedplotlist[["Plot_DplusoutplusprcpvsIFri"]], nestedplotlist[["Plot_DplusoutplusprcpvsIThu"]], nestedplotlist[["Plot_DplusoutplusprcpvsIWed"]], nestedplotlist[["Plot_DplusoutplusprcpvsITue"]], nestedplotlist[["Plot_DplusoutplusprcpvsIMon"]], nrow=3)
 
 
@@ -860,9 +1013,9 @@ grid.arrange(nestedplotlist[["Plot_DplusoutplusprcpvsIMon_1week_lag"]],nestedplo
 for(weekday in weekdays){
 if(weekday == "Mon_1week_lag"){
 weekdayString <- "changeOfIncidencelaggedMon"
-formula.lm <- "changeOfIncidencelaggedMon ~ outOfHomeDuration+outOfHomeDuration:outdoorFraction2+outOfHomeDuration:prpcRound" 
+formula.lm <- "changeOfIncidencelaggedMon ~ outOfHomeDuration+outOfHomeDuration:outdoorFraction2+outOfHomeDuration:prcpRound" 
 } else {
-formula.lm <- paste0("changeOfIncidencelagged",weekday,"2", " ~ outOfHomeDuration+outOfHomeDuration:outdoorFraction2+outOfHomeDuration:prpcRound")
+formula.lm <- paste0("changeOfIncidencelagged",weekday,"2", " ~ outOfHomeDuration+outOfHomeDuration:outdoorFraction2+outOfHomeDuration:prcpRound")
 }
 DplusoutplusprcpvsI.lm <- lm(formula = formula.lm, data=joinedDataFrame) #Examplary regression for Bayern
 if(weekday == "Mon"){
@@ -883,11 +1036,22 @@ title <- "8 Day lag"
 title <- "7 Day lag"   
 }
 plot22 <- ggPredict(DplusoutplusprcpvsI.lm, interactive = TRUE)
+
+plot23 <- ggplot(data=joinedDataFrame) +
+geom_point(aes(x=coefficients(DplusoutplusprcpvsI.lm)["(Intercept)"] + coefficients(DplusoutplusprcpvsI.lm)["outOfHomeDuration"] * outOfHomeDuration + coefficients(DplusoutplusprcpvsI.lm)["outOfHomeDuration:outdoorFraction2"] * outOfHomeDuration* outdoorFraction2 + coefficients(DplusoutplusprcpvsI.lm)["outOfHomeDuration:prcpRound"] * outOfHomeDuration * prcpRound, y = .data[[weekdayString]], color = tavg)) +
+ggtitle(title) +
+xlab("Intercept + a * outOfHomeDuration + b * oOHD * oF2 + c * oOHD * prcp") +
+ylab("changeOfIncidence") +
+geom_abline(intercept = 0, slope = 1) +
+theme_minimal()
+
 nestedplotlist[[paste0("Regression_D:out2:prcpvsI", weekday)]] <- DplusoutplusprcpvsI.lm 
 nestedplotlist[[paste0("Plot_D:out2:prcpvsI", weekday)]] <- plot22
+nestedplotlist[[paste0("ActualvsEstimate_D:out2:prcpvsI", weekday)]] <- plot23
 }
 
 grid.arrange(nestedplotlist[["Plot_D:out2:prcpvsIMon_1week_lag"]],nestedplotlist[["Plot_D:out2:prcpvsISun"]],nestedplotlist[["Plot_D:out2:prcpvsISat"]],nestedplotlist[["Plot_D:out2:prcpvsIFri"]], nestedplotlist[["Plot_D:out2:prcpvsIThu"]], nestedplotlist[["Plot_D:out2:prcpvsIWed"]], nestedplotlist[["Plot_D:out2:prcpvsITue"]], nestedplotlist[["Plot_D:out2:prcpvsIMon"]], nrow=3)
+grid.arrange(nestedplotlist[["ActualvsEstimate_D:out2:prcpvsIMon_1week_lag"]],nestedplotlist[["ActualvsEstimate_D:out2:prcpvsISun"]],nestedplotlist[["ActualvsEstimate_D:out2:prcpvsISat"]],nestedplotlist[["ActualvsEstimate_D:out2:prcpvsIFri"]], nestedplotlist[["ActualvsEstimate_D:out2:prcpvsIThu"]], nestedplotlist[["ActualvsEstimate_D:out2:prcpvsIWed"]], nestedplotlist[["ActualvsEstimate_D:out2:prcpvsITue"]], nestedplotlist[["ActualvsEstimate_D:out2:prcpvsIMon"]], nrow=3)
 #g <- arrangeGrob(nestedplotlist[["Plot_DplusoutplusprcpvsIMon_1week_lag"]],nestedplotlist[["Plot_DplusoutplusprcpvsISun"]],nestedplotlist[["Plot_DplusoutplusprcpvsISat"]],nestedplotlist[["Plot_DplusoutplusprcpvsIFri"]], nestedplotlist[["Plot_DplusoutplusprcpvsIThu"]], nestedplotlist[["Plot_DplusoutplusprcpvsIWed"]], nestedplotlist[["Plot_DplusoutplusprcpvsITue"]], nestedplotlist[["Plot_DplusoutplusprcpvsIMon"]], nrow=3)
 
 
@@ -923,12 +1087,78 @@ geom_point() +
 geom_smooth(method = "lm") +
 ggtitle(title) +
 theme_minimal()
+
+plot23 <- ggplot(data=joinedDataFrame) +
+geom_point(aes(x=coefficients(DSquaredtimesoutvsI.lm)["(Intercept)"] + coefficients(DSquaredtimesoutvsI.lm)["outOfHomeDurationSquared"] * outOfHomeDurationSquared + coefficients(DSquaredtimesoutvsI.lm)["outdoorFraction"] * outdoorFraction + coefficients(DSquaredtimesoutvsI.lm)["outOfHomeDurationSquared:outdoorFraction"] * outOfHomeDurationSquared * outdoorFraction, y = .data[[weekdayString]], color = tavg)) +
+ggtitle(title) +
+xlab("Intercept + a * outOfHomeDuration^2 * outdoorFraction") +
+ylab("changeOfIncidence") +
+geom_abline(intercept = 0, slope = 1) +
+theme_minimal()
+
 nestedplotlist[[paste0("Regression_DtimesoutvsI", weekday)]] <- DSquaredtimesoutvsI.lm
 nestedplotlist[[paste0("Plot_DtimesoutvsI", weekday)]] <- plot22
+nestedplotlist[[paste0("ActualvsEstimate_DtimesoutvsI", weekday)]] <- plot23
 }
 
+
 grid.arrange(nestedplotlist[["Plot_DtimesoutvsIMon_1week_lag"]], nestedplotlist[["Plot_DtimesoutvsISun"]],nestedplotlist[["Plot_DtimesoutvsISat"]],nestedplotlist[["Plot_DtimesoutvsIFri"]], nestedplotlist[["Plot_DtimesoutvsIThu"]], nestedplotlist[["Plot_DtimesoutvsIWed"]], nestedplotlist[["Plot_DtimesoutvsITue"]], nestedplotlist[["Plot_DtimesoutvsIMon"]], nrow=3)
+grid.arrange(nestedplotlist[["ActualvsEstimate_DtimesoutvsIMon_1week_lag"]], nestedplotlist[["ActualvsEstimate_DtimesoutvsISun"]],nestedplotlist[["ActualvsEstimate_DtimesoutvsISat"]],nestedplotlist[["ActualvsEstimate_DtimesoutvsIFri"]], nestedplotlist[["ActualvsEstimate_DtimesoutvsIThu"]], nestedplotlist[["ActualvsEstimate_DtimesoutvsIWed"]], nestedplotlist[["ActualvsEstimate_DtimesoutvsITue"]], nestedplotlist[["ActualvsEstimate_DtimesoutvsIMon"]], nrow=3)
 g <- arrangeGrob(nestedplotlist[["Plot_DtimesoutvsIMon_1week_lag"]], nestedplotlist[["Plot_DtimesoutvsISun"]],nestedplotlist[["Plot_DtimesoutvsISat"]],nestedplotlist[["Plot_DtimesoutvsIFri"]], nestedplotlist[["Plot_DtimesoutvsIThu"]], nestedplotlist[["Plot_DtimesoutvsIWed"]], nestedplotlist[["Plot_DtimesoutvsITue"]], nestedplotlist[["Plot_DtimesoutvsIMon"]], nrow=3)
+
+
+#12) D * tmax^2 vs I 
+joinedDataFrame <- joinedDataFrame %>% mutate(tmaxSquared = tmax * tmax)
+for(weekday in weekdays){
+if(weekday == "Mon_1week_lag"){
+formula.lm <- "changeOfIncidencelaggedMon ~ outOfHomeDuration * tmaxSquared" 
+weekdayString <- "changeOfIncidencelaggedMon"
+} else {
+formula.lm <- paste0("changeOfIncidencelagged",weekday,"2", " ~ outOfHomeDuration * tmaxSquared")
+weekdayString <- paste0("changeOfIncidencelagged",weekday,"2")
+}
+DtimestmaxSquaredvsI.lm <- lm(formula = formula.lm, data=joinedDataFrame)
+if(weekday == "Mon"){
+title <- "14 Day lag" 
+} else if(weekday=="Tue"){
+title <- "13 Day lag" 
+} else if(weekday=="Wed"){
+title <- "12 Day lag"
+} else if(weekday=="Thu"){
+title <- "11 Day lag"
+} else if(weekday=="Fri"){
+title <- "10 Day lag"
+} else if(weekday=="Sat"){
+title <- "9 Day lag"
+} else if(weekday == "Sun"){
+title <- "8 Day lag"
+} else if(weekday == "Mon_1week_lag"){
+title <- "7 Day lag"   
+}
+plot22 <- ggplot(data=joinedDataFrame, aes(x=outOfHomeDurationSquared, color =tmaxSquared, y = .data[[weekdayString]])) +
+geom_point() +
+geom_smooth(method = "lm") +
+ggtitle(title) +
+theme_minimal()
+
+plot23 <- ggplot(data=joinedDataFrame) +
+geom_point(aes(x=coefficients(DtimestmaxSquaredvsI.lm)["(Intercept)"] + coefficients(DtimestmaxSquaredvsI.lm)["outOfHomeDuration"] * outOfHomeDuration + coefficients(DtimestmaxSquaredvsI.lm)["tmaxSquared"] * tmaxSquared + coefficients(DtimestmaxSquaredvsI.lm)["outOfHomeDuration:tmaxSquared"] * outOfHomeDuration * tmaxSquared, y = .data[[weekdayString]], color = tavg)) +
+ggtitle(title) +
+xlab("Intercept + a*outOfHomeDuration + b*tmax^2 + c*oOHD*tmax^2") +
+ylab("changeOfIncidence") +
+geom_abline(intercept = 0, slope = 1) +
+theme_minimal()
+
+nestedplotlist[[paste0("Regression_DtimestmaxSquaredvsI", weekday)]] <- DtimestmaxSquaredvsI.lm 
+nestedplotlist[[paste0("Plot_DtimestmaxSquaredvsI", weekday)]] <- plot22
+nestedplotlist[[paste0("ActualvsEstimate_DtimestmaxSquaredvsI", weekday)]] <- plot23
+}
+
+
+grid.arrange(nestedplotlist[["Plot_DtimestmaxSquaredvsIMon_1week_lag"]], nestedplotlist[["Plot_DtimestmaxSquaredvsISun"]],nestedplotlist[["Plot_DtimestmaxSquaredvsISat"]],nestedplotlist[["Plot_DtimestmaxSquaredvsIFri"]], nestedplotlist[["Plot_DtimestmaxSquaredvsIThu"]], nestedplotlist[["Plot_DtimestmaxSquaredvsIWed"]], nestedplotlist[["Plot_DtimestmaxSquaredvsITue"]], nestedplotlist[["Plot_DtimestmaxSquaredvsIMon"]], nrow=3)
+grid.arrange(nestedplotlist[["ActualvsEstimate_DtimestmaxSquaredvsIMon_1week_lag"]], nestedplotlist[["ActualvsEstimate_DtimestmaxSquaredvsISun"]],nestedplotlist[["ActualvsEstimate_DtimestmaxSquaredvsISat"]],nestedplotlist[["ActualvsEstimate_DtimestmaxSquaredvsIFri"]], nestedplotlist[["ActualvsEstimate_DtimestmaxSquaredvsIThu"]], nestedplotlist[["ActualvsEstimate_DtimestmaxSquaredvsIWed"]], nestedplotlist[["ActualvsEstimate_DtimestmaxSquaredvsITue"]], nestedplotlist[["ActualvsEstimate_DtimestmaxSquaredvsIMon"]], nrow=3)
+g <- arrangeGrob(nestedplotlist[["Plot_DtimestmaxSquaredvsIMon_1week_lag"]], nestedplotlist[["Plot_DtimestmaxSquaredvsISun"]],nestedplotlist[["Plot_DtimestmaxSquaredvsISat"]],nestedplotlist[["Plot_DtimestmaxSquaredvsIFri"]], nestedplotlist[["Plot_DtimestmaxSquaredvsIThu"]], nestedplotlist[["Plot_DtimestmaxSquaredvsIWed"]], nestedplotlist[["Plot_DtimestmaxSquaredvsITue"]], nestedplotlist[["Plot_DtimestmaxSquaredvsIMon"]], nrow=3)
+
 
 #Performing multiple polynomial regression
 
