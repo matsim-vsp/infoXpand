@@ -403,15 +403,14 @@ theme_minimal()
 
 plot23 <- ggplot(data = joinedDataFrame) + #2nd plot; x = model estimate, y = actual changeOfIncidence
 geom_smooth(aes(x=coefficients(D2vsI.lm)["(Intercept)"] + coefficients(D2vsI.lm)["outOfHomeDurationSquared"] * outOfHomeDurationSquared, y = .data[[weekdayString]], color="lightgrey"), method="lm", se=FALSE, size = 2) +
-geom_point(aes(x=coefficients(D2vsI.lm)["(Intercept)"] + coefficients(D2vsI.lm)["outOfHomeDurationSquared"] * outOfHomeDurationSquared, y = .data[[weekdayString]], fill = tmax), size=3, shape = 21) +
-geom_abline(aes(intercept = 0, slope = 1, color = "blue")) +
-scale_color_identity(labels = c("Regression line", "x=y"), guide = "legend") +
 ggtitle(title) +
 xlab("Intercept + a * outOfHomeDuration^2") +
 ylab("changeOfIncidence") +
-geom_abline(intercept = 0, slope = 1) +
+geom_abline(aes(intercept = 0, slope = 1, color="blue")) +
+scale_color_identity(labels = c("x=y", "Regression line"), guide="legend") +
 theme_minimal() +
-theme(legend.position = "bottom", legend.title = element_blank())
+theme(legend.position = "bottom", legend.title = element_blank()) +
+geom_point(aes(x=coefficients(D2vsI.lm)["(Intercept)"] + coefficients(D2vsI.lm)["outOfHomeDurationSquared"] * outOfHomeDurationSquared, y = .data[[weekdayString]], fill = tmax), size=3, shape = 21) 
 
 nestedplotlist[[paste0("Regression_D2vsI", weekday)]] <- D2vsI.lm
 nestedplotlist[[paste0("Plot_D2vsI", weekday)]] <- plot22
@@ -462,14 +461,14 @@ theme_minimal()
 
 plot23 <- ggplot(data = joinedDataFrame) + #2nd plot; x = model estimate, y = actual changeOfIncidence
 geom_smooth(aes(x=coefficients(DplusD2vsI.lm)["(Intercept)"] + coefficients(DplusD2vsI.lm)["outOfHomeDurationSquared"] * outOfHomeDurationSquared + coefficients(DplusD2vsI.lm)["outOfHomeDuration"] * outOfHomeDuration, y = .data[[weekdayString]], color="lightgrey"), method="lm", se=FALSE, size = 2) +
-geom_point(aes(x=coefficients(DplusD2vsI.lm)["(Intercept)"] + coefficients(DplusD2vsI.lm)["outOfHomeDurationSquared"] * outOfHomeDurationSquared + coefficients(DplusD2vsI.lm)["outOfHomeDuration"] * outOfHomeDuration, y = .data[[weekdayString]], fill = tmax), shape = 21, size =3) +
 ggtitle(title) +
 xlab("Intercept + a * outOfHomeDuration^2 + b * outOfHomeDuration") +
 ylab("changeOfIncidence") +
-geom_abline(intercept = 0, slope = 1) +
+geom_abline(aes(intercept = 0, slope = 1, color="blue")) +
 theme_minimal() +
-scale_color_identity(labels = c("Regression line", "x=y"), guide = "legend") +
-theme(legend.position = "bottom", legend.title = element_blank())
+scale_color_identity(labels = c("x=y", "Regression line"), guide = "legend") +
+theme(legend.position = "bottom", legend.title = element_blank()) +
+geom_point(aes(x=coefficients(DplusD2vsI.lm)["(Intercept)"] + coefficients(DplusD2vsI.lm)["outOfHomeDurationSquared"] * outOfHomeDurationSquared + coefficients(DplusD2vsI.lm)["outOfHomeDuration"] * outOfHomeDuration, y = .data[[weekdayString]], fill = tmax), shape = 21, size =3) 
 
 
 nestedplotlist[[paste0("Regression_DplusD2vsI", weekday)]] <- DplusD2vsI.lm
@@ -524,9 +523,9 @@ geom_point(aes(x=coefficients(DplustmaxvsI.lm)["(Intercept)"] + coefficients(Dpl
 ggtitle(title) +
 xlab("Intercept + a * outOfHomeDuration + b * tmax") +
 ylab("changeOfIncidence") +
-geom_abline(intercept = 0, slope = 1) +
+geom_abline(aes(intercept = 0, slope = 1, color="blue")) +
 theme_minimal() +
-scale_color_identity(labels = c("Regression line", "x=y"), guide = "legend") +
+scale_color_identity(labels = c("x=y", "Regression line"), guide = "legend") +
 theme(legend.position = "bottom", legend.title = element_blank())
 
 
@@ -580,9 +579,9 @@ geom_point(aes(x=coefficients(DplustavgvsI.lm)["(Intercept)"] + coefficients(Dpl
 ggtitle(title) +
 xlab("Intercept + a * outOfHomeDuration + b * tavg") +
 ylab("changeOfIncidence") +
-geom_abline(intercept = 0, slope = 1) +
+geom_abline(aes(intercept = 0, slope = 1, color="blue")) +
 theme_minimal() +
-scale_color_identity(labels = c("Regression line", "x=y"), guide = "legend") +
+scale_color_identity(labels = c("x=y", "Regression line"), guide = "legend") +
 theme(legend.position = "bottom", legend.title = element_blank())
 
 
@@ -631,15 +630,15 @@ ggtitle(title) +
 theme_minimal()
 
 plot23 <- ggplot(data = joinedDataFrame) + #2nd plot; x = model estimate, y = actual changeOfIncidence
-geom_point(aes(x=coefficients(DtimestmaxvsI.lm)["(Intercept)"] + coefficients(DtimestmaxvsI.lm)["outOfHomeDuration"] * outOfHomeDuration + coefficients(DtimestmaxvsI.lm)["tmax"] * tmax + coefficients(DtimestmaxvsI.lm)["outOfHomeDuration:tmax"] * outOfHomeDuration * tmax , y = .data[[weekdayString]], fill = tmax), size = 3, shape = 21) +
-geom_smooth(aes(x=coefficients(DtimestmaxvsI.lm)["(Intercept)"] + coefficients(DtimestmaxvsI.lm)["outOfHomeDuration"] * outOfHomeDuration + coefficients(DtimestmaxvsI.lm)["tmax"] * tmax + coefficients(DtimestmaxvsI.lm)["outOfHomeDuration:tmax"] * outOfHomeDuration * tmax , y = .data[[weekdayString]]), color="lightgrey", size=2, method = "lm", se=FALSE) +
+geom_smooth(aes(x=coefficients(DtimestmaxvsI.lm)["(Intercept)"] + coefficients(DtimestmaxvsI.lm)["outOfHomeDuration"] * outOfHomeDuration + coefficients(DtimestmaxvsI.lm)["tmax"] * tmax + coefficients(DtimestmaxvsI.lm)["outOfHomeDuration:tmax"] * outOfHomeDuration * tmax , y = .data[[weekdayString]], color="lightgrey"), size=2, method = "lm", se=FALSE) +
 ggtitle(title) +
 xlab("Intercept + a * outOfHomeDuration + b * tmax + c * oOHD * tmax") +
 ylab("changeOfIncidence") +
-geom_abline(intercept = 0, slope = 1, color="blue") +
+geom_abline(aes(intercept = 0, slope = 1, color="blue")) +
 theme_minimal() +
-scale_color_identity(labels = c("Regression line", "x=y"), guide = "legend") +
-theme(legend.position = "bottom", legend.title = element_blank())
+scale_color_identity(labels = c("x=y", "Regression line"), guide = "legend") +
+theme(legend.position = "bottom", legend.title = element_blank()) +
+geom_point(aes(x=coefficients(DtimestmaxvsI.lm)["(Intercept)"] + coefficients(DtimestmaxvsI.lm)["outOfHomeDuration"] * outOfHomeDuration + coefficients(DtimestmaxvsI.lm)["tmax"] * tmax + coefficients(DtimestmaxvsI.lm)["outOfHomeDuration:tmax"] * outOfHomeDuration * tmax , y = .data[[weekdayString]], fill = tmax), size = 3, shape = 21)
 
 
 nestedplotlist[[paste0("Regression_DtimestmaxvsI", weekday)]] <- DtimestmaxvsI.lm
@@ -691,14 +690,14 @@ theme(legend.position = "bottom", legend.title = element_blank())
 
 
 plot23 <- ggplot(data = joinedDataFrame) + #2nd plot; x = model estimate, y = actual changeOfIncidence
-geom_smooth(aes(x=coefficients(DtimestavgvsI.lm)["(Intercept)"] + coefficients(DtimestavgvsI.lm)["outOfHomeDuration"] * outOfHomeDuration + coefficients(DtimestavgvsI.lm)["tavg"] * tavg + coefficients(DtimestavgvsI.lm)["outOfHomeDuration:tavg"] * outOfHomeDuration * tavg , y = .data[[weekdayString]]), color="lightgrey", size=2, method = "lm", se=FALSE) +
+geom_smooth(aes(x=coefficients(DtimestavgvsI.lm)["(Intercept)"] + coefficients(DtimestavgvsI.lm)["outOfHomeDuration"] * outOfHomeDuration + coefficients(DtimestavgvsI.lm)["tavg"] * tavg + coefficients(DtimestavgvsI.lm)["outOfHomeDuration:tavg"] * outOfHomeDuration * tavg , y = .data[[weekdayString]], color="lightgrey"), size=2, method = "lm", se=FALSE) +
 geom_point(aes(x=coefficients(DtimestavgvsI.lm)["(Intercept)"] + coefficients(DtimestavgvsI.lm)["outOfHomeDuration"] * outOfHomeDuration + coefficients(DtimestavgvsI.lm)["tavg"] * tavg + coefficients(DtimestavgvsI.lm)["outOfHomeDuration:tavg"] * outOfHomeDuration * tavg , y = .data[[weekdayString]], fill = tavg), shape = 21, size =3) +
 ggtitle(title) +
 xlab("Intercept + a * outOfHomeDuration + b * tavg + c * oOHD * tavg") +
 ylab("changeOfIncidence") +
-geom_abline(intercept = 0, slope = 1) +
+geom_abline(aes(intercept = 0, slope = 1, color="blue")) +
 theme_minimal() +
-scale_color_identity(labels = c("Regression line", "x=y"), guide = "legend") +
+scale_color_identity(labels = c("x=y", "Regression line"), guide = "legend") +
 theme(legend.position = "bottom", legend.title = element_blank())
 
 nestedplotlist[[paste0("Regression_DtimestavgvsI", weekday)]] <- DtimestavgvsI.lm
@@ -746,14 +745,14 @@ ggtitle(title) +
 theme_minimal()
 
 plot23 <- ggplot(data=joinedDataFrame) + #2nd plot; x = model estimate, y = actual changeOfIncidence
-geom_smooth(aes(x=coefficients(DplusoutvsI.lm )["(Intercept)"] + coefficients(DplusoutvsI.lm )["outOfHomeDuration"] * outOfHomeDuration + coefficients(DplusoutvsI.lm )["outdoorFraction"] * outdoorFraction, y = .data[[weekdayString]]), color="lightgrey", size=2, method = "lm", se=FALSE) +
+geom_smooth(aes(x=coefficients(DplusoutvsI.lm )["(Intercept)"] + coefficients(DplusoutvsI.lm )["outOfHomeDuration"] * outOfHomeDuration + coefficients(DplusoutvsI.lm )["outdoorFraction"] * outdoorFraction, y = .data[[weekdayString]], color="lightgrey"), size=2, method = "lm", se=FALSE) +
 geom_point(aes(x=coefficients(DplusoutvsI.lm )["(Intercept)"] + coefficients(DplusoutvsI.lm )["outOfHomeDuration"] * outOfHomeDuration + coefficients(DplusoutvsI.lm )["outdoorFraction"] * outdoorFraction , y = .data[[weekdayString]], fill = tavg), shape = 21, size =3) +
 ggtitle(title) +
 xlab("Intercept + a * outOfHomeDuration + b * outdoorFraction") +
 ylab("changeOfIncidence") +
-geom_abline(intercept = 0, slope = 1) +
+geom_abline(aes(intercept = 0, slope = 1, color="blue")) +
 theme_minimal() +
-scale_color_identity(labels = c("Regression line", "x=y"), guide = "legend") +
+scale_color_identity(labels = c("x=y", "Regression line"), guide = "legend") +
 theme(legend.position = "bottom", legend.title = element_blank())
 
 
@@ -802,14 +801,14 @@ ggtitle(title) +
 theme_minimal()
 
 plot23 <- ggplot(data=joinedDataFrame) + #2nd plot; x = model estimate, y = actual changeOfIncidence
-geom_smooth(aes(x=coefficients(Dplusout2vsI.lm )["(Intercept)"] + coefficients(Dplusout2vsI.lm )["outOfHomeDuration"] * outOfHomeDuration + coefficients(Dplusout2vsI.lm )["outdoorFraction2"] * outdoorFraction2 , y = .data[[weekdayString]]), color="lightgrey", size=2, method = "lm", se=FALSE) +
+geom_smooth(aes(x=coefficients(Dplusout2vsI.lm )["(Intercept)"] + coefficients(Dplusout2vsI.lm )["outOfHomeDuration"] * outOfHomeDuration + coefficients(Dplusout2vsI.lm )["outdoorFraction2"] * outdoorFraction2 , y = .data[[weekdayString]], color="lightgrey"), size=2, method = "lm", se=FALSE) +
 geom_point(aes(x=coefficients(Dplusout2vsI.lm )["(Intercept)"] + coefficients(Dplusout2vsI.lm )["outOfHomeDuration"] * outOfHomeDuration + coefficients(Dplusout2vsI.lm )["outdoorFraction2"] * outdoorFraction2 , y = .data[[weekdayString]], fill = tavg), size = 3, shape = 21) +
 ggtitle(title) +
 xlab("Intercept + a * outOfHomeDuration + b * outdoorFraction2") +
 ylab("changeOfIncidence") +
-geom_abline(intercept = 0, slope = 1) +
+geom_abline(aes(intercept = 0, slope = 1, color="blue")) +
 theme_minimal() +
-scale_color_identity(labels = c("Regression line", "x=y"), guide = "legend") +
+scale_color_identity(labels = c("x=y","Regression line"), guide = "legend") +
 theme(legend.position = "bottom", legend.title = element_blank())
 
 
@@ -857,14 +856,14 @@ ggtitle(title) +
 theme_minimal()
 
 plot23 <- ggplot(data = joinedDataFrame) + #2nd plot; x = model estimate, y = actual changeOfIncidence
-geom_smooth(aes(x=coefficients(DtimesoutvsI.lm)["(Intercept)"] + coefficients(DtimesoutvsI.lm)["outOfHomeDuration"] * outOfHomeDuration + coefficients(DtimesoutvsI.lm)["outdoorFraction"] * outdoorFraction + coefficients(DtimesoutvsI.lm)["outOfHomeDuration:outdoorFraction"] * outOfHomeDuration * outdoorFraction, y = .data[[weekdayString]]), color="lightgrey", size=2, method = "lm", se=FALSE) +
+geom_smooth(aes(x=coefficients(DtimesoutvsI.lm)["(Intercept)"] + coefficients(DtimesoutvsI.lm)["outOfHomeDuration"] * outOfHomeDuration + coefficients(DtimesoutvsI.lm)["outdoorFraction"] * outdoorFraction + coefficients(DtimesoutvsI.lm)["outOfHomeDuration:outdoorFraction"] * outOfHomeDuration * outdoorFraction, y = .data[[weekdayString]], color="lightgrey"), size=2, method = "lm", se=FALSE) +
 geom_point(aes(x=coefficients(DtimesoutvsI.lm)["(Intercept)"] + coefficients(DtimesoutvsI.lm)["outOfHomeDuration"] * outOfHomeDuration + coefficients(DtimesoutvsI.lm)["outdoorFraction"] * outdoorFraction + coefficients(DtimesoutvsI.lm)["outOfHomeDuration:outdoorFraction"] * outOfHomeDuration * outdoorFraction, y = .data[[weekdayString]], fill = tavg), shape = 21, size = 3) +
 ggtitle(title) +
 xlab("Intercept + a*outOfHomeDuration + b*outdoorFraction + c*oOHD*oF") +
 ylab("changeOfIncidence") +
-geom_abline(intercept = 0, slope = 1) +
+geom_abline(aes(intercept = 0, slope = 1, color="blue")) +
 theme_minimal() +
-scale_color_identity(labels = c("Regression line", "x=y"), guide = "legend") +
+scale_color_identity(labels = c("x=y", "Regression line"), guide = "legend") +
 theme(legend.position = "bottom", legend.title = element_blank())
 
 nestedplotlist[[paste0("Regression_DtimesoutvsI", weekday)]] <- DtimesoutvsI.lm
@@ -912,14 +911,14 @@ ggtitle(title) +
 theme_minimal()
 
 plot23 <- ggplot(data = joinedDataFrame) + #2nd plot; x = model estimate, y = actual changeOfIncidence
-geom_smooth(aes(x=coefficients(Dtimesout2vsI.lm)["(Intercept)"] + coefficients(Dtimesout2vsI.lm)["outOfHomeDuration"] * outOfHomeDuration + coefficients(Dtimesout2vsI.lm)["outdoorFraction2"] * outdoorFraction2 + coefficients(Dtimesout2vsI.lm)["outOfHomeDuration:outdoorFraction2"] * outOfHomeDuration * outdoorFraction2, y = .data[[weekdayString]]), color="lightgrey", size=2, method = "lm", se=FALSE) +
+geom_smooth(aes(x=coefficients(Dtimesout2vsI.lm)["(Intercept)"] + coefficients(Dtimesout2vsI.lm)["outOfHomeDuration"] * outOfHomeDuration + coefficients(Dtimesout2vsI.lm)["outdoorFraction2"] * outdoorFraction2 + coefficients(Dtimesout2vsI.lm)["outOfHomeDuration:outdoorFraction2"] * outOfHomeDuration * outdoorFraction2, y = .data[[weekdayString]], color="lightgrey"), size=2, method = "lm", se=FALSE) +
 geom_point(aes(x=coefficients(Dtimesout2vsI.lm)["(Intercept)"] + coefficients(Dtimesout2vsI.lm)["outOfHomeDuration"] * outOfHomeDuration + coefficients(Dtimesout2vsI.lm)["outdoorFraction2"] * outdoorFraction2 + coefficients(Dtimesout2vsI.lm)["outOfHomeDuration:outdoorFraction2"] * outOfHomeDuration * outdoorFraction2, y = .data[[weekdayString]], fill = tavg), shape = 21, size =3) +
 ggtitle(title) +
 xlab("Intercept + a * outOfHomeDuration + b * outdoorFraction2 + c * oOHD * oF2") +
 ylab("changeOfIncidence") +
-geom_abline(intercept = 0, slope = 1) +
+geom_abline(aes(intercept = 0, slope = 1, color="blue")) +
 theme_minimal() +
-scale_color_identity(labels = c("Regression line", "x=y"), guide = "legend") +
+scale_color_identity(labels = c("x=y", "Regression line"), guide = "legend") +
 theme(legend.position = "bottom", legend.title = element_blank())
 
 
@@ -968,14 +967,14 @@ ggtitle(title) +
 theme_minimal()
 
 plot23 <- ggplot(data=joinedDataFrame) + #2nd plot; x = model estimate, y = actual changeOfIncidence
-geom_smooth(aes(x=coefficients(DplusprcpvsI.lm)["(Intercept)"] + coefficients(DplusprcpvsI.lm)["outOfHomeDuration"] * outOfHomeDuration + coefficients(DplusprcpvsI.lm)["prcp"] * prcp, y = .data[[weekdayString]]), color="lightgrey", size=2, method = "lm", se=FALSE) +
+geom_smooth(aes(x=coefficients(DplusprcpvsI.lm)["(Intercept)"] + coefficients(DplusprcpvsI.lm)["outOfHomeDuration"] * outOfHomeDuration + coefficients(DplusprcpvsI.lm)["prcp"] * prcp, y = .data[[weekdayString]], color="lightgrey"), size=2, method = "lm", se=FALSE) +
 geom_point(aes(x=coefficients(DplusprcpvsI.lm)["(Intercept)"] + coefficients(DplusprcpvsI.lm)["outOfHomeDuration"] * outOfHomeDuration + coefficients(DplusprcpvsI.lm)["prcp"] * prcp, y = .data[[weekdayString]], fill = tavg), shape = 21, size = 3) +
 ggtitle(title) +
 xlab("Intercept + a * outOfHomeDuration + b * prcp") +
 ylab("changeOfIncidence") +
-geom_abline(intercept = 0, slope = 1) +
+geom_abline(aes(intercept = 0, slope = 1, color="blue")) +
 theme_minimal() +
-scale_color_identity(labels = c("Regression line", "x=y"), guide = "legend") +
+scale_color_identity(labels = c("x=y", "Regression line"), guide = "legend") +
 theme(legend.position = "bottom", legend.title = element_blank())
 
 
@@ -1000,7 +999,7 @@ formula.lm <- "changeOfIncidencelaggedMon ~ outOfHomeDuration + tmax + prcpRound
 formula.lm <- paste0("changeOfIncidencelagged", weekday, "2", " ~ outOfHomeDuration + tmax + prcpRound")
 weekdayString <- paste0("changeOfIncidencelagged", weekday, "2")
 }
-DplustmaxprcpvsI.lm <- lm(formula = formula.lm, data=joinedDataFrame) #Regression
+DplustmaxplusprcpvsI.lm <- lm(formula = formula.lm, data=joinedDataFrame) #Regression
 if(weekday == "Mon") {
 title <- "14 Day lag" 
 } else if (weekday == "Tue") {
@@ -1018,29 +1017,29 @@ title <- "8 Day lag"
 } else if (weekday == "Mon_1week_lag") {
 title <- "7 Day lag"   
 }
-plot22 <- ggPredict(DplustmaxprcpvsI.lm, interactive=TRUE)
+plot22 <- ggPredict(DplustmaxplusprcpvsI.lm, interactive=TRUE)
 
 plot23 <- ggplot(data=joinedDataFrame) + #2nd plot; x = model estimate, y = actual changeOfIncidence
-geom_smooth(aes(x=coefficients(DplustmaxprcpvsI.lm)["(Intercept)"] + coefficients(DplustmaxprcpvsI.lm)["outOfHomeDuration"] * outOfHomeDuration + coefficients(DplustmaxprcpvsI.lm)["tmax"] * tmax + coefficients(DplustmaxprcpvsI.lm)["prcpRound"] * prcpRound, y = .data[[weekdayString]]), color="lightgrey", size=2, method = "lm", se=FALSE) +
-geom_point(aes(x=coefficients(DplustmaxprcpvsI.lm)["(Intercept)"] + coefficients(DplustmaxprcpvsI.lm)["outOfHomeDuration"] * outOfHomeDuration + coefficients(DplustmaxprcpvsI.lm)["tmax"] * tmax + coefficients(DplustmaxprcpvsI.lm)["prcpRound"] * prcpRound, y = .data[[weekdayString]], fill = tavg), shape = 21, size = 3) +
+geom_smooth(aes(x=coefficients(DplustmaxplusprcpvsI.lm)["(Intercept)"] + coefficients(DplustmaxplusprcpvsI.lm)["outOfHomeDuration"] * outOfHomeDuration + coefficients(DplustmaxplusprcpvsI.lm)["tmax"] * tmax + coefficients(DplustmaxplusprcpvsI.lm)["prcpRound"] * prcpRound, y = .data[[weekdayString]], color="lightgrey"), size=2, method = "lm", se=FALSE) +
+geom_point(aes(x=coefficients(DplustmaxplusprcpvsI.lm)["(Intercept)"] + coefficients(DplustmaxplusprcpvsI.lm)["outOfHomeDuration"] * outOfHomeDuration + coefficients(DplustmaxplusprcpvsI.lm)["tmax"] * tmax + coefficients(DplustmaxplusprcpvsI.lm)["prcpRound"] * prcpRound, y = .data[[weekdayString]], fill = tavg), shape = 21, size = 3) +
 ggtitle(title) +
 xlab("Intercept + a * outOfHomeDuration + b * tmax + c * prcp") +
 ylab("changeOfIncidence") +
-geom_abline(intercept = 0, slope = 1) +
+geom_abline(aes(intercept = 0, slope = 1, color="blue")) +
 theme_minimal() +
-scale_color_identity(labels = c("Regression line", "x=y"), guide = "legend") +
+scale_color_identity(labels = c("x=y", "Regression line"), guide = "legend") +
 theme(legend.position = "bottom", legend.title = element_blank())
 
 
-nestedplotlist[[paste0("Regression_DplustmaxprcpvsI", weekday)]] <- DplustmaxprcpvsI.lm
-nestedplotlist[[paste0("Plot_DplustmaxprcpvsI", weekday)]] <- plot22
-nestedplotlist[[paste0("ActualvsEstimation_DplustmaxprcpvsI", weekday)]] <- plot23
+nestedplotlist[[paste0("Regression_DplustmaxplusprcpvsI", weekday)]] <- DplustmaxplusprcpvsI.lm
+nestedplotlist[[paste0("Plot_DplustmaxplusprcpvsI", weekday)]] <- plot22
+nestedplotlist[[paste0("ActualvsEstimation_DplustmaxplusprcpvsI", weekday)]] <- plot23
 }
 
-#grid.arrange(nestedplotlist[["Plot_DplustmaxprcpvsIMon_1week_lag"]],nestedplotlist[["Plot_DplustmaxprcpvsISun"]],nestedplotlist[["Plot_DplustmaxprcpvsISat"]],nestedplotlist[["Plot_DplustmaxprcpvsIFri"]], nestedplotlist[["Plot_DplustmaxprcpvsIThu"]], nestedplotlist[["Plot_DplustmaxprcpvsIWed"]], nestedplotlist[["Plot_DplustmaxprcpvsITue"]], nestedplotlist[["Plot_DplustmaxprcpvsIMon"]], nrow=3)
-grid.arrange(nestedplotlist[["ActualvsEstimation_DplustmaxprcpvsIMon_1week_lag"]],nestedplotlist[["ActualvsEstimation_DplustmaxprcpvsISun"]],nestedplotlist[["ActualvsEstimation_DplustmaxprcpvsISat"]],nestedplotlist[["ActualvsEstimation_DplustmaxprcpvsIFri"]], nestedplotlist[["ActualvsEstimation_DplustmaxprcpvsIThu"]], nestedplotlist[["ActualvsEstimation_DplustmaxprcpvsIWed"]], nestedplotlist[["ActualvsEstimation_DplustmaxprcpvsITue"]], nestedplotlist[["ActualvsEstimation_DplustmaxprcpvsIMon"]], nrow=3)
-#g <- arrangeGrob(nestedplotlist[["ActualvsEstimation_DplustmaxprcpvsIMon_1week_lag"]],nestedplotlist[["ActualvsEstimation_DplustmaxprcpvsISun"]],nestedplotlist[["ActualvsEstimation_DplustmaxprcpvsISat"]],nestedplotlist[["ActualvsEstimation_DplustmaxprcpvsIFri"]], nestedplotlist[["ActualvsEstimation_DplustmaxprcpvsIThu"]], nestedplotlist[["ActualvsEstimation_DplustmaxprcpvsIWed"]], nestedplotlist[["ActualvsEstimation_DplustmaxprcpvsITue"]], nestedplotlist[["ActualvsEstimation_DplustmaxprcpvsIMon"]], nrow=3)
-#g <- arrangeGrob(nestedplotlist[["Plot_DplustmaxprcpvsIMon_1week_lag"]],nestedplotlist[["Plot_DplustmaxprcpvsISun"]],nestedplotlist[["Plot_DplustmaxprcpvsISat"]],nestedplotlist[["Plot_DplustmaxprcpvsIFri"]], nestedplotlist[["Plot_DplustmaxprcpvsIThu"]], nestedplotlist[["Plot_DplustmaxprcpvsIWed"]], nestedplotlist[["Plot_DplustmaxprcpvsITue"]], nestedplotlist[["Plot_DplustmaxprcpvsIMon"]], nrow=3)
+#grid.arrange(nestedplotlist[["Plot_DplustmaxplusprcpvsIMon_1week_lag"]],nestedplotlist[["Plot_DplustmaxplusprcpvsISun"]],nestedplotlist[["Plot_DplustmaxplusprcpvsISat"]],nestedplotlist[["Plot_DplustmaxplusprcpvsIFri"]], nestedplotlist[["Plot_DplustmaxplusprcpvsIThu"]], nestedplotlist[["Plot_DplustmaxplusprcpvsIWed"]], nestedplotlist[["Plot_DplustmaxplusprcpvsITue"]], nestedplotlist[["Plot_DplustmaxplusprcpvsIMon"]], nrow=3)
+grid.arrange(nestedplotlist[["ActualvsEstimation_DplustmaxplusprcpvsIMon_1week_lag"]],nestedplotlist[["ActualvsEstimation_DplustmaxplusprcpvsISun"]],nestedplotlist[["ActualvsEstimation_DplustmaxplusprcpvsISat"]],nestedplotlist[["ActualvsEstimation_DplustmaxplusprcpvsIFri"]], nestedplotlist[["ActualvsEstimation_DplustmaxplusprcpvsIThu"]], nestedplotlist[["ActualvsEstimation_DplustmaxplusprcpvsIWed"]], nestedplotlist[["ActualvsEstimation_DplustmaxplusprcpvsITue"]], nestedplotlist[["ActualvsEstimation_DplustmaxplusprcpvsIMon"]], nrow=3)
+#g <- arrangeGrob(nestedplotlist[["ActualvsEstimation_DplustmaxplusprcpvsIMon_1week_lag"]],nestedplotlist[["ActualvsEstimation_DplustmaxplusprcpvsISun"]],nestedplotlist[["ActualvsEstimation_DplustmaxplusprcpvsISat"]],nestedplotlist[["ActualvsEstimation_DplustmaxplusprcpvsIFri"]], nestedplotlist[["ActualvsEstimation_DplustmaxplusprcpvsIThu"]], nestedplotlist[["ActualvsEstimation_DplustmaxplusprcpvsIWed"]], nestedplotlist[["ActualvsEstimation_DplustmaxplusprcpvsITue"]], nestedplotlist[["ActualvsEstimation_DplustmaxplusprcpvsIMon"]], nrow=3)
+#g <- arrangeGrob(nestedplotlist[["Plot_DplustmaxplusprcpvsIMon_1week_lag"]],nestedplotlist[["Plot_DplustmaxplusprcpvsISun"]],nestedplotlist[["Plot_DplustmaxplusprcpvsISat"]],nestedplotlist[["Plot_DplustmaxplusprcpvsIFri"]], nestedplotlist[["Plot_DplustmaxplusprcpvsIThu"]], nestedplotlist[["Plot_DplustmaxplusprcpvsIWed"]], nestedplotlist[["Plot_DplustmaxplusprcpvsITue"]], nestedplotlist[["Plot_DplustmaxplusprcpvsIMon"]], nrow=3)
 
 # 9b) D + out + prcp
 for(weekday in weekdays){
@@ -1069,17 +1068,17 @@ title <- "8 Day lag"
 } else if(weekday == "Mon_1week_lag") {
 title <- "7 Day lag"   
 }
-plot22 <- ggPredict(DplustmaxprcpvsI.lm, interactive=TRUE)
+plot22 <- ggPredict(DplustmaxplusprcpvsI.lm, interactive=TRUE)
 
 plot23 <- ggplot(data=joinedDataFrame) + #2nd plot; x = model estimate, y = actual changeOfIncidence
-geom_smooth(aes(x=coefficients(DplusoutplusprcpvsI.lm)["(Intercept)"] + coefficients(DplusoutplusprcpvsI.lm)["outOfHomeDuration"] * outOfHomeDuration + coefficients(DplusoutplusprcpvsI.lm)["outdoorFraction"] * outdoorFraction + coefficients(DplusoutplusprcpvsI.lm)["prcpRound"] * prcpRound, y = .data[[weekdayString]]), color="lightgrey", size=2, method = "lm", se=FALSE) +
+geom_smooth(aes(x=coefficients(DplusoutplusprcpvsI.lm)["(Intercept)"] + coefficients(DplusoutplusprcpvsI.lm)["outOfHomeDuration"] * outOfHomeDuration + coefficients(DplusoutplusprcpvsI.lm)["outdoorFraction"] * outdoorFraction + coefficients(DplusoutplusprcpvsI.lm)["prcpRound"] * prcpRound, y = .data[[weekdayString]], color="lightgrey"), size=2, method = "lm", se=FALSE) +
 geom_point(aes(x=coefficients(DplusoutplusprcpvsI.lm)["(Intercept)"] + coefficients(DplusoutplusprcpvsI.lm)["outOfHomeDuration"] * outOfHomeDuration + coefficients(DplusoutplusprcpvsI.lm)["outdoorFraction"] * outdoorFraction + coefficients(DplusoutplusprcpvsI.lm)["prcpRound"] * prcpRound, y = .data[[weekdayString]], fill = tavg), shape = 21, size = 3) +
 ggtitle(title) +
 xlab("Intercept + a * outOfHomeDuration + b * outdoorFraction + c * prcp") +
 ylab("changeOfIncidence") +
-geom_abline(intercept = 0, slope = 1) +
+geom_abline(aes(intercept = 0, slope = 1, color="blue")) +
 theme_minimal() +
-scale_color_identity(labels = c("Regression line", "x=y"), guide = "legend") +
+scale_color_identity(labels = c("x=y", "Regression line"), guide = "legend") +
 theme(legend.position = "bottom", legend.title = element_blank())
 
 
@@ -1102,7 +1101,7 @@ formula.lm <- "changeOfIncidencelaggedMon ~ outOfHomeDuration+outOfHomeDuration:
 } else {
 formula.lm <- paste0("changeOfIncidencelagged", weekday, "2", " ~ outOfHomeDuration+outOfHomeDuration:outdoorFraction2+outOfHomeDuration:prcpRound")
 }
-DplusoutplusprcpvsI.lm <- lm(formula = formula.lm, data=joinedDataFrame) #Regression
+DplusDtimesoutplusDtimesprcp.lm <- lm(formula = formula.lm, data=joinedDataFrame) #Regression
 if(weekday == "Mon") {
 title <- "14 Day lag"
 } else if(weekday == "Tue") {
@@ -1120,21 +1119,21 @@ title <- "8 Day lag"
 } else if(weekday == "Mon_1week_lag"){
 title <- "7 Day lag"
 }
-plot22 <- ggPredict(DplusoutplusprcpvsI.lm, interactive = TRUE)
+plot22 <- ggPredict(DplusDtimesoutplusDtimesprcp.lm, interactive = TRUE)
 
 plot23 <- ggplot(data=joinedDataFrame) + #2nd plot; x = model estimate, y = actual changeOfIncidence
-geom_smooth(aes(x=coefficients(DplusoutplusprcpvsI.lm)["(Intercept)"] + coefficients(DplusoutplusprcpvsI.lm)["outOfHomeDuration"] * outOfHomeDuration + coefficients(DplusoutplusprcpvsI.lm)["outOfHomeDuration:outdoorFraction2"] * outOfHomeDuration* outdoorFraction2 + coefficients(DplusoutplusprcpvsI.lm)["outOfHomeDuration:prcpRound"] * outOfHomeDuration * prcpRound, y = .data[[weekdayString]]), color="lightgrey", size=2, method = "lm", se=FALSE) +
-geom_point(aes(x=coefficients(DplusoutplusprcpvsI.lm)["(Intercept)"] + coefficients(DplusoutplusprcpvsI.lm)["outOfHomeDuration"] * outOfHomeDuration + coefficients(DplusoutplusprcpvsI.lm)["outOfHomeDuration:outdoorFraction2"] * outOfHomeDuration* outdoorFraction2 + coefficients(DplusoutplusprcpvsI.lm)["outOfHomeDuration:prcpRound"] * outOfHomeDuration * prcpRound, y = .data[[weekdayString]], fill = tavg), shape = 21, size = 3) +
+geom_smooth(aes(x=coefficients(DplusDtimesoutplusDtimesprcp.lm)["(Intercept)"] + coefficients(DplusDtimesoutplusDtimesprcp.lm)["outOfHomeDuration"] * outOfHomeDuration + coefficients(DplusDtimesoutplusDtimesprcp.lm)["outOfHomeDuration:outdoorFraction2"] * outOfHomeDuration* outdoorFraction2 + coefficients(DplusDtimesoutplusDtimesprcp.lm)["outOfHomeDuration:prcpRound"] * outOfHomeDuration * prcpRound, y = .data[[weekdayString]], color="lightgrey"), size=2, method = "lm", se=FALSE) +
+geom_point(aes(x=coefficients(DplusDtimesoutplusDtimesprcp.lm)["(Intercept)"] + coefficients(DplusDtimesoutplusDtimesprcp.lm)["outOfHomeDuration"] * outOfHomeDuration + coefficients(DplusDtimesoutplusDtimesprcp.lm)["outOfHomeDuration:outdoorFraction2"] * outOfHomeDuration* outdoorFraction2 + coefficients(DplusDtimesoutplusDtimesprcp.lm)["outOfHomeDuration:prcpRound"] * outOfHomeDuration * prcpRound, y = .data[[weekdayString]], fill = tavg), shape = 21, size = 3) +
 ggtitle(title) +
 xlab("Intercept + a * outOfHomeDuration + b * oOHD * oF2 + c * oOHD * prcp") +
 ylab("changeOfIncidence") +
-geom_abline(intercept = 0, slope = 1) +
+geom_abline(aes(intercept = 0, slope = 1, color="blue")) +
 theme_minimal() +
-scale_color_identity(labels = c("Regression line", "x=y"), guide = "legend") +
+scale_color_identity(labels = c("x=y", "Regression line"), guide = "legend") +
 theme(legend.position = "bottom", legend.title = element_blank())
 
 
-nestedplotlist[[paste0("Regression_D:out2:prcpvsI", weekday)]] <- DplusoutplusprcpvsI.lm 
+nestedplotlist[[paste0("Regression_D:out2:prcpvsI", weekday)]] <- DplusDtimesoutplusDtimesprcp.lm 
 nestedplotlist[[paste0("Plot_D:out2:prcpvsI", weekday)]] <- plot22
 nestedplotlist[[paste0("ActualvsEstimate_D:out2:prcpvsI", weekday)]] <- plot23
 }
@@ -1142,7 +1141,7 @@ nestedplotlist[[paste0("ActualvsEstimate_D:out2:prcpvsI", weekday)]] <- plot23
 grid.arrange(nestedplotlist[["Plot_D:out2:prcpvsIMon_1week_lag"]],nestedplotlist[["Plot_D:out2:prcpvsISun"]],nestedplotlist[["Plot_D:out2:prcpvsISat"]],nestedplotlist[["Plot_D:out2:prcpvsIFri"]], nestedplotlist[["Plot_D:out2:prcpvsIThu"]], nestedplotlist[["Plot_D:out2:prcpvsIWed"]], nestedplotlist[["Plot_D:out2:prcpvsITue"]], nestedplotlist[["Plot_D:out2:prcpvsIMon"]], nrow=3)
 grid.arrange(nestedplotlist[["ActualvsEstimate_D:out2:prcpvsIMon_1week_lag"]],nestedplotlist[["ActualvsEstimate_D:out2:prcpvsISun"]],nestedplotlist[["ActualvsEstimate_D:out2:prcpvsISat"]],nestedplotlist[["ActualvsEstimate_D:out2:prcpvsIFri"]], nestedplotlist[["ActualvsEstimate_D:out2:prcpvsIThu"]], nestedplotlist[["ActualvsEstimate_D:out2:prcpvsIWed"]], nestedplotlist[["ActualvsEstimate_D:out2:prcpvsITue"]], nestedplotlist[["ActualvsEstimate_D:out2:prcpvsIMon"]], nrow=3)
 #g <- arrangeGrob(nestedplotlist[["ActualvsEstimate_D:out2:prcpvsIMon_1week_lag"]],nestedplotlist[["ActualvsEstimate_D:out2:prcpvsISun"]],nestedplotlist[["ActualvsEstimate_D:out2:prcpvsISat"]],nestedplotlist[["ActualvsEstimate_D:out2:prcpvsIFri"]], nestedplotlist[["ActualvsEstimate_D:out2:prcpvsIThu"]], nestedplotlist[["ActualvsEstimate_D:out2:prcpvsIWed"]], nestedplotlist[["ActualvsEstimate_D:out2:prcpvsITue"]], nestedplotlist[["ActualvsEstimate_D:out2:prcpvsIMon"]], nrow=3)
-#g <- arrangeGrob(nestedplotlist[["Plot_DplusoutplusprcpvsIMon_1week_lag"]],nestedplotlist[["Plot_DplusoutplusprcpvsISun"]],nestedplotlist[["Plot_DplusoutplusprcpvsISat"]],nestedplotlist[["Plot_DplusoutplusprcpvsIFri"]], nestedplotlist[["Plot_DplusoutplusprcpvsIThu"]], nestedplotlist[["Plot_DplusoutplusprcpvsIWed"]], nestedplotlist[["Plot_DplusoutplusprcpvsITue"]], nestedplotlist[["Plot_DplusoutplusprcpvsIMon"]], nrow=3)
+#g <- arrangeGrob(nestedplotlist[["Plot_DplusDtimesoutplusDtimesprcpMon_1week_lag"]],nestedplotlist[["Plot_DplusDtimesoutplusDtimesprcpSun"]],nestedplotlist[["Plot_DplusDtimesoutplusDtimesprcpSat"]],nestedplotlist[["Plot_DplusDtimesoutplusDtimesprcpFri"]], nestedplotlist[["Plot_DplusDtimesoutplusDtimesprcpThu"]], nestedplotlist[["Plot_DplusDtimesoutplusDtimesprcpWed"]], nestedplotlist[["Plot_DplusDtimesoutplusDtimesprcpTue"]], nestedplotlist[["Plot_DplusDtimesoutplusDtimesprcpMon"]], nrow=3)
 
 
 # 11) D^2*out vs I 
@@ -1183,14 +1182,14 @@ theme(legend.position = "bottom", legend.title = element_blank())
 
 
 plot23 <- ggplot(data=joinedDataFrame) + #2nd plot; x = model estimate, y = actual changeOfIncidence
-geom_smooth(aes(x=coefficients(DSquaredtimesoutvsI.lm)["(Intercept)"] + coefficients(DSquaredtimesoutvsI.lm)["outOfHomeDurationSquared"] * outOfHomeDurationSquared + coefficients(DSquaredtimesoutvsI.lm)["outdoorFraction"] * outdoorFraction + coefficients(DSquaredtimesoutvsI.lm)["outOfHomeDurationSquared:outdoorFraction"] * outOfHomeDurationSquared * outdoorFraction, y = .data[[weekdayString]]), color="lightgrey", size=2, method = "lm", se=FALSE) +
+geom_smooth(aes(x=coefficients(DSquaredtimesoutvsI.lm)["(Intercept)"] + coefficients(DSquaredtimesoutvsI.lm)["outOfHomeDurationSquared"] * outOfHomeDurationSquared + coefficients(DSquaredtimesoutvsI.lm)["outdoorFraction"] * outdoorFraction + coefficients(DSquaredtimesoutvsI.lm)["outOfHomeDurationSquared:outdoorFraction"] * outOfHomeDurationSquared * outdoorFraction, y = .data[[weekdayString]], color="lightgrey"), size=2, method = "lm", se=FALSE) +
 geom_point(aes(x=coefficients(DSquaredtimesoutvsI.lm)["(Intercept)"] + coefficients(DSquaredtimesoutvsI.lm)["outOfHomeDurationSquared"] * outOfHomeDurationSquared + coefficients(DSquaredtimesoutvsI.lm)["outdoorFraction"] * outdoorFraction + coefficients(DSquaredtimesoutvsI.lm)["outOfHomeDurationSquared:outdoorFraction"] * outOfHomeDurationSquared * outdoorFraction, y = .data[[weekdayString]], fill = tavg), shape = 21, size = 3) +
 ggtitle(title) +
 xlab("Intercept + a * outOfHomeDuration^2 * outdoorFraction") +
 ylab("changeOfIncidence") +
-geom_abline(intercept = 0, slope = 1) +
+geom_abline(aes(intercept = 0, slope = 1, color="blue")) +
 theme_minimal() +
-scale_color_identity(labels = c("Regression line", "x=y"), guide = "legend") +
+scale_color_identity(labels = c("x=y", "Regression line"), guide = "legend") +
 theme(legend.position = "bottom", legend.title = element_blank())
 
 
@@ -1239,18 +1238,18 @@ plot22 <- ggplot(data=joinedDataFrame, aes(x=outOfHomeDuration, color =tmaxSquar
 geom_point() +
 geom_smooth(method = "lm") +
 ggtitle(title) +
-theme_minimal() +
+theme_minimal()
 
 
 plot23 <- ggplot(data=joinedDataFrame) + #2nd plot; x = model estimate, y = actual changeOfIncidence
-geom_smooth(aes(x=coefficients(DtimestmaxSquaredvsI.lm)["(Intercept)"] + coefficients(DtimestmaxSquaredvsI.lm)["outOfHomeDuration"] * outOfHomeDuration + coefficients(DtimestmaxSquaredvsI.lm)["tmaxSquared"] * tmaxSquared + coefficients(DtimestmaxSquaredvsI.lm)["outOfHomeDuration:tmaxSquared"] * outOfHomeDuration * tmaxSquared, y = .data[[weekdayString]]), color="lightgrey", size=2, method = "lm", se=FALSE) +
+geom_smooth(aes(x=coefficients(DtimestmaxSquaredvsI.lm)["(Intercept)"] + coefficients(DtimestmaxSquaredvsI.lm)["outOfHomeDuration"] * outOfHomeDuration + coefficients(DtimestmaxSquaredvsI.lm)["tmaxSquared"] * tmaxSquared + coefficients(DtimestmaxSquaredvsI.lm)["outOfHomeDuration:tmaxSquared"] * outOfHomeDuration * tmaxSquared, y = .data[[weekdayString]], color="lightgrey"), size=2, method = "lm", se=FALSE) +
 geom_point(aes(x=coefficients(DtimestmaxSquaredvsI.lm)["(Intercept)"] + coefficients(DtimestmaxSquaredvsI.lm)["outOfHomeDuration"] * outOfHomeDuration + coefficients(DtimestmaxSquaredvsI.lm)["tmaxSquared"] * tmaxSquared + coefficients(DtimestmaxSquaredvsI.lm)["outOfHomeDuration:tmaxSquared"] * outOfHomeDuration * tmaxSquared, y = .data[[weekdayString]], fill = tavg), shape = 21, size = 3) +
 ggtitle(title) +
 xlab("Intercept + a*outOfHomeDuration + b*tmax^2 + c*oOHD*tmax^2") +
 ylab("changeOfIncidence") +
-geom_abline(intercept = 0, slope = 1) +
+geom_abline(aes(intercept = 0, slope = 1, color="blue")) +
 theme_minimal() +
-scale_color_identity(labels = c("Regression line", "x=y"), guide = "legend") +
+scale_color_identity(labels = c("x=y","Regression line"), guide = "legend") +
 theme(legend.position = "bottom", legend.title = element_blank())
 
 
@@ -1309,7 +1308,7 @@ geom_smooth(aes(x=coefficients(DtimestmaxtimesprcpvsI.lm)["(Intercept)"] +
   coefficients(DtimestmaxtimesprcpvsI.lm)["outOfHomeDuration:tmaxSquared"] * outOfHomeDuration * tmaxSquared + 
   coefficients(DtimestmaxtimesprcpvsI.lm)["outOfHomeDuration:prcp"] * outOfHomeDuration * prcp +
   coefficients(DtimestmaxtimesprcpvsI.lm)["tmaxSquared:prcp"] * prcp * tmaxSquared + 
-  coefficients(DtimestmaxtimesprcpvsI.lm)["outOfHomeDuration:tmaxSquared:prcp"] * outOfHomeDuration * tmaxSquared * prcp, y = .data[[weekdayString]]), color="lightgrey", size=2, method = "lm", se=FALSE) +
+  coefficients(DtimestmaxtimesprcpvsI.lm)["outOfHomeDuration:tmaxSquared:prcp"] * outOfHomeDuration * tmaxSquared * prcp, y = .data[[weekdayString]], color="lightgrey"), size=2, method = "lm", se=FALSE) +
 geom_point(aes(x=coefficients(DtimestmaxtimesprcpvsI.lm)["(Intercept)"] + 
   coefficients(DtimestmaxtimesprcpvsI.lm)["outOfHomeDuration"] * outOfHomeDuration + 
   coefficients(DtimestmaxtimesprcpvsI.lm)["tmaxSquared"] * tmaxSquared + 
@@ -1321,9 +1320,9 @@ geom_point(aes(x=coefficients(DtimestmaxtimesprcpvsI.lm)["(Intercept)"] +
 ggtitle(title) +
 xlab("Estimate") +
 ylab("Actual changeOfIncidence") +
-geom_abline(intercept = 0, slope = 1) +
+geom_abline(aes(intercept = 0, slope = 1, color="blue")) +
 theme_minimal() +
-scale_color_identity(labels = c("Regression line", "x=y"), guide = "legend") +
+scale_color_identity(labels = c("x=y", "Regression line"), guide = "legend") +
 theme(legend.position = "bottom", legend.title = element_blank())
 
 
@@ -1378,16 +1377,16 @@ theme_minimal()
 plot23 <- ggplot(data=joinedDataFrame) + #2nd plot; x = model estimate, y = actual changeOfIncidence
 geom_smooth(aes(x=coefficients(logDpluslogtmaxvsI.lm)["(Intercept)"] + 
   coefficients(logDpluslogtmaxvsI.lm)["logOutOfHomeDuration"] * logOutOfHomeDuration + 
-  coefficients(logDpluslogtmaxvsI.lm)["logtmax"] * logtmax, y = .data[[weekdayString]]), color="lightgrey", size=2, method = "lm", se=FALSE) +
+  coefficients(logDpluslogtmaxvsI.lm)["logtmax"] * logtmax, y = .data[[weekdayString]], color="lightgrey"), size=2, method = "lm", se=FALSE) +
 geom_point(aes(x=coefficients(logDpluslogtmaxvsI.lm)["(Intercept)"] + 
   coefficients(logDpluslogtmaxvsI.lm)["logOutOfHomeDuration"] * logOutOfHomeDuration + 
   coefficients(logDpluslogtmaxvsI.lm)["logtmax"] * logtmax, y = .data[[weekdayString]], fill =logtmax), shape = 21, size = 3) + 
 ggtitle(title) +
 xlab("Estimate") +
 ylab("Actual changeOfIncidence") +
-geom_abline(intercept = 0, slope = 1) +
+geom_abline(aes(intercept = 0, slope = 1, color="blue")) +
 theme_minimal() +
-scale_color_identity(labels = c("Regression line", "x=y"), guide = "legend") +
+scale_color_identity(labels = c("x=y", "Regression line"), guide = "legend") +
 theme(legend.position = "bottom", legend.title = element_blank())
 
 
