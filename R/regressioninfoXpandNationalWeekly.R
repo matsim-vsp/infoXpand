@@ -356,12 +356,12 @@ theme(legend.position = "bottom", legend.title = element_blank()) +
 geom_point(data = joinedDataFrame, aes(x=coefficients(DvsI.lm)["(Intercept)"] + coefficients(DvsI.lm)["outOfHomeDuration"] * outOfHomeDuration, y = .data[[weekdayString]], fill=tmax), size=3, shape=21)
 
 
-nestedplotlist[[paste0("Regression_DvsI_", weekday)]] <- DvsI.lm
+nestedplotlist[[paste0("Regression_DvsI", weekday)]] <- DvsI.lm
 nestedplotlist[[paste0("Plot_DvsI_", weekday)]] <- plot22
 nestedplotlist[[paste0("ActualvsEstimation_DvsI_", weekday)]] <- plot23
 }
 
-grid.arrange(nestedplotlist[["Plot_DvsI_Mon_1week_lag"]],nestedplotlist[["Plot_DvsI_Sun"]],nestedplotlist[["Plot_DvsI_Sat"]],nestedplotlist[["Plot_DvsI_Fri"]], nestedplotlist[["Plot_DvsI_Thu"]], nestedplotlist[["Plot_DvsI_Wed"]], nestedplotlist[["Plot_DvsI_Tue"]], nestedplotlist[["Plot_DvsI_Mon"]], nrow=3)
+grid.arrange(nestedplotlist[["Plot_DvsIMon_1week_lag"]],nestedplotlist[["Plot_DvsISun"]],nestedplotlist[["Plot_DvsISat"]],nestedplotlist[["Plot_DvsIFri"]], nestedplotlist[["Plot_DvsIThu"]], nestedplotlist[["Plot_DvsIWed"]], nestedplotlist[["Plot_DvsITue"]], nestedplotlist[["Plot_DvsIMon"]], nrow=3)
 grid.arrange(nestedplotlist[["ActualvsEstimation_DvsI_Mon_1week_lag"]],nestedplotlist[["ActualvsEstimation_DvsI_Sun"]],nestedplotlist[["ActualvsEstimation_DvsI_Sat"]],nestedplotlist[["ActualvsEstimation_DvsI_Fri"]], nestedplotlist[["ActualvsEstimation_DvsI_Thu"]], nestedplotlist[["ActualvsEstimation_DvsI_Wed"]], nestedplotlist[["ActualvsEstimation_DvsI_Tue"]], nestedplotlist[["ActualvsEstimation_DvsI_Mon"]], nrow=3)
 g <- arrangeGrob(nestedplotlist[["ActualvsEstimation_DvsI_Mon_1week_lag"]],nestedplotlist[["ActualvsEstimation_DvsI_Sun"]],nestedplotlist[["ActualvsEstimation_DvsI_Sat"]],nestedplotlist[["ActualvsEstimation_DvsI_Fri"]], nestedplotlist[["ActualvsEstimation_DvsI_Thu"]], nestedplotlist[["ActualvsEstimation_DvsI_Wed"]], nestedplotlist[["ActualvsEstimation_DvsI_Tue"]], nestedplotlist[["ActualvsEstimation_DvsI_Mon"]], nrow=3)
 #g <- arrangeGrob(nestedplotlist[["Plot_DvsI_Mon_1week_lag"]],nestedplotlist[["Plot_DvsI_Sun"]],nestedplotlist[["Plot_DvsI_Sat"]],nestedplotlist[["Plot_DvsI_Fri"]], nestedplotlist[["Plot_DvsI_Thu"]], nestedplotlist[["Plot_DvsI_Wed"]], nestedplotlist[["Plot_DvsI_Tue"]], nestedplotlist[["Plot_DvsI_Mon"]], nrow=3)
@@ -1081,8 +1081,7 @@ theme_minimal() +
 scale_color_identity(labels = c("x=y", "Regression line"), guide = "legend") +
 theme(legend.position = "bottom", legend.title = element_blank())
 
-
-nestedplotlist[[paste0("Regressio_DplusoutplusprcpvsI", weekday)]] <- DplusoutplusprcpvsI.lm
+nestedplotlist[[paste0("Regression_DplusoutplusprcpvsI", weekday)]] <- DplusoutplusprcpvsI.lm
 nestedplotlist[[paste0("Plot_DplusoutplusprcpvsI", weekday)]] <- plot22
 nestedplotlist[[paste0("ActualvsEstimate_DplusoutplusprcpvsI", weekday)]] <- plot23
 }
