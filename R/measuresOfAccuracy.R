@@ -1,5 +1,10 @@
 library(tidyverse)
 library(lubridate)
+library(sjPlot)
+library(sjlabelled)
+library(sjmisc)
+library(ggplot2)
+library(arm)
 
 
 models <- c("DvsI", "D2vsI", "DplusD2vsI", "DplustmaxvsI", "DplustavgvsI",
@@ -59,3 +64,30 @@ accuracy_measures[nrow(accuracy_measures), 7] <- summary(nestedplotlist[[wording
 
     }
 }
+
+#17 Let's try using regsubset to choose the most influential predictors
+joinedDataFrameReduced <- joinedDataFrame[,c("Date", "outOfHomeDuration", "percentageChangeComparedToBeforeCorona", "changeOfIncidencelaggedWed2",
+  "tmax", "prcp", "outdoorFraction", "outdoorFraction2", "outOfHomeDurationSquared",
+  "tmaxSquared", "prcpSquared")]
+
+lm1 <- lm(joinedDataFrameReduced ,formula=changeOfIncidencelaggedWed2 ~ . -Date)
+summary(lm1)
+
+Best_Subset <-regsubsets(changeOfIncidencelaggedWed2 ~ . -Date -outdoorFraction2,
+               data =joinedDataFrameReduced,
+               nbest = 1,      # 1 best model for each number of predictors
+               nvmax = NULL,    # NULL for no limit on number of variables
+               force.in = NULL, force.out = NULL,
+               method = "exhaustive")
+
+summary_best_subset <- summary(Best_Subset)
+as.data.frame(summary_best_subset$outmat)
+
+which.max(summary_best_subset$adjr2)
+summary_best_subset$which[3,] #This identifies outOfHomeDuration, tmaxSquared and prcp as the most influential predictors!
+
+
+#Visualization of coefficients
+coefplot(nestedplotlist[["Regression_DtimestmaxvsIWed"]], col.pts="darkgreen", intercept=TRUE)
+coefplot(nestedplotlist[["Regression_DplustmaxvsIWed"]], add=TRUE, col.pts ="green", intercept=TRUE)
+coefplot(nestedplotlist[["Regression_DvsIWed"]], add=TRUE, intercept=TRUE, offset=0.2)
