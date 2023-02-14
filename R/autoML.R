@@ -1,24 +1,29 @@
+library(lares)
 library(automl)
+library(h2o)
 
-xmat <- as.matrix(cbind(joinedDataFrame[, c("outOfHomeDuration", "tmax", "prcp")]))
-ymat <- joinedDataFrame$changeOfIncidencelaggedSun2
+joinedDataFrameWed <- joinedDataFrame[, c("Date", "changeOfIncidencelaggedWed2", "tmax", "tavg", "outOfHomeDuration", "outdoorFraction", "prcp", "percentageChangeComparedToBeforeCorona")]
 
-start.time <- Sys.time()
-amlmodel <- automl_train(Xref = xmat, Yref = ymat,
-autopar = list(psopartpopsize = 15,
-numiterations = 20,
-auto_layers_max = 1,
-nbcores = 4))
-end.time <- Sys.time()
-cat(paste('time ellapsed:', end.time - start.time, '\n'))
+#Using automl package
 
-res <- cbind(ymat, automl_predict(model = amlmodel, X = xmat))
+amlmodel <- automl_train_manual(Xref = subset(joinedDataFrameWed , select = -c(changeOfIncidencelaggedWed2, Date)),
+                               Yref = subset(joinedDataFrameWed , select = c(changeOfIncidencelaggedWed2))$changeOfIncidencelaggedWed2 %>% 
+                               as.numeric(),
+                               hpar = list(learningrate = 0.01,
+                               minibatchsize = 2^2,
+                               numiterations = 60))
+
+prediction = automl_predict(model = amlmodel, X = subset(joinedDataFrameWed , select = -c(changeOfIncidencelaggedWed2, Date)))
+
+res <- cbind(subset(joinedDataFrameWed , select = c(changeOfIncidencelaggedWed2))$changeOfIncidencelaggedWed2, prediction)
 colnames(res) <- c('actual', 'predict')
-head(res)
 
-res <- as.data.frame(res)
-
-ggplot(data = res) +
-geom_point(aes(x = actual, y = predict)) +
-geom_abline(intercept = 0, slope = 1) +
+ggplot(as.data.frame(res)) + geom_point(aes(x=predict, y = actual)) +
+geom_abline(aes(intercept = 0, slope = 1, color="blue")) +
+scale_color_identity(labels = c("x=y"), guide="legend") +
 theme_minimal()
+
+#Using lares packages
+
+r <- h2o_automl(joinedDataFrameWed, y = "changeOfIncidencelaggedWed2", exclude_algos = NULL, quiet = TRUE)
+r

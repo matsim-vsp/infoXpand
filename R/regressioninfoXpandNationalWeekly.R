@@ -4,6 +4,7 @@ library(readxl)
 library(httr)
 library(gridExtra)
 library(ggiraphExtra)
+library(leaps)
 
 #Using R 4.1.1
 
@@ -358,6 +359,18 @@ geom_point(data = joinedDataFrame, aes(x=coefficients(DvsI.lm)["(Intercept)"] + 
 
 nestedplotlist[[paste0("Regression_DvsI", weekday)]] <- DvsI.lm
 nestedplotlist[[paste0("Plot_DvsI_", weekday)]] <- plot22
+nestedplotlist[[paste0("ResvsFittedValues_DvsI", weekday)]] <- function(){
+plot(DvsI.lm, which=1)
+}
+nestedplotlist[[paste0("Qqplot_DvsI", weekday)]] <- function(){
+plot(DvsI.lm, which=2)
+}
+nestedplotlist[[paste0("ScaleLoc_DvsI", weekday)]] <- function(){
+plot(DvsI.lm, which=3)
+}
+nestedplotlist[[paste0("Cooksdist_DvsI", weekday)]] <- function(){
+plot(DvsI.lm, which=4)
+}
 nestedplotlist[[paste0("ActualvsEstimation_DvsI_", weekday)]] <- plot23
 }
 
@@ -414,6 +427,18 @@ geom_point(aes(x=coefficients(D2vsI.lm)["(Intercept)"] + coefficients(D2vsI.lm)[
 
 nestedplotlist[[paste0("Regression_D2vsI", weekday)]] <- D2vsI.lm
 nestedplotlist[[paste0("Plot_D2vsI", weekday)]] <- plot22
+nestedplotlist[[paste0("ResvsFittedValues_D2vsI", weekday)]] <- function(){
+plot(D2vsI.lm, which=1)
+}
+nestedplotlist[[paste0("Qqplot_D2vsI", weekday)]] <- function(){
+plot(D2vsI.lm, which=2)
+}
+nestedplotlist[[paste0("ScaleLoc_D2vsI", weekday)]] <- function(){
+plot(D2vsI.lm, which=3)
+}
+nestedplotlist[[paste0("Cooksdist_D2vsI", weekday)]] <- function(){
+plot(D2vsI.lm, which=4)
+}
 nestedplotlist[[paste0("ActualvsEstimation_D2vsI", weekday)]] <- plot23
 }
 
@@ -472,6 +497,19 @@ geom_point(aes(x=coefficients(DplusD2vsI.lm)["(Intercept)"] + coefficients(Dplus
 
 
 nestedplotlist[[paste0("Regression_DplusD2vsI", weekday)]] <- DplusD2vsI.lm
+
+nestedplotlist[[paste0("ResvsFittedValues_DplusD2vsI", weekday)]] <- function(){
+plot(DplusD2vsI.lm, which=1)
+}
+nestedplotlist[[paste0("Qqplot_DplusD2vsI", weekday)]] <- function(){
+plot(DplusD2vsI.lm, which=2)
+}
+nestedplotlist[[paste0("ScaleLoc_DplusD2vsI", weekday)]] <- function(){
+plot(DplusD2vsI.lm, which=3)
+}
+nestedplotlist[[paste0("Cooksdist_DplusD2vsI", weekday)]] <- function(){
+plot(DplusD2vsI.lm, which=4)
+}
 nestedplotlist[[paste0("Plot_DplusD2vsI", weekday)]] <- plot22
 nestedplotlist[[paste0("ActualvsEstimation_DplusD2vsI", weekday)]] <- plot23
 }
@@ -531,6 +569,18 @@ theme(legend.position = "bottom", legend.title = element_blank())
 
 nestedplotlist[[paste0("Regression_DplustmaxvsI", weekday)]] <- DplustmaxvsI.lm
 nestedplotlist[[paste0("Plot_DplustmaxvsI", weekday)]] <- plot22
+nestedplotlist[[paste0("ResvsFittedValues_DplustmaxvsI", weekday)]] <- function(){
+plot(DplustmaxvsI.lm, which=1)
+}
+nestedplotlist[[paste0("Qqplot_DplustmaxvsI", weekday)]] <- function(){
+plot(DplustmaxvsI.lm, which=2)
+}
+nestedplotlist[[paste0("ScaleLoc_DplustmaxvsI", weekday)]] <- function(){
+plot(DplustmaxvsI.lm, which=3)
+}
+nestedplotlist[[paste0("Cooksdist_DplustmaxvsI", weekday)]] <- function(){
+plot(DplustmaxvsI.lm, which=4)
+}
 nestedplotlist[[paste0("ActualvsEstimation_DplustmaxvsI", weekday)]] <- plot23
 }
 grid.arrange(nestedplotlist[["Plot_DplustmaxvsIMon_1week_lag"]],nestedplotlist[["Plot_DplustmaxvsISun"]],nestedplotlist[["Plot_DplustmaxvsISat"]],nestedplotlist[["Plot_DplustmaxvsIFri"]], nestedplotlist[["Plot_DplustmaxvsIThu"]], nestedplotlist[["Plot_DplustmaxvsIWed"]], nestedplotlist[["Plot_DplustmaxvsITue"]], nestedplotlist[["Plot_DplustmaxvsIMon"]], nrow=3)
@@ -587,6 +637,18 @@ theme(legend.position = "bottom", legend.title = element_blank())
 
 nestedplotlist[[paste0("Regression_DplustavgvsI", weekday)]] <- DplustavgvsI.lm
 nestedplotlist[[paste0("Plot_DplustavgvsI", weekday)]] <- plot22
+nestedplotlist[[paste0("ResvsFittedValues_DplustavgvsI", weekday)]] <- function(){
+plot(DplustavgvsI.lm, which=1)
+}
+nestedplotlist[[paste0("Qqplot_DplustavgvsI", weekday)]] <- function(){
+plot(DplustavgvsI.lm, which=2)
+}
+nestedplotlist[[paste0("ScaleLoc_DplustavgvsI", weekday)]] <- function(){
+plot(DplustavgvsI.lm, which=3)
+}
+nestedplotlist[[paste0("Cooksdist_DplustavgvsI", weekday)]] <- function(){
+plot(DplustavgvsI.lm, which=4)
+}
 nestedplotlist[[paste0("ActualvsEstimation_DplustavgvsI", weekday)]] <- plot23
 }
 
@@ -643,6 +705,18 @@ geom_point(aes(x=coefficients(DtimestmaxvsI.lm)["(Intercept)"] + coefficients(Dt
 
 nestedplotlist[[paste0("Regression_DtimestmaxvsI", weekday)]] <- DtimestmaxvsI.lm
 nestedplotlist[[paste0("Plot_DtimestmaxvsI", weekday)]] <- plot22
+nestedplotlist[[paste0("ResvsFittedValues_DtimestmaxvsI", weekday)]] <- function(){
+plot(DtimestmaxvsI.lm, which=1)
+}
+nestedplotlist[[paste0("Qqplot_DtimestmaxvsI", weekday)]] <- function(){
+plot(DtimestmaxvsI.lm, which=2)
+}
+nestedplotlist[[paste0("ScaleLoc_DtimestmaxvsI", weekday)]] <- function(){
+plot(DtimestmaxvsI.lm, which=3)
+}
+nestedplotlist[[paste0("Cooksdist_DtimestmaxvsI", weekday)]] <- function(){
+plot(DtimestmaxvsI.lm, which=4)
+}
 nestedplotlist[[paste0("ActualvsEstimation_DtimestmaxvsI", weekday)]] <- plot23
 }
 
@@ -702,6 +776,19 @@ theme(legend.position = "bottom", legend.title = element_blank())
 
 nestedplotlist[[paste0("Regression_DtimestavgvsI", weekday)]] <- DtimestavgvsI.lm
 nestedplotlist[[paste0("Plot_DtimestavgvsI", weekday)]] <- plot22
+
+nestedplotlist[[paste0("ResvsFittedValues_DtimetavgvsI", weekday)]] <- function(){
+plot(DtimestavgvsI.lm, which=1)
+}
+nestedplotlist[[paste0("Qqplot_DtimestavgvsI", weekday)]] <- function(){
+plot(DtimestavgvsI.lm, which=2)
+}
+nestedplotlist[[paste0("ScaleLoc_DtimestavgvsI", weekday)]] <- function(){
+plot(DtimestavgvsI.lm, which=3)
+}
+nestedplotlist[[paste0("Cooksdist_DtimestavgvsI", weekday)]] <- function(){
+plot(DtimestavgvsI.lm, which=4)
+}
 nestedplotlist[[paste0("ActualvsEstimation_DtimestavgvsI", weekday)]] <- plot23
 }
 
@@ -758,6 +845,18 @@ theme(legend.position = "bottom", legend.title = element_blank())
 
 nestedplotlist[[paste0("Regression_DplusoutvsI", weekday)]] <- DplusoutvsI.lm
 nestedplotlist[[paste0("Plot_DplusoutvsI", weekday)]] <- plot22
+nestedplotlist[[paste0("ResvsFittedValues_DplusoutvsI", weekday)]] <- function(){
+plot(DplusoutvsI.lm, which=1)
+}
+nestedplotlist[[paste0("Qqplot_DplusoutvsI", weekday)]] <- function(){
+plot(DplusoutvsI.lm, which=2)
+}
+nestedplotlist[[paste0("ScaleLoc_DplusoutvsI", weekday)]] <- function(){
+plot(DplusoutvsI.lm, which=3)
+}
+nestedplotlist[[paste0("Cooksdist_DplusoutvsI", weekday)]] <- function(){
+plot(DplusoutvsI.lm, which=4)
+}
 nestedplotlist[[paste0("ActualvsEstimation_DplusoutvsI", weekday)]] <- plot23
 }
 
@@ -814,6 +913,18 @@ theme(legend.position = "bottom", legend.title = element_blank())
 
 nestedplotlist[[paste0("Regression_Dplusout2vsI", weekday)]] <- Dplusout2vsI.lm
 nestedplotlist[[paste0("Plot_Dplusout2vsI", weekday)]] <- plot22
+nestedplotlist[[paste0("ResvsFittedValues_Dplusout2vsI", weekday)]] <- function(){
+plot(Dplusout2vsI.lm, which=1)
+}
+nestedplotlist[[paste0("Qqplot_Dplusout2vsI", weekday)]] <- function(){
+plot(Dplusout2vsI.lm, which=2)
+}
+nestedplotlist[[paste0("ScaleLoc_Dplusout2vsI", weekday)]] <- function(){
+plot(Dplusout2vsI.lm, which=3)
+}
+nestedplotlist[[paste0("Cooksdist_Dplusout2vsI", weekday)]] <- function(){
+plot(Dplusout2vsI.lm, which=4)
+}
 nestedplotlist[[paste0("ActualvsEstimation_Dplusout2vsI", weekday)]] <- plot23
 }
 
@@ -868,6 +979,19 @@ theme(legend.position = "bottom", legend.title = element_blank())
 
 nestedplotlist[[paste0("Regression_DtimesoutvsI", weekday)]] <- DtimesoutvsI.lm
 nestedplotlist[[paste0("Plot_DtimesoutvsI", weekday)]] <- plot22
+
+nestedplotlist[[paste0("ResvsFittedValues_DtimesoutvsI", weekday)]] <- function(){
+plot(DtimesoutvsI.lm, which=1)
+}
+nestedplotlist[[paste0("Qqplot_DtimesoutvsI", weekday)]] <- function(){
+plot(DtimesoutvsI.lm, which=2)
+}
+nestedplotlist[[paste0("ScaleLoc_DtimesoutvsI", weekday)]] <- function(){
+plot(DtimesoutvsI.lm, which=3)
+}
+nestedplotlist[[paste0("Cooksdist_DtimesoutvsI", weekday)]] <- function(){
+plot(DtimesoutvsI.lm, which=4)
+}
 nestedplotlist[[paste0("ActualvsEstimation_DtimesoutvsI", weekday)]] <- plot23
 }
 
@@ -924,6 +1048,18 @@ theme(legend.position = "bottom", legend.title = element_blank())
 
 nestedplotlist[[paste0("Regression_Dtimesout2vsI", weekday)]] <- Dtimesout2vsI.lm
 nestedplotlist[[paste0("Plot_Dtimesout2vsI", weekday)]] <- plot22
+nestedplotlist[[paste0("ResvsFittedValues_Dtimesout2vsI", weekday)]] <- function(){
+plot(Dtimesout2vsI.lm, which=1)
+}
+nestedplotlist[[paste0("Qqplot_Dtimesout2vsI", weekday)]] <- function(){
+plot(Dtimesout2vsI.lm, which=2)
+}
+nestedplotlist[[paste0("ScaleLoc_Dtimesout2vsI", weekday)]] <- function(){
+plot(Dtimesout2vsI.lm, which=3)
+}
+nestedplotlist[[paste0("Cooksdist_Dtimesout2vsI", weekday)]] <- function(){
+plot(Dtimesout2vsI.lm, which=4)
+}
 nestedplotlist[[paste0("ActualvsEstimation_Dtimesout2vsI", weekday)]] <- plot23
 }
 
@@ -980,6 +1116,18 @@ theme(legend.position = "bottom", legend.title = element_blank())
 
 nestedplotlist[[paste0("Regression_DplusprcpvsI", weekday)]] <- DplusprcpvsI.lm
 nestedplotlist[[paste0("Plot_DplusprcpvsI", weekday)]] <- plot22
+nestedplotlist[[paste0("ResvsFittedValues_DplusprcpvsI", weekday)]] <- function(){
+plot(DplusprcpvsI.lm, which=1)
+}
+nestedplotlist[[paste0("Qqplot_DplusprcpvsI", weekday)]] <- function(){
+plot(DplusprcpvsI.lm, which=2)
+}
+nestedplotlist[[paste0("ScaleLoc_DplusprcpvsI", weekday)]] <- function(){
+plot(DplusprcpvsI.lm, which=3)
+}
+nestedplotlist[[paste0("Cooksdist_DplusprcpvsI", weekday)]] <- function(){
+plot(DplusprcpvsI.lm, which=4)
+}
 nestedplotlist[[paste0("ActualvsEstimation_DplusprcpvsI", weekday)]] <- plot23
 }
 
@@ -1033,6 +1181,18 @@ theme(legend.position = "bottom", legend.title = element_blank())
 
 nestedplotlist[[paste0("Regression_DplustmaxplusprcpvsI", weekday)]] <- DplustmaxplusprcpvsI.lm
 nestedplotlist[[paste0("Plot_DplustmaxplusprcpvsI", weekday)]] <- plot22
+nestedplotlist[[paste0("ResvsFittedValues_DplustmaxplusprcpvsI", weekday)]] <- function(){
+plot(DplustmaxplusprcpvsI.lm, which=1)
+}
+nestedplotlist[[paste0("Qqplot_DplustmaxplusprcpvsI", weekday)]] <- function(){
+plot(DplustmaxplusprcpvsI.lm, which=2)
+}
+nestedplotlist[[paste0("ScaleLoc_DplustmaxplusprcpvsI", weekday)]] <- function(){
+plot(DplustmaxplusprcpvsI.lm, which=3)
+}
+nestedplotlist[[paste0("Cooksdist_DplustmaxplusprcpvsI", weekday)]] <- function(){
+plot(DplustmaxplusprcpvsI.lm, which=4)
+}
 nestedplotlist[[paste0("ActualvsEstimation_DplustmaxplusprcpvsI", weekday)]] <- plot23
 }
 
@@ -1083,6 +1243,18 @@ theme(legend.position = "bottom", legend.title = element_blank())
 
 nestedplotlist[[paste0("Regression_DplusoutplusprcpvsI", weekday)]] <- DplusoutplusprcpvsI.lm
 nestedplotlist[[paste0("Plot_DplusoutplusprcpvsI", weekday)]] <- plot22
+nestedplotlist[[paste0("ResvsFittedValues_DplusoutplusprcpvsI", weekday)]] <- function(){
+plot(DplusoutplusprcpvsI.lm, which=1)
+}
+nestedplotlist[[paste0("Qqplot_DplusoutplusprcpvsI", weekday)]] <- function(){
+plot(DplusoutplusprcpvsI.lm, which=2)
+}
+nestedplotlist[[paste0("ScaleLoc_DplusoutplusprcpvsI", weekday)]] <- function(){
+plot(DplusoutplusprcpvsI.lm, which=3)
+}
+nestedplotlist[[paste0("Cooksdist_DplusoutplusprcpvsI", weekday)]] <- function(){
+plot(DplusoutplusprcpvsI.lm, which=4)
+}
 nestedplotlist[[paste0("ActualvsEstimate_DplusoutplusprcpvsI", weekday)]] <- plot23
 }
 
@@ -1134,6 +1306,18 @@ theme(legend.position = "bottom", legend.title = element_blank())
 
 nestedplotlist[[paste0("Regression_D:out2:prcpvsI", weekday)]] <- DplusDtimesoutplusDtimesprcp.lm 
 nestedplotlist[[paste0("Plot_D:out2:prcpvsI", weekday)]] <- plot22
+nestedplotlist[[paste0("ResvsFittedValues_D:out2:prcpvsI", weekday)]] <- function(){
+plot(DplusDtimesoutplusDtimesprcp.lm , which=1)
+}
+nestedplotlist[[paste0("Qqplot_D:out2:prcpvsI", weekday)]] <- function(){
+plot(DplusDtimesoutplusDtimesprcp.lm , which=2)
+}
+nestedplotlist[[paste0("ScaleLoc_D:out2:prcpvsI", weekday)]] <- function(){
+plot(DplusDtimesoutplusDtimesprcp.lm , which=3)
+}
+nestedplotlist[[paste0("Cooksdist_D:out2:prcpvsI", weekday)]] <- function(){
+plot(DplusDtimesoutplusDtimesprcp.lm , which=4)
+}
 nestedplotlist[[paste0("ActualvsEstimate_D:out2:prcpvsI", weekday)]] <- plot23
 }
 
@@ -1194,6 +1378,18 @@ theme(legend.position = "bottom", legend.title = element_blank())
 
 nestedplotlist[[paste0("Regression_D2timesoutvsI", weekday)]] <- DSquaredtimesoutvsI.lm
 nestedplotlist[[paste0("Plot_D2timesoutvsI", weekday)]] <- plot22
+nestedplotlist[[paste0("ResvsFittedValues_D2timesoutvsI", weekday)]] <- function(){
+plot(DSquaredtimesoutvsI.lm , which=1)
+}
+nestedplotlist[[paste0("Qqplot_D2timesoutvsI", weekday)]] <- function(){
+plot(DSquaredtimesoutvsI.lm , which=2)
+}
+nestedplotlist[[paste0("ScaleLoc_D2timesoutvsI", weekday)]] <- function(){
+plot(DSquaredtimesoutvsI.lm , which=3)
+}
+nestedplotlist[[paste0("Cooksdist_D2timesoutvsI", weekday)]] <- function(){
+plot(DSquaredtimesoutvsI.lm , which=4)
+}
 nestedplotlist[[paste0("ActualvsEstimate_D2timesoutvsI", weekday)]] <- plot23
 }
 
@@ -1254,6 +1450,18 @@ theme(legend.position = "bottom", legend.title = element_blank())
 
 nestedplotlist[[paste0("Regression_DtimestmaxSquaredvsI", weekday)]] <- DtimestmaxSquaredvsI.lm 
 nestedplotlist[[paste0("Plot_DtimestmaxSquaredvsI", weekday)]] <- plot22
+nestedplotlist[[paste0("ResvsFittedValues_DtimestmaxSquaredvsI", weekday)]] <- function(){
+plot(DtimestmaxSquaredvsI.lm , which=1)
+}
+nestedplotlist[[paste0("Qqplot_DtimestmaxSquaredvsI", weekday)]] <- function(){
+plot(DtimestmaxSquaredvsI.lm , which=2)
+}
+nestedplotlist[[paste0("ScaleLoc_DtimestmaxSquaredvsI", weekday)]] <- function(){
+plot(DtimestmaxSquaredvsI.lm , which=3)
+}
+nestedplotlist[[paste0("Cooksdist_DtimestmaxSquaredvsI", weekday)]] <- function(){
+plot(DtimestmaxSquaredvsI.lm , which=4)
+}
 nestedplotlist[[paste0("ActualvsEstimate_DtimestmaxSquaredvsI", weekday)]] <- plot23
 }
 
@@ -1327,6 +1535,18 @@ theme(legend.position = "bottom", legend.title = element_blank())
 
 nestedplotlist[[paste0("Regression_DtimestmaxtimesprcpvsI", weekday)]] <- DtimestmaxtimesprcpvsI.lm 
 nestedplotlist[[paste0("Plot_DtimestmaxtimesprcpvsI", weekday)]] <- plot22
+nestedplotlist[[paste0("ResvsFittedValues_DtimestmaxtimesprcpvsI", weekday)]] <- function(){
+plot(DtimestmaxtimesprcpvsI.lm, which=1)
+}
+nestedplotlist[[paste0("Qqplot_DtimestmaxtimesprcpvsI", weekday)]] <- function(){
+plot(DtimestmaxtimesprcpvsI.lm, which=2)
+}
+nestedplotlist[[paste0("ScaleLoc_DtimestmaxtimesprcpvsI", weekday)]] <- function(){
+plot(DtimestmaxtimesprcpvsI.lm, which=3)
+}
+nestedplotlist[[paste0("Cooksdist_DtimestmaxtimesprcpvsI", weekday)]]<- function(){
+plot(DtimestmaxtimesprcpvsI.lm, which=4)
+}
 nestedplotlist[[paste0("ActualvsEstimate_DtimestmaxtimesprcpvsI", weekday)]] <- plot23
 }
 
@@ -1391,6 +1611,18 @@ theme(legend.position = "bottom", legend.title = element_blank())
 
 nestedplotlist[[paste0("Regression_logDpluslogtmaxvsI", weekday)]] <- logDpluslogtmaxvsI.lm
 nestedplotlist[[paste0("Plot_logDpluslogtmaxvsI", weekday)]] <- plot22
+nestedplotlist[[paste0("ResvsFittedValues_logDpluslogtmaxvsI", weekday)]] <- function(){
+plot(logDpluslogtmaxvsI.lm , which=1)
+}
+nestedplotlist[[paste0("Qqplot_logDpluslogtmaxvsI", weekday)]] <- function(){
+plot(logDpluslogtmaxvsI.lm , which=2)
+}
+nestedplotlist[[paste0("ScaleLoc_logDpluslogtmaxvsI", weekday)]] <- function(){
+plot(logDpluslogtmaxvsI.lm , which=3)
+}
+nestedplotlist[[paste0("Cooksdist_logDpluslogtmaxvsI", weekday)]] <- function(){
+plot(logDpluslogtmaxvsI.lm , which=4)
+}
 nestedplotlist[[paste0("ActualvsEstimate_logDpluslogtmaxvsI", weekday)]] <- plot23
 }
 
@@ -1400,27 +1632,157 @@ g <- arrangeGrob(nestedplotlist[["ActualvsEstimate_logDpluslogtmaxvsIMon_1week_l
 g <- arrangeGrob(nestedplotlist[["Plot_logDpluslogtmaxvsIMon_1week_lag"]], nestedplotlist[["Plot_logDpluslogtmaxvsISun"]],nestedplotlist[["Plot_logDpluslogtmaxvsISat"]],nestedplotlist[["Plot_logDpluslogtmaxvsIFri"]], nestedplotlist[["Plot_logDpluslogtmaxvsIThu"]], nestedplotlist[["Plot_logDpluslogtmaxvsIWed"]], nestedplotlist[["Plot_logDpluslogtmaxvsITue"]], nestedplotlist[["Plot_logDpluslogtmaxvsIMon"]], nrow=3)
 
 
+# 15) 1+percChange + tmax vs log(I)
+joinedDataFrame <- joinedDataFrame %>% mutate(onePlusPercChange = 1 + percentageChangeComparedToBeforeCorona/100) 
 
-#Performing multiple polynomial regression
+for(weekday in weekdays){
+if(weekday == "Mon_1week_lag"){
+formula.lm <- "log(changeOfIncidencelaggedMon) ~ onePlusPercChange * tmax" 
+weekdayString <- "changeOfIncidencelaggedMon"
+} else {
+formula.lm <- paste0("log(changeOfIncidencelagged",weekday,"2)", " ~ onePlusPercChange * tmax")
+weekdayString <- paste0("changeOfIncidencelagged",weekday,"2")
+}
+onePlusPercChangeplustmaxvslogI.lm <- lm(formula = formula.lm, data=joinedDataFrame) #Regression
+if(weekday == "Mon") {
+title <- "14 Day lag" 
+} else if (weekday == "Tue") {
+title <- "13 Day lag" 
+} else if (weekday == "Wed") {
+title <- "12 Day lag"
+} else if (weekday == "Thu") {
+title <- "11 Day lag"
+} else if (weekday == "Fri") {
+title <- "10 Day lag"
+} else if (weekday == "Sat") {
+title <- "9 Day lag"
+} else if (weekday == "Sun") {
+title <- "8 Day lag"
+} else if (weekday == "Mon_1week_lag") {
+title <- "7 Day lag"   
+}
+#1st plot; x = onePlusPercChange, y = changeOfIncidence, color = tmax
+plot22 <- ggplot(data=joinedDataFrame, aes(x=onePlusPercChange, color =tmax, y = log(.data[[weekdayString]]))) +
+geom_point() +
+geom_smooth(method = "lm") +
+ggtitle(title) + 
+theme_minimal()
 
-#joinedDataFrame.pm1 <- lm(changeOfIncidence ~ polym(outOfHomeDuration, tmax, degree=2), data=filter(joinedDataFrame, changeOfIncidencelagged2 < 1.6)) #ToDo: How to visualize this?
+plot23 <- ggplot(data=joinedDataFrame) + #2nd plot; x = model estimate, y = actual changeOfIncidence
+geom_smooth(aes(x=coefficients(onePlusPercChangeplustmaxvslogI.lm)["(Intercept)"] + 
+  coefficients(onePlusPercChangeplustmaxvslogI.lm)["onePlusPercChange"] * onePlusPercChange + 
+  coefficients(onePlusPercChangeplustmaxvslogI.lm)["tmax"] * tmax +
+  coefficients(onePlusPercChangeplustmaxvslogI.lm)["onePlusPercChange:tmax"] * onePlusPercChange * tmax, y = log(.data[[weekdayString]]), color="lightgrey"), size=2, method = "lm", se=FALSE) +
+geom_point(aes(x=coefficients(onePlusPercChangeplustmaxvslogI.lm)["(Intercept)"] + 
+  coefficients(onePlusPercChangeplustmaxvslogI.lm)["onePlusPercChange"] * onePlusPercChange + 
+  coefficients(onePlusPercChangeplustmaxvslogI.lm)["tmax"] * tmax +
+  coefficients(onePlusPercChangeplustmaxvslogI.lm)["onePlusPercChange:tmax"] * onePlusPercChange * tmax, y = log(.data[[weekdayString]]), fill =tmax), shape = 21, size = 3) + 
+ggtitle(title) +
+xlab("Estimate") +
+ylab("Actual changeOfIncidence") +
+geom_abline(aes(intercept = 0, slope = 1, color="blue")) +
+theme_minimal() +
+scale_color_identity(labels = c("x=y", "Regression line"), guide = "legend") +
+theme(legend.position = "bottom", legend.title = element_blank())
 
-#fpoly2<-function(x1,x2){
-#  return(joinedDataFrame.pm1$coefficients["(Intercept)"]+
-#  joinedDataFrame.pm1$coefficients["polym(outOfHomeDuration, outdoorFraction2, degree = 2)1.0"]*x1+
-#  joinedDataFrame.pm1$coefficients["polym(outOfHomeDuration, outdoorFraction2, degree = 2)2.0"]*x1*x1+
-#  joinedDataFrame.pm1$coefficients["polym(outOfHomeDuration, outdoorFraction2, degree = 2)0.1"]*x2+
-#  joinedDataFrame.pm1$coefficients["polym(outOfHomeDuration, outdoorFraction2, degree = 2)1.1"]*x1*x2+
-#  joinedDataFrame.pm1$coefficients["polym(outOfHomeDuration, outdoorFraction2, degree = 2)0.2"]*x2*x2)
-#}
 
-#joinedDataFrameBayern <- filter(joinedDataFrame, , changeOfIncidencelagged2 < 1.6)
-#x1x2_poly <- c(joinedDataFrameBayern$outOfHomeDuration, joinedDataFrameBayern$outdoorFraction)
-#y_poly <- poly(x1x2_poly)
-#dataframex1x2y <- data.frame(x1x2_poly, y_poly)
+nestedplotlist[[paste0("Regression_onePlusPercChangeplustmaxvslogI", weekday)]] <- onePlusPercChangeplustmaxvslogI.lm 
+nestedplotlist[[paste0("Plot_onePlusPercChangeplustmaxvslogI", weekday)]] <- plot22
+nestedplotlist[[paste0("ResvsFittedValues_onePlusPercChangeplustmaxvslogI", weekday)]] <- function(){
+plot(onePlusPercChangeplustmaxvslogI.lm , which=1)
+}
+nestedplotlist[[paste0("Qqplot_onePlusPercChangeplustmaxvslogI", weekday)]] <- function(){
+plot(onePlusPercChangeplustmaxvslogI.lm , which=2)
+}
+nestedplotlist[[paste0("ScaleLoc_onePlusPercChangeplustmaxvslogI", weekday)]] <- function(){
+plot(onePlusPercChangeplustmaxvslogI.lm , which=3)
+}
+nestedplotlist[[paste0("Cooksdist_onePlusPercChangeplustmaxvslogI", weekday)]] <- function(){
+plot(onePlusPercChangeplustmaxvslogI.lm , which=4)
+}
+nestedplotlist[[paste0("ActualvsEstimate_onePlusPercChangeplustmaxvslogI", weekday)]] <- plot23
+}
+v
+grid.arrange(nestedplotlist[["Plot_onePlusPercChangeplustmaxvslogIMon_1week_lag"]], nestedplotlist[["Plot_onePlusPercChangeplustmaxvslogISun"]],nestedplotlist[["Plot_onePlusPercChangeplustmaxvslogISat"]],nestedplotlist[["Plot_onePlusPercChangeplustmaxvslogIFri"]], nestedplotlist[["Plot_onePlusPercChangeplustmaxvslogIThu"]], nestedplotlist[["Plot_onePlusPercChangeplustmaxvslogIWed"]], nestedplotlist[["Plot_onePlusPercChangeplustmaxvslogITue"]], nestedplotlist[["Plot_onePlusPercChangeplustmaxvslogIMon"]], nrow=3)
+grid.arrange(nestedplotlist[["ActualvsEstimate_onePlusPercChangeplustmaxvslogIMon_1week_lag"]], nestedplotlist[["ActualvsEstimate_onePlusPercChangeplustmaxvslogISun"]],nestedplotlist[["ActualvsEstimate_onePlusPercChangeplustmaxvslogISat"]],nestedplotlist[["ActualvsEstimate_onePlusPercChangeplustmaxvslogIFri"]], nestedplotlist[["ActualvsEstimate_onePlusPercChangeplustmaxvslogIThu"]], nestedplotlist[["ActualvsEstimate_onePlusPercChangeplustmaxvslogIWed"]], nestedplotlist[["ActualvsEstimate_onePlusPercChangeplustmaxvslogITue"]], nestedplotlist[["ActualvsEstimate_onePlusPercChangeplustmaxvslogIMon"]], nrow=3)
+g <- arrangeGrob(nestedplotlist[["ActualvsEstimate_onePlusPercChangeplustmaxvslogIMon_1week_lag"]], nestedplotlist[["ActualvsEstimate_onePlusPercChangeplustmaxvslogISun"]],nestedplotlist[["ActualvsEstimate_onePlusPercChangeplustmaxvslogISat"]],nestedplotlist[["ActualvsEstimate_onePlusPercChangeplustmaxvslogIFri"]], nestedplotlist[["ActualvsEstimate_onePlusPercChangeplustmaxvslogIThu"]], nestedplotlist[["ActualvsEstimate_onePlusPercChangeplustmaxvslogIWed"]], nestedplotlist[["ActualvsEstimate_onePlusPercChangeplustmaxvslogITue"]], nestedplotlist[["ActualvsEstimate_onePlusPercChangeplustmaxvslogIMon"]], nrow=3)
+g <- arrangeGrob(nestedplotlist[["Plot_onePlusPercChangeplustmaxvslogIMon_1week_lag"]], nestedplotlist[["Plot_onePlusPercChangeplustmaxvslogISun"]],nestedplotlist[["Plot_onePlusPercChangeplustmaxvslogISat"]],nestedplotlist[["Plot_onePlusPercChangeplustmaxvslogIFri"]], nestedplotlist[["Plot_onePlusPercChangeplustmaxvslogIThu"]], nestedplotlist[["Plot_onePlusPercChangeplustmaxvslogIWed"]], nestedplotlist[["Plot_onePlusPercChangeplustmaxvslogITue"]], nestedplotlist[["Plot_onePlusPercChangeplustmaxvslogIMon"]], nrow=3)
 
-#ggplot() +
-#geom_point(data=dataframex1x2y, aes(x= x1x2_poly, y = X1), color= "blue") +
-#geom_point(data=joinedDataFrameBayern, aes(x=))
-#theme_minimal()
+
+
+#16) NEEDS TO BE REWORKED! NEED TO INTRODUCE A SECOND INDICATOR VARIABLE
+#Let's try another by adding a categorical variable which tells us the different phases of 2020
+#D * tmax + cat vs I
+joinedDataFrame <- joinedDataFrame %>% mutate(pointInTime = case_when(Date < "2020-05-10" ~ 1, 
+                                                            Date < "2020-10-15" ~ 2, 
+                                                            Date < "2022-01-01" ~ 3
+                                                            ))
+
+
+for (weekday in weekdays){
+if (weekday == "Mon_1week_lag") {
+weekdayString <- "changeOfIncidencelaggedMon"
+formula.lm <- "changeOfIncidencelaggedMon ~ outOfHomeDuration * tmax + factor(pointInTime)"
+} else {
+formula.lm <- paste0("changeOfIncidencelagged", weekday, "2", " ~ outOfHomeDuration*tmax + factor(pointInTime)")
+weekdayString <- paste0("changeOfIncidencelagged", weekday, "2")
+}
+DtimestmaxpluspointInTimevsI.lm <- lm(formula = formula.lm, data = joinedDataFrame) #Regression
+if (weekday == "Mon") {
+title <- "14 Day lag"
+} else if (weekday == "Tue") {
+title <- "13 Day lag"
+} else if (weekday == "Wed") {
+title <- "12 Day lag"
+} else if (weekday == "Thu") {
+title <- "11 Day lag"
+} else if (weekday == "Fri") {
+title <- "10 Day lag"
+} else if (weekday == "Sat") {
+title <- "9 Day lag"
+} else if (weekday == "Sun") {
+title <- "8 Day lag"
+} else if (weekday == "Mon_1week_lag") {
+title <- "7 Day lag"
+}
+#1st plot; x = outOfHomeDuration, y = changeOfIncidence, color = tmax
+plot22 <- ggplot(data=joinedDataFrame, aes(y = .data[[weekdayString]], x = outOfHomeDuration, color = tmax)) +
+geom_point() +
+geom_smooth(method = "lm") +
+ggtitle(title) +
+theme_minimal()
+
+plot23 <- ggplot(data = joinedDataFrame) + #2nd plot; x = model estimate, y = actual changeOfIncidence
+geom_smooth(aes(x=coefficients(DtimestmaxpluspointInTimevsI.lm)["(Intercept)"] + coefficients(DtimestmaxpluspointInTimevsI.lm)["outOfHomeDuration"] * outOfHomeDuration + coefficients(DtimestmaxpluspointInTimevsI.lm)["tmax"] * tmax + coefficients(DtimestmaxpluspointInTimevsI.lm)["outOfHomeDuration:tmax"] * outOfHomeDuration * tmax + coefficients(DtimestmaxpluspointInTimevsI.lm)["factor(pointInTime)3"] * pointInTime , y = .data[[weekdayString]], color="lightgrey"), size=2, method = "lm", se=FALSE) +
+ggtitle(title) +
+xlab("Intercept + a * outOfHomeDuration + b * tmax + c * oOHD * tmax") +
+ylab("changeOfIncidence") +
+geom_abline(aes(intercept = 0, slope = 1, color="blue")) +
+theme_minimal() +
+scale_color_identity(labels = c("x=y", "Regression line"), guide = "legend") +
+theme(legend.position = "bottom", legend.title = element_blank()) +
+geom_point(aes(x=coefficients(DtimestmaxpluspointInTimevsI.lm)["(Intercept)"] + coefficients(DtimestmaxpluspointInTimevsI.lm)["outOfHomeDuration"] * outOfHomeDuration + coefficients(DtimestmaxpluspointInTimevsI.lm)["tmax"] * tmax + coefficients(DtimestmaxpluspointInTimevsI.lm)["outOfHomeDuration:tmax"] * outOfHomeDuration * tmax + coefficients(DtimestmaxpluspointInTimevsI.lm)["factor(pointInTime)3"] * pointInTime , y = .data[[weekdayString]], fill = tmax), size = 3, shape = 21)
+
+
+nestedplotlist[[paste0("Regression_DtimestmaxpluspITvsI", weekday)]] <- DtimestmaxpluspointInTimevsI.lm
+nestedplotlist[[paste0("Plot_DtimestmaxpluspITvsI", weekday)]] <- plot22
+nestedplotlist[[paste0("ResvsFittedValues_DtimestmaxpluspITvsI", weekday)]] <- function(){
+plot(DtimestmaxpluspointInTimevsI.lm, which=1)
+}
+nestedplotlist[[paste0("Qqplot_DtimestmaxpluspITvsI", weekday)]] <- function(){
+plot(DtimestmaxpluspointInTimevsI.lm, which=2)
+}
+nestedplotlist[[paste0("ScaleLoc_DtimestmaxpluspITvsI", weekday)]] <- function(){
+plot(DtimestmaxpluspointInTimevsI.lm, which=3)
+}
+nestedplotlist[[paste0("Cooksdist_DtimestmaxpluspITvsI", weekday)]] <- function(){
+plot(DtimestmaxpluspointInTimevsI.lm, which=4)
+}
+nestedplotlist[[paste0("ActualvsEstimation_DtimestmaxpluspITvsI", weekday)]] <- plot23
+}
+
+grid.arrange(nestedplotlist[["Plot_DtimestmaxpluspITvsIMon_1week_lag"]],nestedplotlist[["Plot_DtimestmaxpluspITvsISun"]],nestedplotlist[["Plot_DtimestmaxpluspITvsISat"]],nestedplotlist[["Plot_DtimestmaxpluspITvsIFri"]], nestedplotlist[["Plot_DtimestmaxpluspITvsIThu"]], nestedplotlist[["Plot_DtimestmaxpluspITvsIWed"]], nestedplotlist[["Plot_DtimestmaxpluspITvsITue"]], nestedplotlist[["Plot_DtimestmaxpluspITvsIMon"]], nrow=3)
+grid.arrange(nestedplotlist[["ActualvsEstimation_DtimestmaxpluspITvsIMon_1week_lag"]],nestedplotlist[["ActualvsEstimation_DtimestmaxpluspITvsISun"]],nestedplotlist[["ActualvsEstimation_DtimestmaxpluspITvsISat"]],nestedplotlist[["ActualvsEstimation_DtimestmaxpluspITvsIFri"]], nestedplotlist[["ActualvsEstimation_DtimestmaxpluspITvsIThu"]], nestedplotlist[["ActualvsEstimation_DtimestmaxpluspITvsIWed"]], nestedplotlist[["ActualvsEstimation_DtimestmaxpluspITvsITue"]], nestedplotlist[["ActualvsEstimation_DtimestmaxpluspITvsIMon"]], nrow=3)
+g <- arrangeGrob(nestedplotlist[["ActualvsEstimation_DtimestmaxpluspITvsIMon_1week_lag"]],nestedplotlist[["ActualvsEstimation_DtimestmaxpluspITvsISun"]],nestedplotlist[["ActualvsEstimation_DtimestmaxpluspITvsISat"]],nestedplotlist[["ActualvsEstimation_DtimestmaxpluspITvsIFri"]], nestedplotlist[["ActualvsEstimation_DtimestmaxpluspITvsIThu"]], nestedplotlist[["ActualvsEstimation_DtimestmaxpluspITvsIWed"]], nestedplotlist[["ActualvsEstimation_DtimestmaxpluspITvsITue"]], nestedplotlist[["ActualvsEstimation_DtimestmaxpluspITvsIMon"]], nrow=3)
+#g <- arrangeGrob(nestedplotlist[["Plot_DtimestmaxpluspITvsIMon_1week_lag"]],nestedplotlist[["Plot_DtimestmaxpluspITvsISun"]],nestedplotlist[["Plot_DtimestmaxpluspITvsISat"]],nestedplotlist[["Plot_DtimestmaxpluspITvsIFri"]], nestedplotlist[["Plot_DtimestmaxpluspITvsIThu"]], nestedplotlist[["Plot_DtimestmaxpluspITvsIWed"]], nestedplotlist[["Plot_DtimestmaxpluspITvsITue"]], nestedplotlist[["Plot_DtimestmaxpluspITvsIMon"]], nrow=3)
 
