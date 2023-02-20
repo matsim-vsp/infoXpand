@@ -16,10 +16,8 @@ This repository contains all simulation and estimation work done by the [Transpo
 
 - **regressioninfoXpandFederalStateMonthly.R** : Currently on hold, until our work on a national level is finished.
 
-- **BeyondLinearityNationalWeekly.R**
-
 ### Miscellaneous scripts contained in this repository
 
-- **applemobilitydata.R**
+- **applemobilitydata.R** : Apple mobility data, which was provided by Apple from April 2020 until April 2022 is read and cleaned. Here, we filter for Germany, filter for Germany and plot weekly changes for the different federal states. 
 
-- **googlemobilitydatacleaning.R**
+- **googlemobilitydatacleaning.R** : Google mobility data, which was provided by Google until October 2022 is read and cleaned. Here, we filter for Germany, turn daily into weekly values, and plot the data for Germany's 16 federal states.
