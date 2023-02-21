@@ -1,13 +1,12 @@
 library(automl)
 library(h2o)
-library(RemixAutoML)
 
 joinedDataFrameWed <- joinedDataFrame[, c("Date", "changeOfIncidencelaggedWed2", "tmax", "tavg", "outOfHomeDuration", "outdoorFraction", "prcp", "percentageChangeComparedToBeforeCorona")]
 joinedDataFrameWed <- joinedDataFrame[-c(31,32),]
 
 #Using automl package
 
-amlmodel <- automl_train_manual(Xref = subset(joinedDataFrameWed , select = -c(changeOfIncidencelaggedWed2, Date)),
+amlmodel <- automl_train_manual(Xref = subset(joinedDataFrameWed , select = -c(weekMon, changeOfIncidencelaggedWed2, Date)),
                                Yref = subset(joinedDataFrameWed , select = c(changeOfIncidencelaggedWed2))$changeOfIncidencelaggedWed2 %>% 
                                as.numeric(),
                                hpar = list(learningrate = 0.01,
@@ -35,8 +34,8 @@ train_h <- splits[[1]]
 test_h <- splits[[2]]
 
 # set label type
-y = 'changeOfIncidencelaggedWed2'
-pred = setdiff(names(train), c(y, 'Date')) 
+y <- 'changeOfIncidencelaggedWed2'
+pred <- setdiff(names(train), c(y, 'Date'))
 
 #convert variables to factors
 train$changeOfIncidencelaggedWed2 <- as.factor(train$changeOfIncidencelaggedWed2)
@@ -58,8 +57,28 @@ prediction <- h2o.predict(aml@leader, test_h[,-2]) %>%
                             as.data.frame()
 
 
-#Explain a mnodel
-exm <- h2o.explain(aml, test_h)
+#Diagnostic plots
+
+#Plotting the fitted values vs the residuals on the test dataset
+h2o.residual_analysis_plot(aml@leader, test_h)
+
+#Variable importance plot: Showing the relative importance of the most important variables in the plot
+h2o.varimp_plot(aml@leader)
+
+#Variable importance heatmap: Shows variable importance across multiple models
+h2o.varimp_heatmap(aml)
+
+#Model correlation map: Shows the correlation between the predictions of the model
+#By default: Models are ordered by their similarity
+h2o.model_correlation(aml, test_h)
+h2o.model_correlation_heatmap(aml, test_h)
+
+#SHAP summary plot: Shows the contribution of the features for each row of data
+h2o.shap_summary_plot(model, test_h)
+
+#SHAP local explanation: Shows contribution of features for a given instance
+#Sum of feature contributions + the bias term = equal to the raw prediction of the model
+h2o.shap_explain_row_plot(model, test_h, row_index=1)
 
 # close h2o connection
 h2o.shutdown(prompt = F)
