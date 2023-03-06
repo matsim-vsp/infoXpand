@@ -46,6 +46,33 @@ dict_state_id[nrow(dict_state_id) + 1, ] <- c("Schleswig-Holstein", 10044)
 dict_state_id[nrow(dict_state_id) + 1, ] <- c("Thüringen", 10554)
 
 #Reading incidence data in, data hereby comes from RKI
+
+#Incidence from Januar 2020 until May 2020
+#Data starting Jan 2020
+url1 <- 'https://svn.vsp.tu-berlin.de/repos/public-svn/matsim/scenarios/countries/de/episim/original-data/Fallzahlen/RKI/bundesland-cases.csv'
+GET(url1, write_disk(tf <- tempfile(fileext = ".csv")))
+incidence_data_archiv <- read_csv(tf) 
+incidence_data_archiv <- incidence_data_archiv %>% mutate(Date = make_date(year = year, month = month, day = day))
+incidence_data_archiv <- incidence_data_archiv %>% group_by(Date) %>%
+  summarise(date = Date, cases = sum(cases), deaths = sum(casesDeath)) %>% distinct()
+
+incidence_data_seven_days <- data.frame(matrix(nrow = 0, ncol = 2))
+colnames(incidence_data_seven_days) <- c("Date", "Cases")
+
+datum <- min(incidence_data_archiv$Date)+6
+while(datum < as.Date("2020-05-06")){
+  filtered <- filter(incidence_data_archiv, Date <= datum) %>% filter(Date > datum-7)
+  incidence_data_seven_days[nrow(incidence_data_seven_days)+1,1] <- datum
+  incidence_data_seven_days[nrow(incidence_data_seven_days), 2] <- sum(filtered$cases)
+  datum <- datum + 1
+}
+
+incidence_data_seven_days$Date <- as.Date(incidence_data_seven_days$Date, origin="1970-01-01")
+incidence_data_seven_days <- incidence_data_seven_days %>% mutate(Bundesland = "Gesamt")
+incidence_data_seven_days <- incidence_data_seven_days[ , c("Bundesland", "Date", "Incidence")]
+incidence_data_seven_days <- incidence_data_seven_days %>% mutate(Incidence = Cases / 83200000 * 100000)
+
+#Incidence from May 2020 until September 2021
 url1 <-'https://www.rki.de/DE/Content/InfAZ/N/Neuartiges_Coronavirus/Daten/Fallzahlen_Kum_Tab_Archiv.xlsx?__blob=publicationFile'
 GET(url1, write_disk(tf <- tempfile(fileext = ".xlsx")))
 incidence_data_archiv <- read_excel(tf, 3)
@@ -57,6 +84,7 @@ incidence_data_archiv$Date <- as.integer(incidence_data_archiv$Date)
 incidence_data_archiv$Date <- as.Date(incidence_data_archiv$Date,origin="1899-12-30")
 incidence_data_archiv <- incidence_data_archiv %>% filter(Bundesland == "Gesamt")
 
+#Incidence from September 2021 onwards
 url1 <- 'https://www.rki.de/DE/Content/InfAZ/N/Neuartiges_Coronavirus/Daten/Fallzahlen_Kum_Tab_aktuell.xlsx?__blob=publicationFile'
 GET(url1, write_disk(tf <- tempfile(fileext = ".xlsx")))
 incidence_data <- read_excel(tf, 4)
@@ -70,10 +98,10 @@ incidence_data$Date <- as.Date(incidence_data$Date)
 incidence_data$Date <- incidence_data$Date
 incidence_data <- incidence_data %>% filter(Bundesland == "Gesamt")
 
-# incidence_data2 <- incidence_data
+incidence_data_archiv <- rbind(incidence_data_seven_days,incidence_data_archiv)
 incidence_data <- rbind(incidence_data_archiv, incidence_data)
 incidence_data$Incidence <- as.double(incidence_data$Incidence)
-incidence_data <- filter(incidence_data, Date < as.Date("2021-01-01") & Date > as.Date("2020-05-11"))
+incidence_data <- filter(incidence_data, Date < as.Date("2021-01-01"))
 
 incidence_data <- incidence_data %>%
   mutate(weekMon = cut(Date, "week")) %>% #Weeks start on Monday
@@ -1702,7 +1730,7 @@ plot(onePlusPercChangeplustmaxvslogI.lm , which=4)
 }
 nestedplotlist[[paste0("ActualvsEstimate_onePlusPercChangeplustmaxvslogI", weekday)]] <- plot23
 }
-v
+
 grid.arrange(nestedplotlist[["Plot_onePlusPercChangeplustmaxvslogIMon_1week_lag"]], nestedplotlist[["Plot_onePlusPercChangeplustmaxvslogISun"]],nestedplotlist[["Plot_onePlusPercChangeplustmaxvslogISat"]],nestedplotlist[["Plot_onePlusPercChangeplustmaxvslogIFri"]], nestedplotlist[["Plot_onePlusPercChangeplustmaxvslogIThu"]], nestedplotlist[["Plot_onePlusPercChangeplustmaxvslogIWed"]], nestedplotlist[["Plot_onePlusPercChangeplustmaxvslogITue"]], nestedplotlist[["Plot_onePlusPercChangeplustmaxvslogIMon"]], nrow=3)
 grid.arrange(nestedplotlist[["ActualvsEstimate_onePlusPercChangeplustmaxvslogIMon_1week_lag"]], nestedplotlist[["ActualvsEstimate_onePlusPercChangeplustmaxvslogISun"]],nestedplotlist[["ActualvsEstimate_onePlusPercChangeplustmaxvslogISat"]],nestedplotlist[["ActualvsEstimate_onePlusPercChangeplustmaxvslogIFri"]], nestedplotlist[["ActualvsEstimate_onePlusPercChangeplustmaxvslogIThu"]], nestedplotlist[["ActualvsEstimate_onePlusPercChangeplustmaxvslogIWed"]], nestedplotlist[["ActualvsEstimate_onePlusPercChangeplustmaxvslogITue"]], nestedplotlist[["ActualvsEstimate_onePlusPercChangeplustmaxvslogIMon"]], nrow=3)
 g <- arrangeGrob(nestedplotlist[["ActualvsEstimate_onePlusPercChangeplustmaxvslogIMon_1week_lag"]], nestedplotlist[["ActualvsEstimate_onePlusPercChangeplustmaxvslogISun"]],nestedplotlist[["ActualvsEstimate_onePlusPercChangeplustmaxvslogISat"]],nestedplotlist[["ActualvsEstimate_onePlusPercChangeplustmaxvslogIFri"]], nestedplotlist[["ActualvsEstimate_onePlusPercChangeplustmaxvslogIThu"]], nestedplotlist[["ActualvsEstimate_onePlusPercChangeplustmaxvslogIWed"]], nestedplotlist[["ActualvsEstimate_onePlusPercChangeplustmaxvslogITue"]], nestedplotlist[["ActualvsEstimate_onePlusPercChangeplustmaxvslogIMon"]], nrow=3)
@@ -1713,12 +1741,12 @@ g <- arrangeGrob(nestedplotlist[["Plot_onePlusPercChangeplustmaxvslogIMon_1week_
 #16) NEEDS TO BE REWORKED! NEED TO INTRODUCE A SECOND INDICATOR VARIABLE
 #Let's try another by adding a categorical variable which tells us the different phases of 2020
 #D * tmax + cat vs I
-joinedDataFrame <- joinedDataFrame %>% mutate(pointInTime = case_when(Date < "2020-05-10" ~ "firstWave", 
+joinedDataFrame <- joinedDataFrame %>% mutate(pointInTime = case_when(Date < "2020-05-10" ~ "FirstWave", 
                                                             Date < "2020-10-15" ~ "Summer", 
                                                             Date < "2022-01-01" ~ "SecondWave"
                                                             ))
 
-joinedDataFrame$pointInTime <- factor(joinedDataFrame$pointInTime, levels=c("Summer", "SecondWave"))
+joinedDataFrame$pointInTime <- factor(joinedDataFrame$pointInTime, levels=c("FirstWave", "Summer", "SecondWave"))
 for (weekday in weekdays){
 if (weekday == "Mon_1week_lag") {
 weekdayString <- "changeOfIncidencelaggedMon"
@@ -1859,7 +1887,7 @@ g <- arrangeGrob(nestedplotlist[["ActualvsEstimation_DtimestmaxvsIMon_1week_lag"
 #g <- arrangeGrob(nestedplotlist[["Plot_DtimestmaxvsIMon_1week_lag"]],nestedplotlist[["Plot_DtimestmaxvsISun"]],nestedplotlist[["Plot_DtimestmaxvsISat"]],nestedplotlist[["Plot_DtimestmaxvsIFri"]], nestedplotlist[["Plot_DtimestmaxvsIThu"]], nestedplotlist[["Plot_DtimestmaxvsIWed"]], nestedplotlist[["Plot_DtimestmaxvsITue"]], nestedplotlist[["Plot_DtimestmaxvsIMon"]], nrow=3)
 
 #18) Reusing 12) D * tmax^2 vs I , but with weights!
-joinedDataFrame <- joinedDataFrame %>% mutate(tmaxSquared = tmax * tmax) %>% mutate(weight = case_when(IncidenceWed < 15 ~ 0.2, .default = 1))
+joinedDataFrame <- joinedDataFrame %>% mutate(tmaxSquared = tmax * tmax) %>% mutate(weight = case_when(tmax > 22 ~ 0.2, .default = 1))
 for(weekday in weekdays){
 if(weekday == "Mon_1week_lag"){
 formula.lm <- "changeOfIncidencelaggedMon ~ outOfHomeDuration * tmaxSquared" 

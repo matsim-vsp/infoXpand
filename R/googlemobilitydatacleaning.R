@@ -23,7 +23,7 @@ google_mobility_data_weekly <- google_mobility_data %>% group_by(week, year, sub
 #Turning the data into tidy format
 google_mobility_data_weekly <- pivot_longer(google_mobility_data_weekly , cols = c("retail_and_recreation", "grocery_and_pharmacy", "parks", "transit_stations", "workplaces", "residential"), names_to="category", values_to = "changeFromBaseline")
 
-#Plotting the data for 2021 for sll 16 federal German states and for all of Germany
+#Plotting the data for 2021 for all 16 federal German states and for all of Germany
 google_mobility_data_weekly %>% filter(date < "2021-01-01") %>% # filter(category!="parks") %>%
 ggplot() +
   geom_line(mapping = aes(x = date, y = changeFromBaseline, col = category)) +
