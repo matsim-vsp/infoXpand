@@ -156,6 +156,11 @@ incidence_data[, "changeOfIncidenceMon"] <- as.double(incidence_data$IncidenceMo
 incidence_data[, "changeOfIncidenceTue"] <- incidence_data$IncidenceTue/lag(incidence_data$IncidenceTue)
 incidence_data[, "changeOfIncidenceWed"] <- incidence_data$IncidenceWed/lag(incidence_data$IncidenceWed)
 incidence_data[, "changeOfIncidenceThu"] <- incidence_data$IncidenceThu/lag(incidence_data$IncidenceThu)
+
+
+
+
+
 incidence_data[, "changeOfIncidenceFri"] <- incidence_data$IncidenceFri/lag(incidence_data$IncidenceFri)
 incidence_data[, "changeOfIncidenceSat"] <- incidence_data$IncidenceSat/lag(incidence_data$IncidenceSat)
 incidence_data[, "changeOfIncidenceSun"] <- incidence_data$IncidenceSun/lag(incidence_data$IncidenceSun)
@@ -174,3 +179,5 @@ incidence_data[, "changeOfIncidenceSun"] <- incidence_data$IncidenceSun/lag(inci
  incidence_data <- mutate(incidence_data, changeOfIncidencelaggedSat2 = lead(changeOfIncidencelaggedSat))
  incidence_data <- mutate(incidence_data, changeOfIncidencelaggedSun = lead(changeOfIncidenceSun))
  incidence_data <- mutate(incidence_data, changeOfIncidencelaggedSun2 = lead(changeOfIncidencelaggedSun))
+
+
