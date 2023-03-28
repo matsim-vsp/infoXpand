@@ -67,7 +67,7 @@ filter(Date > "2020-01-01") %>%
   group_by(year, week, Bundesland) %>%
   summarise(Bundesland = Bundesland, Date = min(Date)+4, tmax = mean(tmax), tavg = mean(tavg), prcp = mean(prcp)) %>% distinct()
 
-#The method above sets the temp for "Gesamt" equal to the temp for Berlin. 
+#The method above sets the temp for "Gesamt" equal to the temp for Berlin.
 for(date in unique(weather_data_all$Date)){
 filtered <- filter(weather_data_all, Date == date) %>%
             filter(Bundesland != "Gesamt")
@@ -79,10 +79,15 @@ weather_data_all$prcp[weather_data_all$Date == date & weather_data_all$Bundeslan
 
 #Converting the weather data to an "outdoor fraction"
 #Below a certain temperature, everything happens indoords, above a certain temperature everything happens outdoors and in between we linearize
-weather_data_all <- mutate(weather_data_all, outdoorFraction = case_when(22.5 >= tmax & tmax >= 12.5 ~ 2 - 0.1*(22.5 - tmax),
-                                                                   tmax < 12.5 ~ 2,
-                                                                  tmax > 22.5 ~ 1))
+#Compare https://doi.org/10.1371/journal.pone.0259037 for computation of outdoor fraction
+weather_data_all <- weather_data_all %>% mutate(TStar = case_when(Date < "2020-03-01" ~ 17.5, 
+                                                                  Date >= "2020-03-01" & Date <= "2020-10-01" ~ as.numeric(Date-as.Date("2020-03-01"))*7.5/214 + 17.5,
+                                                                  Date > "2020-10-01" ~ 25))
+
+weather_data_all <- mutate(weather_data_all, outdoorFraction = case_when(TStar + 5 >= tmax & tmax >= TStar - 5 ~ -1/(10.5) * tmax + (TStar+5)/10.5 + 1,
+                                                                   tmax < TStar - 5 ~ 2,
+                                                                   tmax > TStar + 5 ~ 1))
 #Alternative to compute outdoor fraction
-weather_data_all <- mutate(weather_data_all, outdoorFraction2 = case_when(22.5 >= tmax & tmax >= 12.5 ~ 0.1*(22.5 - tmax),
-                                                                   tmax < 12.5 ~ 0,
-                                                                  tmax > 22.5 ~ 1))                                                                 
+weather_data_all <- weather_data_all %>% mutate(outdoorFraction2 = case_when(TStar + 5 >= tmax & tmax >= TStar - 5 ~ 1/(10.5) * tmax - (TStar-5)/10.5,
+                                                                   tmax < TStar - 5 ~ 0,
+                                                                  tmax > TStar + 5 ~ 1))                                                                 
