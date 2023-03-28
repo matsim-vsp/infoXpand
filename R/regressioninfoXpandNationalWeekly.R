@@ -169,7 +169,7 @@ ids <- c("oOH", "oOH2", "oOH+oOH2", "oOH+tmax", "oOH+tavg",
           "oOH+prcp", "oOH+tmax+prcp", "oOH+out+prcp", "oOH:out2:prcpvsI",
           "oOH*out", "oOH*tmax2", "oOH*tmax*prcp", "logoOH+logtmax", "1+percChange*tmax")
 
-lags <- c(cOI, cOI_1weekbefore, cOI_2weeksbefore, cOI_3weeksbefore)
+lags <- c("cOI", "cOI_1weekbefore", "cOI_2weeksbefore", "cOI_3weeksbefore", "cOI_4weeksbefore", "cOI_5weeksbefore")
 
 joinedDataFrame <- joinedDataFrame %>%
         mutate(outOfHomeDurationSquared = outOfHomeDuration*outOfHomeDuration) %>%
@@ -190,7 +190,11 @@ for (id in ids){
   } else if (lag == "cOI_2weeksbefore") {
     joinedDataFrame <- joinedDataFrame %>% filter(cOI_2weeksbefore < 2)
   } else if (lag == "cOI_3weeksbefore") {
-    joinedDataFrame <- joinedDataFrame %>% filter(cOI_2weeksbefore < 2)
+    joinedDataFrame <- joinedDataFrame %>% filter(cOI_3weeksbefore < 2)
+  } else if (lag == "cOI_4weeksbefore") {
+    joinedDataFrame <- joinedDataFrame %>% filter(cOI_4weeksbefore < 2)
+  } else if (lag == "cOI_5weeksbefore") {
+    joinedDataFrame <- joinedDataFrame %>% filter(cOI_5weeksbefore < 2)
   }
   resultsList[[id]][[lag]] <- list()
   if (id == "oOH") {
@@ -265,6 +269,8 @@ summary(resultsList[["oOH"]][["cOI"]][["Model"]])
 summary(resultsList[["oOH"]][["cOI_1weekbefore"]][["Model"]])
 summary(resultsList[["oOH"]][["cOI_2weeksbefore"]][["Model"]])
 summary(resultsList[["oOH"]][["cOI_3weeksbefore"]][["Model"]])
+summary(resultsList[["oOH"]][["cOI_4weeksbefore"]][["Model"]])
+summary(resultsList[["oOH"]][["cOI_5weeksbefore"]][["Model"]])
 resultsList[["oOH"]][["cOI_1weekbefore"]][["PlotActualFitted"]]
 
 grid.arrange(resultsList[["oOH"]][["cOI"]][["PlotActualFitted"]], resultsList[["oOH"]][["cOI_1weekbefore"]][["PlotActualFitted"]],
