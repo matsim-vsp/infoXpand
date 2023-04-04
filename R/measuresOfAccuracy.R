@@ -10,7 +10,7 @@ library(arm)
 models <- c("oOH", "oOH2", "oOH+oOH2", "oOH+tmax", "oOH+tavg",
           "oOH*tmax", "oOH*tavg", "oOH+out", "oOH+out2",
           "oOH+prcp", "oOH+tmax+prcp", "oOH+out+prcp", "oOH:out2:prcpvsI",
-          "oOH*out", "oOH*tmax2", "oOH*tmax*prcp", "logoOH+logtmax")
+          "oOH*out", "oOH*out2", "oOH*tmax2", "oOH*tmax*prcp", "logoOH+logtmax")
 
 lags <- c("cOI", "cOI_1weekbefore", "cOI_2weeksbefore", "cOI_3weeksbefore", "cOI_4weeksbefore")
 
