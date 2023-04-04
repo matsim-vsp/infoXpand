@@ -29,7 +29,7 @@ incidence_data <- incidence_data %>%  group_by(year, week, Bundesland) %>%
 incidence_data  <- incidence_data  %>% ungroup()
 
 incidence_data <- incidence_data %>%
-                    mutate(cOI = as.double(incidence_data$Incidence/lag(incidence_data$Incidence))) %>% 
+                    mutate(cOI = as.double(lead(incidence_data$Incidence)/incidence_data$Incidence)) %>% 
                     mutate(cOI_1weekbefore = lead(cOI)) %>%
                     mutate(cOI_2weeksbefore = lead(cOI_1weekbefore)) %>%
                     mutate(cOI_3weeksbefore = lead(cOI_2weeksbefore)) %>%

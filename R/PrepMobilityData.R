@@ -16,3 +16,4 @@ colnames(mobility_data)[2] <- "Bundesland"
 colnames(mobility_data)[1] <- "Date"
 
 mobility_data$Bundesland[mobility_data$Bundesland == "Deutschland"] <- "Gesamt"
+
