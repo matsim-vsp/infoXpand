@@ -16,6 +16,8 @@ apple_mobility_data <- apple_mobility_data %>%
     group_by(`sub-region`, week, year) %>%
     summarise(date = max(date), weekly_change_driving = mean(driving), weekly_change_transit = mean(transit, na.rm=TRUE), weekly_change_walking = mean(walking))
 
+apple_mobility_data <- apple_mobility_data %>% mutate(date = as.Date(date))
+
 #Plotting the weekly changes for the different federal states
     cols <- c("driving" = "red", "transit" = "purple", "walking" = "blue")
     ggplot(data = apple_mobility_data) +
