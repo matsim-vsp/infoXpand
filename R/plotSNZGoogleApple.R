@@ -1,6 +1,7 @@
 library(tidyverse)
 library(lubridate)
 library(scales)
+library(ggokabeito)
 
 #First step: setwd(".../R")
 
@@ -24,6 +25,12 @@ mobility_data <- mobility_data %>% mutate(Bundesland_ENG = case_when(Bundesland_
                                                                     Bundesland_GER == "Sachsen-Anhalt" ~ "Saxony-Anhalt",
                                                                     Bundesland_GER == "Schleswig-Holstein" ~ "Schleswig-Holstein",
                                                                     Bundesland_GER == "Thüringen" ~ "Thuringia"))
+
+mobility_data <- mobility_data %>% mutate(atHomeDuration = 24 - outOfHomeDuration) %>% 
+                  group_by(Bundesland_GER) %>%
+                  mutate(percentageChangeatHome = (atHomeDuration - atHomeDuration[1])/atHomeDuration[1] * 100)
+
+
 mobility_data %>% filter(Bundesland_GER != "Gesamt") %>%
 ggplot(aes(x = Date, y = percentageChangeComparedToBeforeCorona)) +
 geom_line(size = 1.5, color = "blueviolet") +
@@ -36,7 +43,7 @@ ylab("Percentage Change compared to baseline")
 ### Apple mobility data
 source("AppleMobilityData.R") #Results are saved as apple_mobility_data
 colnames(apple_mobility_data)[1] <- "Bundesland"
-apple_mobility_data <- apple_mobility_data %>% 
+apple_mobility_data <- apple_mobility_data %>%
                         mutate(Bundesland_GER = case_when(Bundesland == "Baden-Württemberg" ~ "Baden-Württemberg",
                                                       Bundesland == "Bavaria" ~ "Bayern",
                                                       Bundesland == "Berlin" ~ "Berlin",
@@ -93,6 +100,10 @@ google_mobility_data <- google_mobility_data %>%
                                         Bundesland_ENG == "Schleswig-Holstein" ~ "Schleswig-Holstein",
                                         Bundesland_ENG == "Thuringia" ~ "Thüringen"))
 
+google_mobility_data <- google_mobility_data %>%
+  mutate(timeAtHome = (100+changeFromBaseline)/100*15.7) %>% #15.7 comes from https://www.sciencedirect.com/science/article/abs/pii/S1438463905000635?via%3Dihub 
+  mutate(timeOutsideHome = 24 - timeAtHome)
+
 google_mobility_data %>% filter(Bundesland_ENG != "Germany") %>%
   ggplot() +
   geom_line(aes(x = date, y = changeFromBaseline, col = category)) +
@@ -108,31 +119,64 @@ google_mobility_data %>% filter(Bundesland_ENG != "Germany") %>%
   mutate(mobility = 100 - changeFromBaseline) %>%
   ggplot() +
   geom_line(aes(x = date, y = mobility, col = category), size = 1.2) +
-  facet_wrap(vars(Bundesland), nrow = 4) +
+  facet_wrap(vars(Bundesland_ENG), nrow = 4) +
   theme_bw() +
   ylab("Average weekly change in percentage") +
   xlab("Date") +
   theme(legend.position = "none")
 
-
-### Plotting both snz and google data in one plot
+### Plotting both snz and google data in one plot (federal state level)
 google_mobility_data <- google_mobility_data %>% filter(Bundesland_ENG != "Germany") %>%
-  filter(category == "residential") %>%
-  filter(Bundesland_ENG != "Germany") %>%
-  mutate(mobility = (-1)*changeFromBaseline)
+  filter(category == "residential")
 
 mobility_data <- mobility_data %>% filter(Bundesland_ENG != "Germany")
 
-cols <- c("SNZ" = "blueviolet", "Google" = "darkorange")
-g <- ggplot() +
-geom_line(data = mobility_data, aes(x=Date, y = percentageChangeComparedToBeforeCorona, colour="SNZ"), size = 1.2) +
-geom_line(data = google_mobility_data, aes(x=date, y = mobility, colour = "Google"), size = 1.2) +
+cols <- c("Senozon" = "blueviolet", "Google Mobility Report" = "darkorange")
+ggplot() +
+geom_line(data = mobility_data, aes(x=Date, y = percentageChangeatHome, colour="SNZ"), size = 1.2) +
+geom_line(data = google_mobility_data, aes(x=date, y = changeFromBaseline, colour = "Google"), size = 1.2) +
 facet_wrap(vars(Bundesland_ENG), nrow = 4) +
 theme_bw() +
 ylab("Average weekly change in percentage") +
 xlab("Date") +
+ggtitle("Change time at home") +
 scale_colour_manual(name = "",
   values = cols,
 ) +
-scale_x_date(date_labels = "%Y", breaks = date_breaks("1 year")) +
+scale_x_date(date_labels = "%Y", breaks = scales::date_breaks("1 year")) +
+theme(legend.position = "bottom")
+
+#Plotting both snz and google data in one plot (national level)
+google_mobility_data <- google_mobility_data %>% filter(Bundesland_ENG == "Germany") %>%
+  filter(category == "residential") %>%
+  filter(date < "2021-01-01") %>% filter(date > "2020-03-01")
+
+mobility_data <- mobility_data %>% filter(Bundesland_ENG == "Germany") %>% filter(Date < "2021-01-01")
+
+ggplot() +
+geom_line(data = mobility_data, aes(x=Date, y = percentageChangeatHome, colour="SNZ"), size = 1.2) +
+geom_line(data = google_mobility_data, aes(x=date, y = changeFromBaseline, colour = "Google"), size = 1.2) +
+facet_wrap(vars(Bundesland_ENG), nrow = 4) +
+theme_bw() +
+ylab("Average weekly change in percentage") +
+xlab("Date") +
+ggtitle("Change time at home") +
+scale_colour_manual(name = "",
+  values = cols,
+) +
+scale_x_date(date_labels = "%Y", breaks = scales::date_breaks("1 year")) +
+theme(legend.position = "bottom")
+
+ggplot() +
+geom_line(data = mobility_data, aes(x=Date, y = outOfHomeDuration, color="Senozon"), size = 1.1) +
+geom_line(data = google_mobility_data, aes(x=date, y = timeOutsideHome, color = "Google Mobility Report"), size = 1.1) +
+theme_bw() +
+ylab("Average time spent at home/Day") +
+xlab("Date") +
+scale_colour_manual(name = "",
+  values = cols,
+) +
+theme(axis.title.y = element_text(size = 9)) +
+theme(axis.title.x = element_text(size = 9)) +
+scale_x_date(date_labels = "%b", breaks = scales::date_breaks("3 months")) +
 theme(legend.position = "bottom")
