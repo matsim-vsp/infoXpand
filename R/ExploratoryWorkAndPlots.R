@@ -57,7 +57,7 @@ source("PrepIncidenceData.R")
 
 incidence_data <- left_join(incidence_data_fedState, incidence_data, by = "Date")
 
-incidence_data <- select(incidence_data, year.x, week.x, Bundesland.x, Date, Incidence.x, cOI.x, cOI_1weekbefore.x, cOI_2weeksbefore.x, cOI_3weeksbefore.x, cOI_4weeksbefore.x, cOI_5weeksbefore.x, Incidence.y, cOI.y, cOI_1weekbefore.y, cOI_2weeksbefore.y, cOI_3weeksbefore.y, cOI_4weeksbefore.y, cOI_5weeksbefore.y)
+incidence_data <- dplyr::select(incidence_data, year.x, week.x, Bundesland.x, Date, Incidence.x, cOI.x, cOI_1weekbefore.x, cOI_2weeksbefore.x, cOI_3weeksbefore.x, cOI_4weeksbefore.x, cOI_5weeksbefore.x, Incidence.y, cOI.y, cOI_1weekbefore.y, cOI_2weeksbefore.y, cOI_3weeksbefore.y, cOI_4weeksbefore.y, cOI_5weeksbefore.y)
 colnames(incidence_data) <- c("year", "week", "Bundesland", "Date", "Incidence_Fed", "cOI_Fed", "cOI_1weekbefore_Fed", "cOI_2weeksbefore_Fed", "cOI_3weeksbefore_Fed", "cOI_4weeksbefore_Fed", "cOI_5weeksbefore_Fed", "Incidence_Nat", "cOI_Nat", "cOI_1weekbefore_Nat", "cOI_2weeksbefore_Nat", "cOI_3weeksbefore_Nat", "cOI_4weeksbefore_Nat", "cOI_5weeksbefore_Nat")
 
 source("PrepMobilityData.R")
@@ -65,7 +65,7 @@ source("PrepMobilityData.R")
 mobility_data_Nat <- mobility_data %>% filter(Bundesland == "Gesamt")
 mobility_data <- mobility_data %>% filter(Bundesland != "Gesamt")
 mobility_data <- left_join(mobility_data, mobility_data_Nat, by = "Date")
-mobility_data <- select(mobility_data, -Bundesland.y)
+mobility_data <- dplyr::select(mobility_data, -Bundesland.y)
 colnames(mobility_data) <- c("Date", "Bundesland", "outOfHomeDuration_Fed", "percChange_Fed", "outOfHomeDuration_Nat", "percChange_Nat")
 
 joinedDataFrame <- inner_join(incidence_data, mobility_data, by = c("Date", "Bundesland"))
@@ -77,28 +77,32 @@ joinedDataFrame <- left_join(joinedDataFrame, weather_data_all, by = c("Date", "
 #Plotting changeOfIncidence over time and outOfHomeDuration_Fed over time and OutdoorFactor over time
 nestedplotlist <- list()
 
+joinedDataFrame <- joinedDataFrame %>% filter(cOI_2weeksbefore_Fed < 2)
 for (state in unique(joinedDataFrame$Bundesland)) {
 incidencePlot <- ggplot(data = joinedDataFrame %>% filter(Bundesland == state), aes(x = Date, y = Incidence_Fed)) +
   geom_line(color = "cornflowerblue") +
   theme_minimal() +
-  theme(axis.title.x=element_blank(), axis.title.y=element_blank()) +
-  ggtitle(toString(state))
+  theme(axis.title.x = element_blank(), axis.title.y = element_blank()) +
+  ggtitle(toString(state)) 
 changeOfIncidencePlot <- ggplot(data = joinedDataFrame %>% filter(Bundesland == state), aes(x = Date, y = cOI_2weeksbefore_Fed)) +
   geom_line(color = "cornflowerblue") +
   #ylab("Change of Incidence") +
   theme_minimal() +
-    theme(axis.title.x=element_blank(), axis.title.y=element_blank()) +
-    ggtitle("")
+  ylim(0, 2)+
+  theme(axis.title.x=element_blank(), axis.title.y=element_blank()) +
+  ggtitle("")
 mobilityPlot <- ggplot(data = joinedDataFrame %>% filter(Bundesland == state), aes(x = Date, y = outOfHomeDuration_Fed)) +
   geom_line(color = "cornflowerblue") +
   #ylab("Out of home duration per person (in hours)") +
   theme_minimal() +
-    theme(axis.title.x=element_blank(), axis.title.y=element_blank()) +
-    ggtitle("")
+    theme(axis.title.x = element_blank(), axis.title.y = element_blank()) +
+    ggtitle("") +
+    ylim(5,9)
 tempPlot <- ggplot(data = joinedDataFrame %>% filter(Bundesland == state), aes(x = Date, y = tmax)) +
   geom_line(color = "cornflowerblue") +
   theme_minimal() +
   #ylab("Maximal Temperature (in C°)") +
+    ylim(0, 36)+
     theme(axis.title.x=element_blank(), axis.title.y=element_blank()) +
     ggtitle("")
 outdoorFractionPlot <- ggplot(data = joinedDataFrame %>% filter(Bundesland == state), aes(x = Date, y = outdoorFraction2)) +
@@ -106,6 +110,7 @@ outdoorFractionPlot <- ggplot(data = joinedDataFrame %>% filter(Bundesland == st
   theme_minimal() +
   #ylab("Share Of Activities Performed Outside") +
   theme_minimal() +
+  ylim(0,1)+
   theme(axis.title.x=element_blank(), axis.title.y=element_blank()) +
   ggtitle("")
 outOfHomevsIncidence <- ggplot(data = joinedDataFrame %>% filter(Bundesland == state), aes(x=outOfHomeDuration_Fed, y=cOI_2weeksbefore_Fed)) +
@@ -190,6 +195,90 @@ g <- (arrangeGrob(nestedplotlist[["outdoorFractionPlot_Baden-Württemberg"]], ne
 ggsave("ExploratoryAnalysis_oF.png", g, w = 2.75, h = 16, dpi = 300)
 
 
+g <- (arrangeGrob(nestedplotlist[["outdoorFractionPlot_Baden-Württemberg"]], nestedplotlist[["outdoorFractionPlot_Bayern"]], nestedplotlist[["outdoorFractionPlot_Berlin"]], nestedplotlist[["outdoorFractionPlot_Brandenburg"]],
+    nestedplotlist[["outdoorFractionPlot_Bremen"]], nestedplotlist[["outdoorFractionPlot_Hamburg"]], nestedplotlist[["outdoorFractionPlot_Hessen"]], nestedplotlist[["outdoorFractionPlot_Mecklenburg-Vorpommern"]],
+    nestedplotlist[["outdoorFractionPlot_Niedersachsen"]], nestedplotlist[["outdoorFractionPlot_Nordrhein-Westfalen"]], nestedplotlist[["outdoorFractionPlot_Rheinland-Pfalz"]], nestedplotlist[["outdoorFractionPlot_Saarland"]],
+    nestedplotlist[["outdoorFractionPlot_Sachsen-Anhalt"]], nestedplotlist[["outdoorFractionPlot_Sachsen"]], nestedplotlist[["outdoorFractionPlot_Schleswig-Holstein"]], nestedplotlist[["outdoorFractionPlot_Thüringen"]],
+    nrow=16,
+    left = textGrob("Share of Activities Performed Outside", rot = 90, vjust = 1)))
+
+
+
+# National plots (Currently section 4)
+source("PrepIncidenceData.R")
+incidence_data <- incidence_data %>% filter(Date > "2020-03-01")
+
+p1 <- ggplot(incidence_data, aes(x=Date, y =Incidence)) +
+geom_line(color = "cornflowerblue", size = 1.1) +
+ylab("7-day-Incidence/100,000") +
+xlab("") +
+theme_minimal() +
+theme(axis.title.y = element_text(size = 7)) +
+theme(axis.title.x = element_text(size = 7))
+
+p2 <- ggplot(incidence_data, aes(x = Date, y = cOI)) +
+geom_line(color="cornflowerblue", size = 1.1) +
+ylab("Change of Incidence") +
+xlab("") +
+theme_minimal() +
+theme(axis.title.y = element_text(size = 7)) +
+theme(axis.title.x = element_text(size = 7)) 
+
+source("PrepMobilityData.R")
+p3 <- mobility_data %>% filter (Bundesland == "Gesamt") %>% filter(Date < "2021-01-01") %>%
+ggplot(aes(x = Date, y = outOfHomeDuration)) +
+geom_line(color = "cornflowerblue", size = 1.1) +
+ylab("Daily Out Of Home Duration/Person") +
+xlab("") +
+theme_minimal() +
+theme(axis.title.y = element_text(size = 7)) +
+theme(axis.title.x = element_text(size = 7)) 
+
+p4 <- weather_data_all %>% filter(Date > "2020-03-01") %>% ggplot(aes(x = Date, y = tmax)) +
+geom_line(color="cornflowerblue", size = 1.2) +
+ylab("Maximal Temperature (in C°)") +
+xlab("") +
+theme_minimal() +
+theme(axis.title.y = element_text(size = 7)) +
+theme(axis.title.x = element_text(size = 7))
+
+p5 <- weather_data_all %>% filter(Date > "2020-03-01") %>% ggplot(aes(x = Date, y = outdoorFraction2)) +
+geom_line(color="cornflowerblue", size = 1.1) +
+ylab("Share Of Activities Performed Outside") +
+theme_minimal() +
+theme(axis.title.y = element_text(size = 7)) +
+theme(axis.title.x = element_text(size = 7)) 
+
+p <- arrangeGrob(p1,p2,p3,p4,p5, nrow=5)
+
+
+incidence_data <- incidence_data %>% mutate(Welle = case_when(Date < "2020-05-17" ~ "1st Wave",
+                                                               Date >= "2020-05-17" ~ "Summer break",
+                                                               Date >= "2020-09-28" ~ "Second wave"))
+
+date_breaks <- data.frame(start = c(as.Date("2020-03-08"), as.Date("2020-05-17"), as.Date("2020-09-28")),
+                          end = c(as.Date("2020-05-16"), as.Date("2020-09-27"), as.Date("2021-01-01")),
+                          colors = c("First Wave", "Summer Break", "Second Wave"))
+
+#Plot for 3 different phases
+ggplot() +
+geom_rect(data = date_breaks,
+            aes(xmin = start,
+                xmax = end,
+                ymin = - Inf,
+                ymax = Inf,
+                fill = colors),
+            alpha = 0.4) +
+scale_fill_manual(values = c("#E69F00",
+                               "#56B4E9",
+                               "#099E73")) +
+geom_line(data = incidence_data, aes(x=Date, y = Incidence), color = "cornflowerblue", size = 1.1) +
+ylab("7-day-Incidence/100,000") +
+xlab("Date") +
+theme_minimal() +
+theme(legend.position = "bottom", legend.title = element_blank()) +
+theme(axis.title.y = element_text(size = 7)) +
+theme(axis.title.x = element_text(size = 7))
 ####### From here on Trying to explore correlations #######
 #Exploratory work, for now everything will remain. Later, whatever we deem unnecessary will be 
 
