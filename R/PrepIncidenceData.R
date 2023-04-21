@@ -18,7 +18,7 @@ incidence_data <- incidence_data[, c("Meldedatum", "Inzidenz_7-Tage", "Bundeslan
 colnames(incidence_data) <- c("Date", "Incidence", "Bundesland")
 
 # Here, we are filtering only for 2020
-incidence_data <- filter(incidence_data, Date < as.Date("2021-01-01")) %>%
+incidence_data <- filter(incidence_data, Date < as.Date("2021-03-01")) %>%
                   mutate(year = year(Date)) %>%
                   mutate(week = isoweek(Date)) %>%
                   mutate(weekday = wday(Date, week_start = 1))
