@@ -206,13 +206,14 @@ g <- (arrangeGrob(nestedplotlist[["outdoorFractionPlot_Baden-Württemberg"]], ne
 
 # National plots (Currently section 4)
 source("PrepIncidenceData.R")
-incidence_data <- incidence_data %>% filter(Date > "2020-03-01")
+incidence_data <- incidence_data %>% filter(Date > "2020-03-15") %>% filter(Date < "2021-01-01")
 
 p1 <- ggplot(incidence_data, aes(x=Date, y =Incidence)) +
 geom_line(color = "cornflowerblue", size = 1.1) +
 ylab("7-day-Incidence/100,000") +
 xlab("") +
 theme_minimal() +
+scale_x_date(date_breaks = "1 month", date_labels = "%b") +
 theme(axis.title.y = element_text(size = 7)) +
 theme(axis.title.x = element_text(size = 7))
 
@@ -221,35 +222,60 @@ geom_line(color="cornflowerblue", size = 1.1) +
 ylab("Change of Incidence") +
 xlab("") +
 theme_minimal() +
+scale_x_date(date_breaks = "1 month", date_labels = "%b") +
 theme(axis.title.y = element_text(size = 7)) +
-theme(axis.title.x = element_text(size = 7)) 
+theme(axis.title.x = element_text(size = 7))
 
 source("PrepMobilityData.R")
 p3 <- mobility_data %>% filter (Bundesland == "Gesamt") %>% filter(Date < "2021-01-01") %>%
 ggplot(aes(x = Date, y = outOfHomeDuration)) +
-geom_line(color = "cornflowerblue", size = 1.1) +
 ylab("Daily Out Of Home Duration/Person") +
 xlab("") +
+geom_vline(xintercept = (as.Date("2020-03-16")),
+                color = "#E69F00", size=1) +
+geom_vline(xintercept = (as.Date("2020-03-23")),
+                color = "#009E73", size=1) +
+geom_vline(xintercept = (as.Date("2020-05-10")),
+                color = "#D55E00", size=1) +
+geom_vline(xintercept = (as.Date("2020-11-02")),
+                color = "#CC79A7", size=1) +
+geom_vline(xintercept = (as.Date("2020-12-13")),
+                color = "#56B4E9", size=1) +
 theme_minimal() +
+geom_line(color = "cornflowerblue", size = 1.1) +
+annotate(geom = "text",
+        label = c("School closure", "Contact restrictions", "Relaxation Period", "Lockdown light", "2nd Lockdown"),
+        x = c(as.Date("2020-03-16"), as.Date("2020-03-23"), as.Date("2020-05-10"), as.Date("2020-11-02"), as.Date("2020-12-13")),
+        y = c(6.5,6.5,6.5,6.5,6.5),
+        angle = 90,
+        vjust = 1.5) +
+scale_x_date(date_breaks = "1 month", date_labels = "%b") +
 theme(axis.title.y = element_text(size = 7)) +
-theme(axis.title.x = element_text(size = 7)) 
+theme(axis.title.x = element_text(size = 7))
 
-p4 <- weather_data_all %>% filter(Date > "2020-03-01") %>% ggplot(aes(x = Date, y = tmax)) +
+source("PrepWeatherData.R")
+p4 <- weather_data_all %>% filter(Bundesland == "Gesamt") %>% filter(Date > "2020-03-01") %>% ggplot(aes(x = Date, y = tmax)) +
 geom_line(color="cornflowerblue", size = 1.2) +
 ylab("Maximal Temperature (in C°)") +
 xlab("") +
 theme_minimal() +
+scale_x_date(date_breaks = "1 month", date_labels = "%b") +
 theme(axis.title.y = element_text(size = 7)) +
 theme(axis.title.x = element_text(size = 7))
 
-p5 <- weather_data_all %>% filter(Date > "2020-03-01") %>% ggplot(aes(x = Date, y = outdoorFraction2)) +
+p5 <- weather_data_all %>% filter(Bundesland == "Gesamt") %>% filter(Date > "2020-03-01") %>% ggplot(aes(x = Date, y = outdoorFraction2)) +
 geom_line(color="cornflowerblue", size = 1.1) +
 ylab("Share Of Activities Performed Outside") +
 theme_minimal() +
+scale_x_date(date_breaks = "1 month", date_labels = "%b") +
 theme(axis.title.y = element_text(size = 7)) +
-theme(axis.title.x = element_text(size = 7)) 
+theme(axis.title.x = element_text(size = 7))
 
 p <- arrangeGrob(p1,p2,p3,p4,p5, nrow=5)
+
+p <- arrangeGrob(p1,p2, nrow=2)
+
+p <- arrangeGrob(p4,p5, nrow=2)
 
 
 incidence_data <- incidence_data %>% mutate(Welle = case_when(Date < "2020-05-17" ~ "1st Wave",
