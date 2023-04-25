@@ -22,9 +22,12 @@ joinedDataFrame <- left_join(joinedDataFrame, weather_data_all, by = "Date")
 joinedDataFrame <- filter(joinedDataFrame, Date < "2021-01-01") %>%
                       distinct()
 
-joinedDataFrame <- joinedDataFrame %>% mutate(Welle = case_when(Date < "2020-06-01" ~ "1. Welle",
-                                                                Date >= "2020-06-01" & Date <= "2020-10-01" ~ "Sommer",
-                                                                Date > "2020-10-01" ~ "2. Welle"))
+joinedDataFrame <- joinedDataFrame %>% mutate(Welle = case_when(Date < "2020-05-17" ~ "1st Wave",
+                                                                Date >= "2020-05-17" & Date <= "2020-09-27" ~ "Summer break",
+                                                                Date > "2020-09-27" ~ "2nd Wave"))
+
+
+joinedDataFrame[4, 20] <- (joinedDataFrame[3,20]+joinedDataFrame[5,20])/2
 
 ####### Different types of models #######
 
@@ -46,6 +49,10 @@ resultsList[["oOH*tmax"]] <- list()
 resultsList[["oOH*tavg"]] <- list()
 resultsList[["oOH+out"]] <- list()
 resultsList[["oOH+out2"]] <- list()
+resultsList[["oOH2+out"]] <- list()
+resultsList[["oOH2+out2"]] <- list()
+resultsList[["oOH+oOH2+out"]] <- list()
+resultsList[["oOH+oOH2+out2"]] <- list()
 resultsList[["oOH*out"]] <- list()
 resultsList[["oOH*out2"]] <- list()
 resultsList[["oOH+prcp"]] <- list()
@@ -69,13 +76,13 @@ resultsList[["logoOH+logtmax"]] <- list()
 
 
 ids <- c("oOH", "oOH2", "oOH+oOH2", "oOH+tmax", "oOH+tavg",
-          "oOH*tmax", "oOH*tavg", "oOH+out", "oOH+out2", "oOH*out", "oOH*out2",
+          "oOH*tmax", "oOH*tavg", "oOH+oOH2+out", "oOH+oOH2+out2", "oOH+out", "oOH+out2", "oOH2+out", "oOH2+out2", "oOH*out", "oOH*out2",
           "oOH+prcp", "oOH+tmax+prcp", "oOH+tavg+prcp", "oOH+out+prcp", "oOH+out2+prcp",
           "oOH:tmax:prcp", "oOH:tavg:prcp", "oOH:out:prcp", "oOH:out2:prcp",
           "oOH2*out", "oOH2*out2", "oOH*tmax2", "oOH*tavg2",
           "oOH*tmax*prcp", "oOH*tavg*prcp", "oOH*out*prcp", "oOH*out2*prcp", "logoOH+logtmax",
           "c_oOH", "c_oOH+c_tmax", "c_oOH+c_tavg", "c_oOH+c_out", "c_oOH+c_out2",
-          "c_oOH*c_tmax", "c_oOH*c_tavg", "c_oOH*c_out", "c_oOH*c_out2")
+          "c_oOH*c_tmax", "c_oOH*c_tavg", "c_oOH*c_out", "c_oOH*c_out2", "oOH+oOH2+out2")
 
 lags <- c("cOI", "cOI_1weekbefore", "cOI_2weeksbefore", "cOI_3weeksbefore", "cOI_4weeksbefore", "cOI_5weeksbefore")
 
@@ -91,9 +98,9 @@ joinedDataFrame <- joinedDataFrame %>%
         mutate(c_tmax = tmax - mean(tmax)) %>%
         mutate(c_tavg = tavg - mean(tavg)) %>%
         mutate(c_outdoorFraction = outdoorFraction - mean(outdoorFraction)) %>%
-        mutate(c_outdoorFraction2 = outdoorFraction2 - mean(outdoorFraction2)) 
+        mutate(c_outdoorFraction2 = outdoorFraction2 - mean(outdoorFraction2))
 
-joinedDataFrame <- joinedDataFrame[complete.cases(joinedDataFrame), ]
+# joinedDataFrame <- joinedDataFrame[complete.cases(joinedDataFrame), ]
 
 for (id in ids) {
   for (lag in lags) {
@@ -129,6 +136,14 @@ for (id in ids) {
     formula.lm <- paste0(lag, " ~ outOfHomeDuration + outdoorFraction")
   } else if (id == "oOH+out2") {
     formula.lm <- paste0(lag, " ~ outOfHomeDuration + outdoorFraction2")
+  } else if (id == "oOH2+out") {
+    formula.lm <- paste0(lag, " ~ outOfHomeDurationSquared + outdoorFraction")
+  } else if (id == "oOH2+out2") {
+    formula.lm <- paste0(lag, " ~ outOfHomeDurationSquared + outdoorFraction2")
+  } else if (id == "oOH+oOH2+out") {
+    formula.lm <- paste0(lag, " ~ outOfHomeDuration + outOfHomeDurationSquared + outdoorFraction")
+  } else if (id == "oOH+oOH2+out2") {
+    formula.lm <- paste0(lag, " ~ outOfHomeDuration + outOfHomeDurationSquared + outdoorFraction2")
   } else if (id == "oOH*out") {
     formula.lm <- paste0(lag, " ~ outOfHomeDuration * outdoorFraction")
   } else if (id == "oOH*out2") {
@@ -187,7 +202,9 @@ for (id in ids) {
     formula.lm <- paste0(lag, " ~ c_outOfHomeDuration * c_outdoorFraction")
   } else if (id == "c_oOH*c_out2") {
     formula.lm <- paste0(lag, " ~ c_outOfHomeDuration * c_outdoorFraction2")
-  } 
+  }  else if (id == "oOH+oOH2+out2") {
+    formula.lm <- paste0(lag, " ~ outOfHomeDuration + outOfHomeDurationSquared + outdoorFraction2")
+  }
 
     model.lm <- lm(formula = formula.lm, data = joinedDataFrame) # Regression
     resultsList[[id]][[lag]][["Model"]] <- model.lm
@@ -201,11 +218,11 @@ for (id in ids) {
 
     resultsList[[id]][[lag]][["PlotActualFitted"]] <- ggplot(data = joinedDataFrame) + 
     geom_smooth(aes(x=predict(model.lm), y = .data[[lag]], color="#4b4b4b"), method="lm", size = 2) +
-    xlab("Prediction") +
-    ylab("Actual change of Incidence") +
-    ggtitle(paste0("lag: ", lag, ", Model: ", id)) +
-    geom_abline(aes(intercept = 0, slope = 1, color = "blue")) +
-    scale_color_identity(labels = c("x=y", "Regression line"), guide = "legend") +
+    xlab("Predicted Values") +
+    ylab("Observed Values") +
+    #ggtitle(paste0("lag: ", lag, ", Model: ", id)) +
+    #geom_abline(aes(intercept = 0, slope = 1, color = "blue")) +
+    scale_color_identity(labels = c("Regression line"), guide = "legend") +
     theme_minimal() +
     theme(legend.position = "bottom", legend.title = element_blank()) +
    geom_point(data = joinedDataFrame, aes(x = predict(model.lm), y = .data[[lag]], fill=Welle), size=3, shape=21)
@@ -239,6 +256,16 @@ summary(resultsList[["oOH+tavg"]][["cOI_2weeksbefore"]][["Model"]])
 summary(resultsList[["oOH+out"]][["cOI_2weeksbefore"]][["Model"]])
 summary(resultsList[["oOH+out2"]][["cOI_2weeksbefore"]][["Model"]])
 
+summary(resultsList[["oOH2+out"]][["cOI_2weeksbefore"]][["Model"]])
+summary(resultsList[["oOH2+out2"]][["cOI_2weeksbefore"]][["Model"]])
+
+
+summary(resultsList[["oOH+oOH2+out"]][["cOI_2weeksbefore"]][["Model"]])
+summary(resultsList[["oOH+oOH2+out2"]][["cOI_2weeksbefore"]][["Model"]])
+
+summary(resultsList[["oOH*out"]][["cOI_2weeksbefore"]][["Model"]])
+summary(resultsList[["oOH*out2"]][["cOI_2weeksbefore"]][["Model"]])
+
 summary(resultsList[["c_oOH"]][["cOI_2weeksbefore"]][["Model"]])
 summary(resultsList[["c_oOH+c_tmax"]][["cOI_2weeksbefore"]][["Model"]])
 summary(resultsList[["c_oOH+c_tavg"]][["cOI_2weeksbefore"]][["Model"]])
@@ -249,7 +276,7 @@ summary(resultsList[["c_oOH*c_tavg"]][["cOI_2weeksbefore"]][["Model"]])
 summary(resultsList[["c_oOH*c_out"]][["cOI_2weeksbefore"]][["Model"]])
 summary(resultsList[["c_oOH*c_out2"]][["cOI_2weeksbefore"]][["Model"]])
 
-resultsList[["oOH+out2"]][["cOI_2weeksbefore"]][["ResvsFitted"]]()
+resultsList[["oOH+oOH2+out2"]][["cOI_2weeksbefore"]][["PlotActualFitted"]]
 resultsList[["oOH+out"]][["cOI_2weeksbefore"]][["Qqplot"]]()
 resultsList[["oOH+out"]][["cOI_2weeksbefore"]][["ScaleLoc"]]()
 resultsList[["oOH+out"]][["cOI_2weeksbefore"]][["Cooksdist"]]()
@@ -270,3 +297,20 @@ resultsList[["oOH*tmax"]][["cOI_2weeksbefore"]][["PlotActualFitted"]], resultsLi
 
 g <- arrangeGrob(resultsList[["oOH"]][["cOI"]][["PlotActualFitted"]], resultsList[["oOH"]][["cOI_1weekbefore"]][["PlotActualFitted"]],
 resultsList[["oOH"]][["cOI_2weeksbefore"]][["PlotActualFitted"]], resultsList[["oOH"]][["cOI_3weeksbefore"]][["PlotActualFitted"]], nrow=2)
+
+#We have decided on the model oOH+out2
+#We now check if the relationship changes over time
+#We therefore consider the following 3 models
+# (1) Using only data from the 1st wave
+# (2) Using only data from the 2nd wave
+# (3) Using data from all of 2020
+
+
+joinedDataFrame_1st <- joinedDataFrame %>% filter(Welle == "1. Welle")
+joinedDataFrame_2nd <- joinedDataFrame %>% filter(Welle == "2. Welle")
+
+resultsList[["oOH"]][["cOI_2weeksbefore"]][["Model"]] <- lm(cOI_2weeksbefore ~ outOfHomeDuration, data = joinedDataFrame_1st)
+resultsList[["oOH"]][["cOI_2weeksbefore"]][["Model"]] <- lm(cOI_2weeksbefore ~ outOfHomeDuration, data = joinedDataFrame_2nd)
+ 
+resultsList[["oOH+out2_1st"]][["cOI_2weeksbefore"]][["Model"]] <- lm(cOI_2weeksbefore ~ outOfHomeDuration + outdoorFraction2, data = joinedDataFrame_1st)
+resultsList[["oOH+out2_2nd"]][["cOI_2weeksbefore"]][["Model"]] <- lm(cOI_2weeksbefore ~ outOfHomeDuration + outdoorFraction2, data = joinedDataFrame_2nd)
