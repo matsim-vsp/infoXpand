@@ -9,7 +9,7 @@ library(ggokabeito)
 
 
 ids <- c("oOH", "oOH2", "oOH+oOH2", "oOH+tmax", "oOH+tavg",
-          "oOH*tmax", "oOH*tavg", "oOH+out", "oOH+out2", "oOH*out", "oOH*out2",
+          "oOH*tmax", "oOH*tavg", "oOH+oOH2+out", "oOH+oOH2+out2", "oOH+out", "oOH+out2", "oOH*out", "oOH*out2",
           "oOH+prcp", "oOH+tmax+prcp", "oOH+tavg+prcp", "oOH+out+prcp", "oOH+out2+prcp",
           "oOH:tmax:prcp", "oOH:tavg:prcp","oOH:out:prcp","oOH:out2:prcp",
           "oOH2*out", "oOH2*out2", "oOH*tmax2", "oOH*tavg2",
@@ -17,7 +17,7 @@ ids <- c("oOH", "oOH2", "oOH+oOH2", "oOH+tmax", "oOH+tavg",
 
 lags <- c("cOI", "cOI_1weekbefore", "cOI_2weeksbefore", "cOI_3weeksbefore", "cOI_4weeksbefore")
 
-accuracy_measures <- data.frame(matrix(ncol = 9, nrow = 0))
+accuracy_measures <- data.frame(matrix(ncol = 11, nrow = 0))
 colnames(accuracy_measures) <- c("Model", "lag", "Fstatistic", "RSE", "Rsquared", "AdjRSquared", "AIC", "BIC", "LOOCV_RMSE", "LOOCV_R2", "LOOCV_MAE")
 
 #Iterating through all our models and lags to extract the following measures of id accuracy
