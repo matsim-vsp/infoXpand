@@ -6,7 +6,7 @@ google_mobility_data <- read_csv("https://www.gstatic.com/covid19/mobility/Globa
 
 #Filter for Germany
 google_mobility_data <- filter(google_mobility_data, country_region == "Germany")
-google_mobility_data$sub_region_1 <- google_mobility_data$sub_region_1 %>% replace_na("Germany")
+google_mobility_data$sub_region_1 <-  replace_na(google_mobility_data$sub_region_1, value = "Germany")
 
 #Data is provided on a daily level, but we look at it on a weekly level
 google_mobility_data <- mutate(google_mobility_data, year = year(date))
