@@ -213,7 +213,7 @@ geom_line(color = "cornflowerblue", size = 1.1) +
 ylab("7-day-Incidence/100,000") +
 xlab("") +
 theme_minimal() +
-scale_x_date(date_breaks = "1 month", date_labels = "%b") +
+scale_x_date(date_breaks = "1 month", date_labels = "%d/%b/%y") +
 theme(axis.title.y = element_text(size = 7)) +
 theme(axis.title.x = element_text(size = 7))
 
@@ -222,7 +222,7 @@ geom_line(color="cornflowerblue", size = 1.1) +
 ylab("Change of Incidence") +
 xlab("") +
 theme_minimal() +
-scale_x_date(date_breaks = "1 month", date_labels = "%b") +
+scale_x_date(date_breaks = "1 month", date_labels = "%d/%b/%y") +
 theme(axis.title.y = element_text(size = 7)) +
 theme(axis.title.x = element_text(size = 7))
 
@@ -249,7 +249,7 @@ annotate(geom = "text",
         y = c(6.5,6.5,6.5,6.5,6.5),
         angle = 90,
         vjust = 1.5) +
-scale_x_date(date_breaks = "1 month", date_labels = "%b") +
+scale_x_date(date_breaks = "1 month", date_labels = "%d/%b/%y") +
 theme(axis.title.y = element_text(size = 7)) +
 theme(axis.title.x = element_text(size = 7))
 
@@ -259,7 +259,7 @@ geom_line(color="cornflowerblue", size = 1.2) +
 ylab("Maximal Temperature (in C°)") +
 xlab("") +
 theme_minimal() +
-scale_x_date(date_breaks = "1 month", date_labels = "%b") +
+scale_x_date(date_breaks = "1 month", date_labels = "%d/%b/%y") +
 theme(axis.title.y = element_text(size = 7)) +
 theme(axis.title.x = element_text(size = 7))
 
@@ -267,7 +267,7 @@ p5 <- weather_data_all %>% filter(Bundesland == "Gesamt") %>% filter(Date > "202
 geom_line(color="cornflowerblue", size = 1.1) +
 ylab("Share Of Activities Performed Outside") +
 theme_minimal() +
-scale_x_date(date_breaks = "1 month", date_labels = "%b") +
+scale_x_date(date_breaks = "1 month", date_labels = "%d/%b/%y") +
 theme(axis.title.y = element_text(size = 7)) +
 theme(axis.title.x = element_text(size = 7))
 
