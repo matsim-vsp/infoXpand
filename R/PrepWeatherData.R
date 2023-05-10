@@ -81,13 +81,13 @@ weather_data_all$prcp[weather_data_all$Date == date & weather_data_all$Bundeslan
 #Below a certain temperature, everything happens indoords, above a certain temperature everything happens outdoors and in between we linearize
 #Compare https://doi.org/10.1371/journal.pone.0259037 for computation of outdoor fraction
 weather_data_all <- weather_data_all %>% mutate(TStar = case_when(Date < "2020-03-01" ~ 17.5, 
-                                                                  Date >= "2020-03-01" & Date <= "2020-10-01" ~ as.numeric(Date-as.Date("2020-03-01"))*7.5/214 + 17.5,
+                                                                  Date >= "2020-03-01" & Date <= "2020-10-01" ~ as.numeric(Date-as.Date("2020-03-01"))/7*7.5/31 + 17.5,
                                                                   Date > "2020-10-01" ~ 25))
 
 weather_data_all <- mutate(weather_data_all, outdoorFraction = case_when(TStar + 5 >= tmax & tmax >= TStar - 5 ~ -1/(10.5) * tmax + (TStar+5)/10.5 + 1,
                                                                    tmax < TStar - 5 ~ 2,
                                                                    tmax > TStar + 5 ~ 1))
 #Alternative to compute outdoor fraction
-weather_data_all <- weather_data_all %>% mutate(outdoorFraction2 = case_when(TStar + 5 >= tmax & tmax >= TStar - 5 ~ 1/(10.5) * tmax - (TStar-5)/10.5,
+weather_data_all <- weather_data_all %>% mutate(outdoorFraction2 = case_when(TStar + 5 >= tmax & tmax >= TStar - 5 ~  (tmax - (TStar-5))/10,
                                                                    tmax < TStar - 5 ~ 0,
                                                                   tmax > TStar + 5 ~ 1))                                                                 
