@@ -232,7 +232,7 @@ scale_fill_manual(values = c("#1B9E77",
                                "#D95F02", "#7570B3")) +
 geom_line(aes(x=Date, y =Incidence),color = "#666666", size = 1.2) +
 theme_minimal() +
-scale_x_date(date_breaks = "1 month", date_labels = "%d/%b") +
+scale_x_date(date_breaks = "1 month", date_labels = "%d/%b/%y") +
 theme(text = element_text(size = 13), legend.position = "none") +
    theme(axis.ticks.x = element_line(), 
                    axis.ticks.y = element_line(),
@@ -259,8 +259,8 @@ theme(text = element_text(size = 13), legend.position = "bottom", legend.title =
                    axis.ticks.length = unit(5, "pt"))
 
 
-date_breaks <- data.frame(start = c(as.Date("2020-03-23"), as.Date("2020-05-10"), as.Date("2020-11-02"), as.Date("2020-12-13")),
-                          end = c(as.Date("2020-05-10"), as.Date("2020-11-02"), as.Date("2020-12-13"), as.Date("2021-01-03")),
+date_breaks <- data.frame(start = c(as.Date("2020-03-23"), as.Date("2020-05-10"), as.Date("2020-11-02"), as.Date("2020-12-16")),
+                          end = c(as.Date("2020-05-10"), as.Date("2020-11-02"), as.Date("2020-12-16"), as.Date("2021-01-03")),
                           colors = c("First Contact Restrictions", "Relaxation Period", "Lockdown Light", "Tighter Contact Restrctions"))
 
 source("PrepMobilityData.R")
