@@ -131,7 +131,7 @@ google_mobility_data <- google_mobility_data %>% filter(Bundesland_ENG != "Germa
 
 mobility_data <- mobility_data %>% filter(Bundesland_ENG != "Germany")
 
-cols <- c("Senozon" = "blueviolet", "Google Mobility Report" = "darkorange")
+cols <- c("Senozon" = "#666666", "Google Mobility Report" = "darkorange")
 ggplot() +
 geom_line(data = mobility_data, aes(x=Date, y = percentageChangeatHome, colour="SNZ"), size = 1.2) +
 geom_line(data = google_mobility_data, aes(x=date, y = changeFromBaseline, colour = "Google"), size = 1.2) +
@@ -144,12 +144,15 @@ scale_colour_manual(name = "",
   values = cols,
 ) +
 scale_x_date(date_labels = "%Y", breaks = scales::date_breaks("1 year")) +
-theme(legend.position = "bottom")
+theme(text = element_text(size = 13), legend.position = "bottom", legend.title = element_blank()) +
+theme(axis.ticks.x = element_line(),
+                   axis.ticks.y = element_line(),
+                   axis.ticks.length = unit(5, "pt"))
 
 #Plotting both snz and google data in one plot (national level)
 google_mobility_data <- google_mobility_data %>% filter(Bundesland_ENG == "Germany") %>%
   filter(category == "residential") %>%
-  filter(date < "2021-01-01") %>% filter(date > "2020-03-01")
+  filter(date < "2020-12-31") %>% filter(date > "2020-03-01")
 
 mobility_data <- mobility_data %>% filter(Bundesland_ENG == "Germany") %>% filter(Date < "2021-01-01")
 
@@ -168,15 +171,15 @@ scale_x_date(date_labels = "%Y", breaks = scales::date_breaks("1 year")) +
 theme(legend.position = "bottom")
 
 ggplot() +
-geom_line(data = mobility_data, aes(x=Date, y = outOfHomeDuration, color="Senozon"), size = 1.1) +
-geom_line(data = google_mobility_data, aes(x=date, y = timeOutsideHome, color = "Google Mobility Report"), size = 1.1) +
-theme_bw() +
-ylab("Average time spent at home/Day") +
+geom_line(data = mobility_data, aes(x=Date, y = outOfHomeDuration, color="Senozon"), size = 1.2) +
+geom_line(data = google_mobility_data, aes(x=date, y = timeOutsideHome, color = "Google Mobility Report"), size = 1.2) +
+ylab("Daily Out Of Home \nDuration/Person") +
 xlab("Date") +
 scale_colour_manual(name = "",
-  values = cols,
-) +
-theme(axis.title.y = element_text(size = 9)) +
-theme(axis.title.x = element_text(size = 9)) +
-scale_x_date(date_labels = "%b", breaks = scales::date_breaks("3 months")) +
-theme(legend.position = "bottom")
+  values = cols) +
+theme_minimal() +
+scale_x_date(date_breaks = "1 month", date_labels = "%d/%b/%y") +
+theme(text = element_text(size = 13), legend.position = "bottom", legend.title = element_blank()) +
+theme(axis.ticks.x = element_line(),
+                   axis.ticks.y = element_line(),
+                   axis.ticks.length = unit(5, "pt"))
