@@ -22,9 +22,26 @@ joinedDataFrame <- left_join(joinedDataFrame, weather_data_all, by = "Date")
 joinedDataFrame <- filter(joinedDataFrame, Date < "2021-01-01") %>%
                       distinct()
 
-joinedDataFrame <- joinedDataFrame %>% mutate(Welle = case_when(Date < "2020-05-17" ~ "1st Wave",
+joinedDataFrame <- joinedDataFrame %>% mutate(Welle = case_when(Date < "2020-05-17" ~ "First Wave",
                                                                 Date >= "2020-05-17" & Date <= "2020-09-27" ~ "Summer break",
-                                                                Date > "2020-09-27" ~ "2nd Wave"))
+                                                                Date > "2020-09-27" ~ "Second Wave")) %>% 
+                                                                mutate(Welle_1week = case_when(Date < as.Date("2020-05-17") - 7 ~ "First Wave",
+                                                                Date >= as.Date("2020-05-17") - 7 & Date <= as.Date("2020-09-27") - 7 ~ "Summer break",
+                                                                Date > as.Date("2020-09-27") - 7 ~ "Second Wave")) %>% 
+                                                                mutate(Welle_2weeks = case_when(Date < as.Date("2020-05-17") - 14 ~ "First Wave",
+                                                                Date >= as.Date("2020-05-17") - 14 & Date <= as.Date("2020-09-27") - 14 ~ "Summer break",
+                                                                Date > as.Date("2020-09-27") - 14 ~ "Second Wave")) %>%
+                                                                mutate(Welle_3weeks = case_when(Date < as.Date("2020-05-17") - 21 ~ "First Wave",
+                                                                Date >= as.Date("2020-05-17") - 21 & Date <= as.Date("2020-09-27") - 21 ~ "Summer break",
+                                                                Date > as.Date("2020-09-27") - 21 ~ "Second Wave")) %>%
+                                                                mutate(Welle_4weeks = case_when(Date < as.Date("2020-05-17") - 28 ~ "First Wave",
+                                                                Date >= as.Date("2020-05-17") - 28 & Date <= as.Date("2020-09-27") - 28 ~ "Summer break",
+                                                                Date > as.Date("2020-09-27") - 28 ~ "Second Wave")) %>%
+                                                                mutate(Welle_5weeks = case_when(Date < as.Date("2020-05-17") - 35 ~ "First Wave",
+                                                                Date >= as.Date("2020-05-17") - 35 & Date <= as.Date("2020-09-27") - 35 ~ "Summer break",
+                                                                Date > as.Date("2020-09-27") - 35 ~ "Second Wave"))
+
+                                                                
 
 
 joinedDataFrame[4, 20] <- (joinedDataFrame[3,20]+joinedDataFrame[5,20])/2
@@ -77,10 +94,15 @@ resultsList[["logoOH+logtmax"]] <- list()
 resultsList[["polyoOH+polyout2"]] <- list()
 resultsList[["oOH*out2+oOH2"]] <- list()
 resultsList[["oOH+oOH2*out2"]] <- list()
-resultslist[["polyoOH3+polyout23"]] <- list()
-resultslist[["polyoOH2+polyout23"]] <- list()
-resultslist[["polyoOH2+out2+out23"]] <- list()
-resultslist[["oOH2+out2_noInt"]] <- list()
+resultsList[["polyoOH3+polyout23"]] <- list()
+resultsList[["polyoOH2+polyout23"]] <- list()
+resultsList[["polyoOH2+out2+out23"]] <- list()
+resultsList[["oOH2+out2_noInt"]] <- list()
+resultsList[["oOH2*out2_noInt"]] <- list()
+resultsList[["oOH2+tmax_noInt"]] <- list()
+resultsList[["oOH2+tavg_noInt"]] <- list()
+resultsList[["oOH2+out2+prcp_noInt"]] <- list()
+resultsList[["logoOH+oOH2+out2_0Intercept"]] <- list()
 
 ids <- c("oOH", "oOH2", "oOH+oOH2", "oOH+tmax", "oOH+tavg",
           "oOH*tmax", "oOH*tavg", "oOH+oOH2+out", "oOH+oOH2+out2", "oOH+out", "oOH+out2", "oOH2+out", "oOH2+out2", "oOH*out", "oOH*out2",
@@ -90,7 +112,8 @@ ids <- c("oOH", "oOH2", "oOH+oOH2", "oOH+tmax", "oOH+tavg",
           "oOH*tmax*prcp", "oOH*tavg*prcp", "oOH*out*prcp", "oOH*out2*prcp", "logoOH+logtmax",
           "c_oOH", "c_oOH+c_tmax", "c_oOH+c_tavg", "c_oOH+c_out", "c_oOH+c_out2",
           "c_oOH*c_tmax", "c_oOH*c_tavg", "c_oOH*c_out", "c_oOH*c_out2", "oOH+oOH2+out2", "oOH+oOH2+out2_0Intercept", "oOH+oOH2+out2+gradtmax",
-          "polyoOH+polyout2", "oOH*out2+oOH2", "oOH+oOH2*out2", "polyoOH3+polyout23", "polyoOH2+polyout23", "polyoOH2+out2+out23", "oOH2+out2_noInt")
+          "polyoOH+polyout2", "oOH*out2+oOH2", "oOH+oOH2*out2", "polyoOH3+polyout23", "polyoOH2+polyout23", "polyoOH2+out2+out23", "oOH2+out2_noInt", "oOH2*out2_noInt",
+          "oOH2+tmax_noInt", "oOH2+tavg_noInt", "oOH2+out2+prcp_noInt", "logoOH+oOH2+out2_0Intercept")
 
 lags <- c("cOI", "cOI_1weekbefore", "cOI_2weeksbefore", "cOI_3weeksbefore", "cOI_4weeksbefore", "cOI_5weeksbefore")
 
@@ -112,7 +135,8 @@ joinedDataFrame <- joinedDataFrame %>%
               stand_outOfHomeSquared = scale(outOfHomeDurationSquared),
               stand_tmax = scale(tmax)) %>%
         mutate(centDiffquot_tmax = (lead(tmax)-lag(tmax))/2) %>%
-        mutate(outdoorFraction2Cubed = outdoorFraction2 *outdoorFraction2 * outdoorFraction2)
+        mutate(outdoorFraction2Cubed = outdoorFraction2 *outdoorFraction2 * outdoorFraction2) %>%
+        mutate(logcOI_2weeksbefore = log(cOI_2weeksbefore))
 
 
 # joinedDataFrame <- joinedDataFrame[complete.cases(joinedDataFrame), ]
@@ -120,17 +144,29 @@ joinedDataFrame <- joinedDataFrame %>%
 for (id in ids) {
   for (lag in lags) {
   if (lag == "cOI") {
-    joinedDataFrame_reduced <- joinedDataFrame %>% filter(cOI < 2)
+    joinedDataFrame_reduced <- joinedDataFrame %>% filter(cOI < 2) %>% filter(Date < "2021-01-01")
+    joinedDataFrame_reduced$labeled <- ifelse(joinedDataFrame_reduced[[lag]] < 1.5, "", as.character(joinedDataFrame_reduced$Date))
+    chosen_welle <- "Welle"
   } else if (lag == "cOI_1weekbefore") {
-    joinedDataFrame_reduced <- joinedDataFrame %>% filter(cOI_1weekbefore < 2)
+    joinedDataFrame_reduced <- joinedDataFrame %>% filter(cOI_1weekbefore < 2) %>% filter(Date + 7 < "2021-01-01")  %>% mutate(Date = Date + 7)
+    joinedDataFrame_reduced$labeled <- ifelse(joinedDataFrame_reduced[[lag]] < 1.5, "", as.character(joinedDataFrame_reduced$Date))
+    chosen_welle <- "Welle_1week"
   } else if (lag == "cOI_2weeksbefore") {
-    joinedDataFrame_reduced <- joinedDataFrame %>% filter(cOI_2weeksbefore < 2)
+    joinedDataFrame_reduced <- joinedDataFrame %>% filter(cOI_2weeksbefore < 2) %>% filter(Date +14 < "2021-01-01")  %>% mutate(Date = Date + 14)
+    joinedDataFrame_reduced$labeled <- ifelse(joinedDataFrame_reduced[[lag]] < 1.5, "", as.character(joinedDataFrame_reduced$Date))
+    chosen_welle <- "Welle_2weeks"
   } else if (lag == "cOI_3weeksbefore") {
-    joinedDataFrame_reduced <- joinedDataFrame %>% filter(cOI_3weeksbefore < 2)
+    joinedDataFrame_reduced <- joinedDataFrame %>% filter(cOI_3weeksbefore < 2) %>% filter(Date + 21 < "2021-01-01")  %>% mutate(Date = Date + 21)
+    joinedDataFrame_reduced$labeled <- ifelse(joinedDataFrame_reduced[[lag]] < 1.5, "", as.character(joinedDataFrame_reduced$Date))
+    chosen_welle <- "Welle_3weeks"
   } else if (lag == "cOI_4weeksbefore") {
-    joinedDataFrame_reduced <- joinedDataFrame %>% filter(cOI_4weeksbefore < 2)
+    joinedDataFrame_reduced <- joinedDataFrame %>% filter(cOI_4weeksbefore < 2) %>% filter(Date + 28 < "2021-01-01")  %>% mutate(Date = Date + 28)
+    joinedDataFrame_reduced$labeled <- ifelse(joinedDataFrame_reduced[[lag]] < 1.5, "", as.character(joinedDataFrame_reduced$Date))
+    chosen_welle <- "Welle_4weeks"
   } else if (lag == "cOI_5weeksbefore") {
-    joinedDataFrame_reduced <- joinedDataFrame %>% filter(cOI_5weeksbefore < 2)
+    joinedDataFrame_reduced <- joinedDataFrame %>% filter(cOI_5weeksbefore < 2) %>% filter(Date + 35 < "2021-01-01")  %>% mutate(Date = Date + 35)
+    joinedDataFrame_reduced$labeled <- ifelse(joinedDataFrame_reduced[[lag]] < 1.5, "", as.character(joinedDataFrame_reduced$Date))
+    chosen_welle <- "Welle_5weeks"
   }
   resultsList[[id]][[lag]] <- list()
   if (id == "oOH") {
@@ -157,6 +193,14 @@ for (id in ids) {
     formula.lm <- paste0(lag, " ~ outOfHomeDurationSquared + outdoorFraction2")
   } else if (id == "oOH2+out2_noInt") {
     formula.lm <- paste0(lag, " ~ 0+ outOfHomeDurationSquared + outdoorFraction2")
+  } else if (id == "oOH2+out2+prcp_noInt") {
+    formula.lm <- paste0(lag, " ~ 0+ outOfHomeDurationSquared + outdoorFraction2 + prcp")
+  } else if (id == "oOH2+tmax_noInt") {
+    formula.lm <- paste0(lag, " ~ 0+ outOfHomeDurationSquared + tmax")
+  } else if (id == "oOH2+tavg_noInt") {
+    formula.lm <- paste0(lag, " ~ 0+ outOfHomeDurationSquared + tavg")
+  } else if (id == "oOH2*out2_noInt") {
+    formula.lm <- paste0(lag, " ~ 0+ outOfHomeDurationSquared * outdoorFraction2")
   } else if (id == "oOH+oOH2+out") {
     formula.lm <- paste0(lag, " ~ outOfHomeDuration + outOfHomeDurationSquared + outdoorFraction")
   } else if (id == "oOH+oOH2+out2") {
@@ -223,6 +267,8 @@ for (id in ids) {
     formula.lm <- paste0(lag, " ~ outOfHomeDuration + outOfHomeDurationSquared + outdoorFraction2")
   }  else if (id == "oOH+oOH2+out2_0Intercept") {
     formula.lm <- paste0(lag, " ~ 0 + outOfHomeDurationSquared + outdoorFraction2")
+  } else if (id == "logoOH+oOH2+out2_0Intercept") {
+    formula.lm <- "logcOI_2weeksbefore ~ 0 + outOfHomeDurationSquared + outdoorFraction2"
   } else if (id == "oOH+oOH2+out2+gradtmax") {
     formula.lm <- paste0(lag, " ~ outOfHomeDuration + outOfHomeDurationSquared + outdoorFraction2 + centDiffquot_tmax")
     joinedDataFrame_reduced <- joinedDataFrame_reduced[-1,]
@@ -253,22 +299,55 @@ for (id in ids) {
 
     #10-fold cross validation
     train.control <- trainControl(method = "cv", number = 10)
-    model.10foldcv <- train(eval(parse(text=formula.lm)), data = joinedDataFrame_reduced, method = "lm", trControl = train.control)
+    model.10foldcv <- train(eval(parse(text=formula.lm)), data = joinedDataFrame_reduced, method = "lm", trControl = train.control, tuneGrid  = expand.grid(intercept = FALSE))
     resultsList[[id]][[lag]][["Model_10foldCV"]] <- model.10foldcv
 
-    joinedDataFrame_reduced$labeled <- ifelse(joinedDataFrame_reduced[[lag]] < 1.5, "", as.character(joinedDataFrame_reduced$Date))
-    resultsList[[id]][[lag]][["PlotActualFitted"]] <- ggplot(data = joinedDataFrame_reduced) + 
-    geom_smooth(aes(x=predict(model.lm), y = .data[[lag]], color="#4b4b4b"), method="lm", size = 2) +
-    geom_text(aes(x = predict(model.lm), y = .data[[lag]], label=labeled),hjust=1.2, vjust=0.5) +
+    joinedDataFrame_reduced <- joinedDataFrame_reduced %>% mutate(predicted = predict(model.lm))
+    resultsList[[id]][[lag]][["PlotActualFitted"]]  <- local({
+    lag <- lag
+    g <- ggplot() +
+    #geom_smooth(aes(x=predict(model.lm), y = .data[[lag]], color="#4b4b4b"), method="lm", size = 2) +
+    geom_text_repel(data = joinedDataFrame_reduced, aes(x = predicted, y = .data[[lag]], label = labeled)) +
     xlab("Predicted Values") +
     ylab("Observed Values") +
-    ggtitle(paste0("lag: ", lag, ", Model: ", id)) +
-    #geom_abline(aes(intercept = 0, slope = 1, color = "blue")) +
-    scale_color_identity(labels = c("Regression line"), guide = "legend") +
+    #ggtitle(paste0("lag: ", lag, ", Model: ", id)) +
+    geom_abline(aes(intercept = 0, slope = 1, color = "#666666"), size = 1.5) +
+    scale_color_identity(labels = c("x=y"), guide = "legend") +
     theme_minimal(base_size = 12) +
-    theme(legend.position = "bottom", legend.title = element_blank(), legend.text=element_text(size=12)) +
-   geom_point(data = joinedDataFrame_reduced, aes(x = predict(model.lm), y = .data[[lag]], fill=Welle), size=3, shape=21)
+    theme(legend.position = "bottom", legend.title = element_blank(), text = element_text(size = 13)) +
+    geom_point(data = joinedDataFrame_reduced, aes(x = predicted, y = .data[[lag]], fill = .data[[chosen_welle]]), size = 4, shape = 21,  stroke = NA) +
+    scale_fill_brewer(palette = "Dark2")
+    print(g)
+    })
 
+  date_breaks <- data.frame(start = c(as.Date("2020-03-22"), as.Date("2020-05-17"), as.Date("2020-09-28")),
+                          end = c(as.Date("2020-05-17"), as.Date("2020-09-28"), as.Date("2021-01-01")),
+                          colors = c("First Wave", "Summer Break", "Second Wave"))
+
+joinedDataFrame_reduced <- joinedDataFrame_reduced %>% mutate(predicted = predict(model.lm))
+
+  g2 <- ggplot(joinedDataFrame_reduced) +
+  theme_minimal() +
+  theme(legend.position = "bottom", legend.title = element_blank(), text = element_text(size = 13)) +
+  geom_rect(data = date_breaks,
+            aes(xmin = start,
+                xmax = end,
+                ymin = - Inf,
+                ymax = Inf,
+                fill = colors),
+            alpha = 0.3) +
+  scale_fill_manual(values = c("#1B9E77",
+                               "#D95F02", "#7570B3")) +
+  scale_x_date(date_breaks = "1 month", date_labels = "%d/%b/%y") +
+  ylab("Change of Incidence") +
+  xlab("") +
+  geom_line(aes(x = Date, y = .data[[lag]]), color = "#666666", size = 1.2) +
+  geom_point(aes(x = Date, y = predicted), size = 2, show.legend=FALSE)  +
+  theme(text = element_text(size = 13), legend.position = "bottom", legend.title = element_blank()) +
+  theme(axis.ticks.x = element_line(),
+                   axis.ticks.y = element_line(),
+                   axis.ticks.length = unit(5, "pt"))
+  resultsList[[id]][[lag]][["PlotActualFitted_overTime"]] <- g2
 
     resultsList[[id]][[lag]][["ResvsFitted"]] <- function() {
     plot(model.lm, which = 1)
@@ -327,11 +406,66 @@ AIC(model_step6)
 BIC(model_step6)
 summary(resultsList[["oOH2+out2_noInt"]][["cOI_2weeksbefore"]][["Model"]])
 confint(resultsList[["oOH2+out2_noInt"]][["cOI_2weeksbefore"]][["Model"]])
+resultsList[["oOH2+out2_noInt"]][["cOI_2weeksbefore"]][["PlotActualFitted"]]
+resultsList[["oOH2+out2_noInt"]][["cOI_2weeksbefore"]][["PlotActualFitted_overTime"]]
+
+#Checking for mixed effects
+model_step7 <- resultsList[["oOH2*out2_noInt"]][["cOI_2weeksbefore"]][["Model"]]
+AIC(model_step7)
+BIC(model_step7)
+summary(resultsList[["oOH2*out2_noInt"]][["cOI_2weeksbefore"]][["Model"]])
+confint(resultsList[["oOH2*out2_noInt"]][["cOI_2weeksbefore"]][["Model"]])
 
 
+#Further model comparison, now considering tmax and tavg
+summary(resultsList[["oOH2+tmax_noInt"]][["cOI_2weeksbefore"]][["Model"]])
+AIC(resultsList[["oOH2+tmax_noInt"]][["cOI_2weeksbefore"]][["Model"]])
+BIC(resultsList[["oOH2+tmax_noInt"]][["cOI_2weeksbefore"]][["Model"]])
+summary(resultsList[["oOH2+tavg_noInt"]][["cOI_2weeksbefore"]][["Model"]])
+AIC(resultsList[["oOH2+tavg_noInt"]][["cOI_2weeksbefore"]][["Model"]])
+BIC(resultsList[["oOH2+tavg_noInt"]][["cOI_2weeksbefore"]][["Model"]])
 
 
+#And, one more time, this time including precipitation
+summary(resultsList[["oOH2+out2+prcp_noInt"]][["cOI_2weeksbefore"]][["Model"]])
+AIC(resultsList[["oOH2+out2+prcp_noInt"]][["cOI_2weeksbefore"]][["Model"]])
+BIC()
 
+
+#Extracting cross validation results
+cross_validation_results <- data.frame(resultsList[["oOH2+out2_noInt"]][["cOI_2weeksbefore"]][["Model_10foldCV"]]$resample$MAE, resultsList[["oOH2+out2_noInt"]][["cOI_2weeksbefore"]][["Model_10foldCV"]]$resample$RMSE, resultsList[["oOH2+out2_noInt"]][["cOI_2weeksbefore"]][["Model_10foldCV"]]$resample$Resample)
+colnames(cross_validation_results) <- c("MAE", "RMSE", "Fold")
+
+cross_validation_results[1,3] <- "1"
+cross_validation_results[2,3] <- "2"
+cross_validation_results[3,3] <- "3"
+cross_validation_results[4,3] <- "4"
+cross_validation_results[5,3] <- "5"
+cross_validation_results[6,3] <- "6"
+cross_validation_results[7,3] <- "7"
+cross_validation_results[8,3] <- "8"
+cross_validation_results[9,3] <- "9"
+cross_validation_results[10,3] <- "10"
+
+p1 <- ggplot(data = cross_validation_results, aes(x = Fold, y = RMSE, group = 1)) +
+geom_boxplot(color= "#7570B3", size = 1.2) +
+geom_point(color = "#666666", size = 1.5) +
+theme_minimal() +
+theme(text = element_text(size = 13)) +
+theme(axis.ticks.x = element_line(), 
+                   axis.ticks.y = element_line(),
+                   axis.ticks.length = unit(5, "pt"))
+
+p2 <- ggplot(data = cross_validation_results, aes(x = Fold, y = MAE, group = 1)) +
+geom_boxplot(color= "#7570B3", size = 1.2) +
+geom_point(color = "#666666", size = 1.5) +
+theme_minimal() +
+theme(text = element_text(size = 13)) +
+theme(axis.ticks.x = element_line(), 
+                   axis.ticks.y = element_line(),
+                   axis.ticks.length = unit(5, "pt"))
+
+p <- arrangeGrob(p1,p2, nrow=1)
 
 #We have decided on the model oOH+oOH2+out2
 #We now check if the relationship changes over time
@@ -349,3 +483,4 @@ resultsList[["oOH"]][["cOI_2weeksbefore"]][["Model"]] <- lm(cOI_2weeksbefore ~ o
  
 resultsList[["oOH+out2_1st"]][["cOI_2weeksbefore"]][["Model"]] <- lm(cOI_2weeksbefore ~ outOfHomeDuration + outdoorFraction2, data = joinedDataFrame_1st)
 resultsList[["oOH+out2_2nd"]][["cOI_2weeksbefore"]][["Model"]] <- lm(cOI_2weeksbefore ~ outOfHomeDuration + outdoorFraction2, data = joinedDataFrame_2nd)
+
