@@ -6,11 +6,11 @@ google_mobility_data <- read_csv("https://www.gstatic.com/covid19/mobility/Globa
 
 #Filter for Germany
 google_mobility_data <- filter(google_mobility_data, country_region == "Germany")
-google_mobility_data$sub_region_1 <-  replace_na(google_mobility_data$sub_region_1, value = "Germany")
+google_mobility_data <- google_mobility_data %>% mutate(sub_region_1 = ifelse(is.na(sub_region_1), "Germany", sub_region_1))
 
 #Data is provided on a daily level, but we look at it on a weekly level
 google_mobility_data <- mutate(google_mobility_data, year = year(date))
-google_mobility_data <- mutate(google_mobility_data, week = week(date))
+google_mobility_data <- mutate(google_mobility_data, week = isoweek(date))
 google_mobility_data_weekly <- google_mobility_data %>% group_by(week, year, sub_region_1) %>%
   summarise(date = max(date),
             retail_and_recreation = mean(retail_and_recreation_percent_change_from_baseline, na.rm = TRUE),
