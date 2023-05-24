@@ -35,3 +35,4 @@ incidence_data <- incidence_data %>%
                     mutate(cOI_3weeksbefore = lead(cOI_2weeksbefore)) %>%
                     mutate(cOI_4weeksbefore = lead(cOI_3weeksbefore)) %>%
                     mutate(cOI_5weeksbefore = lead(cOI_4weeksbefore))
+
