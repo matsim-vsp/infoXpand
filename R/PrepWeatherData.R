@@ -94,4 +94,9 @@ weather_data_all <- mutate(weather_data_all, outdoorFraction = case_when(TStar +
 #Alternative to compute outdoor fraction
 weather_data_all <- weather_data_all %>% mutate(outdoorFraction2 = case_when(TStar + 5 >= tmax & tmax >= TStar - 5 ~  (tmax - (TStar-5))/10,
                                                                    tmax < TStar - 5 ~ 0,
-                                                                  tmax > TStar + 5 ~ 1))                                                                 
+                                                                  tmax > TStar + 5 ~ 1))  
+
+#Computation of indoorfraction
+weather_data_all <- weather_data_all %>% mutate(indoorFraction = case_when(TStar + 5 >= tmax & tmax >= TStar - 5 ~  1-(tmax - (TStar-5))/10,
+                                                                   tmax < TStar - 5 ~ 1,
+                                                                  tmax > TStar + 5 ~ 0))                                                                                                                                   

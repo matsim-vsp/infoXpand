@@ -9,7 +9,7 @@ library(leaps)
 #Using R 4.1.1
 
 #Reading incidence data in, data hereby comes from RKI
-#Note: Older versions of this code use multiple data sources as I was not aware
+#Note: Older versions of this code use multiple data sources as I was not aware of this repository
 incidence_data <- read_csv("https://raw.githubusercontent.com/robert-koch-institut/COVID-19_7-Tage-Inzidenz_in_Deutschland/main/COVID-19-Faelle_7-Tage-Inzidenz_Deutschland.csv")
 incidence_data <- incidence_data %>%
                 filter(Altersgruppe == "00+") %>%

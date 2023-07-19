@@ -59,6 +59,7 @@ weather_data <- weather_data[, c("Date", "tmax", "tavg", "prcp")]
 weather_data$Bundesland <- dict_state_id[as.integer(state), 1]
 weather_data$EinwohnerInnen <- dict_state_id[as.integer(state), 3]
 weather_data$Bundesland_id <- dict_state_id[as.integer(state), 4]
+weather_data$Kurzform <- dict_state_id[as.integer(state), 5]
 weather_data$EinwohnerInnenRelativ <- as.integer(dict_state_id[as.integer(state), 3])/83237124
 
 
