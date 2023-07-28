@@ -7,9 +7,12 @@ library(ggiraphExtra)
 library(leaps)
 library(stats)
 
-#Using R 4.1.1
+#### This r script reads in and prepares climate/weather data on a national level
+#### The prepared data is then used for further analysis
+#### Author: S. Paltra @ TU Berlin
 
-#Looking at this on a federal state level, so here's a little reminder of the state's capitals. Weather IDs are taken from meteostat and were (for this exercise) extracted manually
+# We read in data on a federal state level, to then compute a temperature to represent Germany on a national level
+# Here are the  16 states and their capitals. Weather IDs are taken from meteostat and were extracted manually
 # Baden-Württemberg (Hauptstadt: Stuttgart) 10737
 # Bayern (München) 10865
 # Berlin (Berlin) 10382
@@ -26,7 +29,7 @@ library(stats)
 # Schleswig-Holstein (Kiel) 10044
 # Thüringen (Erfurt) 10554
 
-#Setting up da data frame containing the states and the corresponding weather IDs
+# Setting up da data frame containing the states and the corresponding weather IDs
 dict_state_id <- data.frame(matrix(nrow = 0, ncol = 3))
 colnames(dict_state_id) <- c("Bundesland", "ID", "EinwohnerInnen")
 dict_state_id[nrow(dict_state_id) + 1, ] <- c("Baden-Württemberg", 10738, 11124642)
@@ -47,7 +50,8 @@ dict_state_id[nrow(dict_state_id) + 1, ] <- c("Schleswig-Holstein", 10044, 29220
 dict_state_id[nrow(dict_state_id) + 1, ] <- c("Thüringen", 10554, 2108863)
 dict_state_id[nrow(dict_state_id) + 1, ] <- c("Gesamt", 10382, 83237124)
 
-#Weather data
+# Reading in weather data
+# For now, the national weather ("Gesamt") is set equal to the weather in Berlin
 weather_data_all <- data.frame(matrix(nrow = 0, ncol = 5))
 for (state in 1 : 17) {
 ID <- dict_state_id[as.integer(state), 2]
@@ -64,6 +68,7 @@ weather_data$EinwohnerInnenRelativ <- as.integer(dict_state_id[as.integer(state)
 weather_data_all <- rbind(weather_data_all, weather_data)
 }
 
+# Computing weekly averages
 weather_data_all <- filter(weather_data_all, Date < "2021-01-01") %>%
 filter(Date > "2020-01-01") %>%
   mutate(week = week(Date)) %>%
@@ -71,7 +76,7 @@ filter(Date > "2020-01-01") %>%
   group_by(year, week, Bundesland) %>%
   summarise(Bundesland = Bundesland, Date = min(Date)+4, tmax = mean(tmax), tavg = mean(tavg), prcp = mean(prcp), EinwohnerInnen, EinwohnerInnenRelativ) %>% distinct()
 
-#The method above sets the temp for "Gesamt" equal to the temp for Berlin.
+# A weighted average is computed for the national weather and replaces the read-in value
 for(date in unique(weather_data_all$Date)){
 filtered <- filter(weather_data_all, Date == date) %>%
             filter(Bundesland != "Gesamt")
@@ -81,9 +86,9 @@ weather_data_all$tavg[weather_data_all$Date == date & weather_data_all$Bundeslan
 weather_data_all$prcp[weather_data_all$Date == date & weather_data_all$Bundesland == "Gesamt"] <- weighted.mean(filtered$prcp, filtered$EinwohnerInnenRelativ)
 }
 
-#Converting the weather data to an "outdoor fraction"
-#Below a certain temperature, everything happens indoords, above a certain temperature everything happens outdoors and in between we linearize
-#Compare https://doi.org/10.1371/journal.pone.0259037 for computation of outdoor fraction
+# Temperature is converted to the so-called "outdoor fraction" (Fraction of leisure activities the population performs outside)
+# It is assumed that the outdoor effect saturates. Between the two saturation ends, we linearize
+# See https://doi.org/10.1371/journal.pone.0259037 for computation of outdoor fraction
 weather_data_all <- weather_data_all %>% mutate(TStar = case_when(Date < "2020-03-01" ~ 17.5, 
                                                                   Date >= "2020-03-01" & Date <= "2020-10-01" ~ as.numeric(Date-as.Date("2020-03-01"))/7*7.5/31 + 17.5,
                                                                   Date > "2020-10-01" ~ 25))
@@ -91,12 +96,12 @@ weather_data_all <- weather_data_all %>% mutate(TStar = case_when(Date < "2020-0
 weather_data_all <- mutate(weather_data_all, outdoorFraction = case_when(TStar + 5 >= tmax & tmax >= TStar - 5 ~ -1/(10.5) * tmax + (TStar+5)/10.5 + 1,
                                                                    tmax < TStar - 5 ~ 2,
                                                                    tmax > TStar + 5 ~ 1))
-#Alternative to compute outdoor fraction
+# Alternative to compute outdoor fraction
 weather_data_all <- weather_data_all %>% mutate(outdoorFraction2 = case_when(TStar + 5 >= tmax & tmax >= TStar - 5 ~  (tmax - (TStar-5))/10,
                                                                    tmax < TStar - 5 ~ 0,
                                                                   tmax > TStar + 5 ~ 1))  
 
-#Computation of indoorfraction
+# Computation of indoo fraction (1- outdoor fraction = indoor fraction)
 weather_data_all <- weather_data_all %>% mutate(indoorFraction = case_when(TStar + 5 >= tmax & tmax >= TStar - 5 ~  1-(tmax - (TStar-5))/10,
                                                                    tmax < TStar - 5 ~ 1,
                                                                   tmax > TStar + 5 ~ 0))                                                                                                                                   
