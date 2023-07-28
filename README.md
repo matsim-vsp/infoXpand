@@ -8,13 +8,13 @@ This repository contains all simulation and estimation work done by the [Transpo
 ### Data prep
 
 - **PrepIncidenceData.R**
-Script which prepares incidence data.
+ Reads in and prepares [RKI](https://github.com/robert-koch-institut/COVID-19_7-Tage-Inzidenz_in_Deutschland) COVID-19 incidence data on a national level.
 
 - **PrepMobilityData.R**
-Script which prepares mobility data on national and federal state level (Germany).
+Reads in and prepares mobility data (daily "out of home duration" in hours per person) on a national level.
 
 - **PrepWeatherData.R**
-Script which reads in and cleans weather data from meteostat.org.
+Reads in and prepares climate/weather data from [METEOSTAT](https://meteostat.net/en/) on a national level.
 
 ### Estimation
 
@@ -34,6 +34,6 @@ Script which reads in and cleans weather data from meteostat.org.
 
 ### Miscellaneous scripts contained in this repository
 
-- **applemobilitydata.R** : Apple mobility data, which was provided by Apple from April 2020 until April 2022 is read and cleaned. Here, we filter for Germany, filter for Germany and plot weekly changes for the different federal states. 
+- **applemobilitydata.R** : Apple mobility data, which was provided by Apple from April 2020 until April 2022 is read and cleaned. Here, we filter for Germany, and plot weekly changes for the different federal states. 
 
 - **googlemobilitydatacleaning.R** : Google mobility data, which was provided by Google until October 2022 is read and cleaned. Here, we filter for Germany, turn daily into weekly values, and plot the data for Germany's 16 federal states.
