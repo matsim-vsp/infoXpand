@@ -18,7 +18,7 @@ Reads in and prepares climate/weather data from [METEOSTAT](https://meteostat.ne
 
 ### Estimation
 
-- **regressioninfoXpandNationalWeekly.R** : This script combines data import, data cleaning, first exploratory visualizations as well as 17 different regression models. First, incidence data from RKI, aggregated mobility data from our MODUS-Covid project and weather data from meteostat are imported, cleaned and joined into a single data frame. Second, the following measures are plotted over time: Incidence, change of incidence (weekly), out of home duration (in hours per person and day), tmax (in celsius). Additionally, raw corrlations are computed. Finally, 17 regression models are set up and their results are saved within a list. For each regression model, we save the model itself, a scatter plot of a linar combinations of the regressors vs change of incidence, 4 diagnostic plots (residuals vs fitted values, ggplot, scale-loc plot, cook's distance plot), a plot of the predicted vs the actual values (including the regression line),
+- **regressioninfoXpandNationalWeekly.R** : A variety of regression models are set up and their results are saved within a list. For each regression model, we save the model itself, a scatter plot of a linar combinations of the regressors vs change of incidence, 4 diagnostic plots (residuals vs fitted values, ggplot, scale-loc plot, cook's distance plot), a plot of the predicted vs the actual values (including the regression line).
 
 - **measuresOfAccuracy.R** : The aim of this script is to identify the model which most accurately describes the data. To this end, the following measures of accuracy are considered: F-statistic, RSE, R Squared, Adjusted RSquared.
 
@@ -37,3 +37,5 @@ Reads in and prepares climate/weather data from [METEOSTAT](https://meteostat.ne
 - **applemobilitydata.R** : Apple mobility data, which was provided by Apple from April 2020 until April 2022 is read and cleaned. Here, we filter for Germany, and plot weekly changes for the different federal states. 
 
 - **googlemobilitydatacleaning.R** : Google mobility data, which was provided by Google until October 2022 is read and cleaned. Here, we filter for Germany, turn daily into weekly values, and plot the data for Germany's 16 federal states.
+
+- **plotSNZGoogleApple.R** : Creation of plots to compare the three different mobility data sources.
