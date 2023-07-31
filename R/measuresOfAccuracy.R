@@ -8,6 +8,7 @@ library(arm)
 library(ggokabeito)
 library(lindia)
 
+#Different model names
 ids <- c("oOH", "oOH2", "oOH3", "oOH+oOH2", "oOH+tmax", "oOH+tavg",
           "oOH*tmax", "oOH*tavg", "oOH+oOH2+out", "oOH+oOH2+out2", "oOH+out", "oOH+out2", "oOH2+out", "oOH2+out2", "oOH*out", "oOH*out2",
           "oOH+prcp", "oOH+tmax+prcp", "oOH+tavg+prcp", "oOH+out+prcp", "oOH+out2+prcp",
@@ -26,8 +27,10 @@ ids <- c("oOH", "oOH2", "oOH3", "oOH+oOH2", "oOH+tmax", "oOH+tavg",
           "log_oOH", "log_oOH_noInt", "polyoOH3", "test", "test2", "test3", "oOH2+oOH2:out2", "oOH2+oOH2:out2_noInt",
           "oOH2+oOH2:tmax", "oOH2+oOH2:tmax_noInt", "oOH2+oOH2:tavg", "oOH2+oOH2:tavg_noInt", "oOH2_noInt",  "oOH3+oOHout+oOH2out")
 
-lags <- c("cOI", "cOI_1weekbefore", "cOI_2weeksbefore", "cOI_3weeksbefore", "cOI_4weeksbefore")
+#Different lags (0 to 5 week lag)
+lags <- c("cOI", "cOI_1weekbefore", "cOI_2weeksbefore", "cOI_3weeksbefore", "cOI_4weeksbefore", "cOI_5weeksbefore")
 
+#Creation of data frame, which will contain the different statistics
 accuracy_measures <- data.frame(matrix(ncol = 8, nrow = 0))
 colnames(accuracy_measures) <- c("Model", "lag", "Fstatistic", "RSE", "Rsquared", "AdjRSquared", "AIC", "BIC")
 
@@ -71,7 +74,7 @@ ggplot(accuracy_measures, aes(x = lag, fill = lag, y = AdjRSquared)) +
     ylab("Adjusted R^2") +
     scale_fill_okabe_ito() +
     theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
-    theme(legend.position = "none") 
+    theme(legend.position = "none")
 
 #Visualization of RSE for different models
 ggplot(accuracy_measures, aes(x = lag, fill = lag, y = RSE)) +
@@ -121,7 +124,7 @@ ggplot(accuracy_measures, aes(x = lag, fill = lag, y = BIC)) +
     theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
     theme(legend.position = "none") #For most models: Maximum reached when considering a 2 week lag, exceptions: oOH, oOH2
 
-# Sec. 5.1 : Diagnostic plots for "oOH2+oOH2:out2_noInt" 
+# Sec. 5.1 : Diagnostic plots for "oOH2+oOH2:out2_noInt"
 # If one's interested in a different model, then line 130 must be adapted
 # This came in extremely handy: https://rpubs.com/therimalaya/43190
 
@@ -201,5 +204,5 @@ ggplot(resultsList[["oOH2+oOH2:out2_noInt"]][["cOI_2weeksbefore"]][["Model"]], a
                    axis.ticks.y = element_line(),
                    axis.ticks.length = unit(5, "pt"))
 
-max(cooks.distance(resultsList[["oOH2+oOH2:indoor"]][["cOI_2weeksbefore"]][["Model"]]))
+max(cooks.distance(resultsList[["oOH2+oOH2:out2_noInt"]][["cOI_2weeksbefore"]][["Model"]]))
 which.max(cooks.distance(resultsList[["oOH2+oOH2:out2_noInt"]][["cOI_2weeksbefore"]][["Model"]]))

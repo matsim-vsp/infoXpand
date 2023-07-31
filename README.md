@@ -8,27 +8,34 @@ This repository contains all simulation and estimation work done by the [Transpo
 ### Data prep
 
 - **PrepIncidenceData.R**
- Reads in and prepares [RKI](https://github.com/robert-koch-institut/COVID-19_7-Tage-Inzidenz_in_Deutschland) COVID-19 incidence data on a national level.
+ Reads in and prepares [RKI](https://github.com/robert-koch-institut/COVID-19_7-Tage-Inzidenz_in_Deutschland) COVID-19 incidence at the national level.
+
+- **PrepIncidenceData_Fed.R**
+ Reads in and prepares [RKI](https://github.com/robert-koch-institut/COVID-19_7-Tage-Inzidenz_in_Deutschland) COVID-19 incidence data at the federal state level.
 
 - **PrepMobilityData.R**
-Reads in and prepares mobility data (daily "out of home duration" in hours per person) on a national level.
+Reads in and prepares mobility data (daily "out of home duration" in hours per person) at the national level.
+
+- **PrepMobilityData_Fed.R**
+Reads in and prepares mobility data (daily "out of home duration" in hours per person) at the federal state level.
+
+- **PrepWeatherData_Fed.R**
+Reads in and prepares climate/weather data from [METEOSTAT](https://meteostat.net/en/) at the federal state level.
 
 - **PrepWeatherData.R**
-Reads in and prepares climate/weather data from [METEOSTAT](https://meteostat.net/en/) on a national level.
+Reads in and prepares climate/weather data from [METEOSTAT](https://meteostat.net/en/) at the national level.
 
 ### Estimation
 
+- **ExploratoryWorkAndPlots.R** : Exploratory data analysis by visualizing the data frames created in PrepIncidenceData.R, PrepMobilityData.R, PrepWeatherData.R . The (in)dependent variables are plotted over time and various scatter plots are created
+
+- **ExploratoryWorkAndPlots_Fed.R** : Exploratory data analysis by visualizing the data frames created in PrepIncidenceData_Fed.R, PrepMobilityData_Fed.R, PrepWeatherData_Fed.R . The (in)dependent variables are plotted over time and various scatter plots are created.
+
 - **regressionAnalysis_Nat.R** : A variety of regression models are set up and their results are saved within a list. For each regression model, we save the model itself, a scatter plot of a linar combinations of the regressors vs change of incidence, 4 diagnostic plots (residuals vs fitted values, ggplot, scale-loc plot, cook's distance plot), a plot of the predicted vs the actual values (including the regression line).
 
-- **adjustedR2.R** : Computes adjusted R^2 for the no-intercept regression models from regressionAnalysis_Nat.R.
+- **adjustedR2.R** : Computes adjusted R^2 for the no-intercept regression models from regressionAnalysis_Nat.R. The functions introduced here may also be applied to the models from regressionAnalysis_Fed.R.
 
-- **measuresOfAccuracy.R** : The aim of this script is to identify the model which most accurately describes the data. To this end, the following measures of accuracy are considered: F-statistic, RSE, R Squared, Adjusted RSquared.
-
-- **autoML.R** : We used autoML to improve the models we have (thus far) set up manually. Hereby, we make use of the automl package as well as the H_2O framework.
-
-- **regressioninfoXpandFederalStateWeekly.R** : Currently on hold, until our work on a national level is finished.
-
-- **regressioninfoXpandFederalStateMonthly.R** : Currently on hold, until our work on a national level is finished.
+- **measuresOfAccuracy.R** : Helps to identify the model which most accurately describes the data. To this end, the following measures of accuracy are considered: F-statistic, RSE, R Squared, Adjusted RSquared.
 
 ### Miscellaneous scripts contained in this repository
 
