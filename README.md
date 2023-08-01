@@ -31,7 +31,7 @@ Reads in and prepares climate/weather data from [METEOSTAT](https://meteostat.ne
 
 - **ExploratoryWorkAndPlots_Fed.R** : Exploratory data analysis by visualizing the data frames created in PrepIncidenceData_Fed.R, PrepMobilityData_Fed.R, PrepWeatherData_Fed.R . The (in)dependent variables are plotted over time and various scatter plots are created.
 
-- **regressionAnalysis_Nat.R** : A variety of regression models are set up and their results are saved within a list. For each regression model, we save the model itself, a scatter plot of a linar combinations of the regressors vs change of incidence, 4 diagnostic plots (residuals vs fitted values, ggplot, scale-loc plot, cook's distance plot), a plot of the predicted vs the actual values (including the regression line).
+- **regressionAnalysis_Nat.R** : A variety of regression models are set up and their results are saved within a list. For each regression model, we save the model itself, cross validation results (LOOCV and 10-fold CV), a plot of the observed vs. the predicted values and a plot of predicted/observed values over time. After models are run, we use multiple model selection techniques: Elastic net, 10-fold CV, regular subset selection. Then, the regression lines of the linear/quadratic/cubic model are placed on the scatter plot of the dependent vs. the independent variable. Finally, the regression results are plotted in 3D. The latter half of this script, might be moved to another script. 
 
 - **adjustedR2.R** : Computes adjusted R^2 for the no-intercept regression models from regressionAnalysis_Nat.R. The functions introduced here may also be applied to the models from regressionAnalysis_Fed.R.
 
