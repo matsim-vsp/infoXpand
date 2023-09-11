@@ -19,6 +19,9 @@ r2_weather_noInt_4weeks <- r2(joinedDataFrame, "cOI_4weeksbefore", "oOH2+oOH2:ou
 r2_tmax_noInt_2weeks <- r2(joinedDataFrame, "cOI_2weeksbefore", "oOH2+oOH2:tmax_noInt")
 r2_tavg_noInt_2weeks <- r2(joinedDataFrame, "cOI_2weeksbefore", "oOH2+oOH2:tavg_noInt")
 
+#Computation of r2 for mobility only model
+r2_noInt <- r2(joinedDataFrame, "cOI_2weeksbefore", "oOH2_noInt")
+
 #Computation of adjusted r2 for no-intercept models
 adjustedr2 <- function(r2, n, p){
  1 - ((1-r2)*(n-1))/(n-p)
@@ -34,3 +37,6 @@ adjr2_weather_noInt_4weeks <- adjustedr2(r2_weather_noInt_4weeks, 40, 2)
 #Computation of adjusted r2 for models using tmax/tavg
 adjr2_tmax_noInt_2weeks <- adjustedr2(r2_tmax_noInt_2weeks, 40, 2)
 adjr2_tavg_noInt_2weeks <- adjustedr2(r2_tavg_noInt_2weeks, 40, 2)
+
+#Computation of r2 for mobility only model
+adjr2_noInt_2weeks <- adjustedr2(r2_noInt, 40, 2)

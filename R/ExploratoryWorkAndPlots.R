@@ -9,7 +9,7 @@ library(ggiraphExtra)
 library(leaps)
 library(RColorBrewer)
 
-#### This r script performs exploratory data analysis bxy visualizing the data frames created in PrepIncidenceData.R, PrepMobilityData.R, PrepWeatherData.R
+#### This r script performs exploratory data analysis by visualizing the data frames created in PrepIncidenceData.R, PrepMobilityData.R, PrepWeatherData.R
 #### Author: S. Paltra @ TU Berlin)
 
 # Prepping incidence data
@@ -144,31 +144,33 @@ p <- arrangeGrob(p1,p2, nrow=2)
 p <- arrangeGrob(p4,p5, nrow=2)
 
 # Creating regression line for the linear/quadratic/cubic mobility-only model
-oOH_x <- seq(-0.5, 10, length.out = 40)
+oOH_x <- seq(-0.5, 10, length.out = 39)
 oOH_y <- resultsList[["oOH"]][["cOI_2weeksbefore"]][["Model"]]$coefficients[[1]] + resultsList[["oOH"]][["cOI_2weeksbefore"]][["Model"]]$coefficients[[2]]*oOH_x
 
-oOH2_x <- seq(-0.5, 10, length.out = 40)
+oOH2_x <- seq(-0.5, 10, length.out = 39)
 oOH2_y <- resultsList[["oOH2"]][["cOI_2weeksbefore"]][["Model"]]$coefficients[[1]] + resultsList[["oOH2"]][["cOI_2weeksbefore"]][["Model"]]$coefficients[[2]]*oOH2_x^2
 
-oOH3_x <- seq(-0.5, 10, length.out = 40)
+oOH3_x <- seq(-0.5, 10, length.out = 39)
 oOH3_y <- resultsList[["oOH3"]][["cOI_2weeksbefore"]][["Model"]]$coefficients[[1]] + resultsList[["oOH3"]][["cOI_2weeksbefore"]][["Model"]]$coefficients[[2]]*oOH3_x^3
 
 joinedDataFrame_reduced <- joinedDataFrame %>% filter(cOI_2weeksbefore < 2) %>% filter(Date + 14 < "2021-01-01")
 joinedDataFrame_reduced <- joinedDataFrame_reduced %>% mutate(labeled = case_when(cOI_2weeksbefore> 1.5 ~ as.character(joinedDataFrame_reduced$Date+14),
                                                                   cOI_2weeksbefore <= 1.5 ~ ""))
 
+colors <- c("linear" = "#e6ab02", "quadratic" = "#e7298a", "cubic" = "#7570b3")
 # Plot of these regression lines as well as scatter plot of growth multiplier vs oOH
-joinedDataFrame_reduced %>%
+p <- joinedDataFrame_reduced %>%
 ggplot(aes(x = outOfHomeDuration, y = cOI_2weeksbefore)) +
 theme_minimal() +
-geom_line(aes(oOH_x, oOH_y, color = "linear")) +
-geom_line(aes(oOH2_x, oOH2_y, color = "quadratic")) +
-geom_line(aes(oOH3_x, oOH3_y, , color = "cubic")) +
-geom_text_repel(aes(label = labeled)) +
+#geom_line(aes(oOH_x, oOH_y, color = "linear")) +
+#geom_line(aes(oOH2_x, oOH2_y, color = "quadratic")) +
+#geom_line(aes(oOH3_x, oOH3_y, , color = "cubic")) +
+#scale_color_manual(values = colors, breaks = names(colors)[c(1, 2, 3)]) +
+#geom_text_repel(aes(label = labeled)) +
 geom_point(color = "#666666", size = 2) +
 xlab("Daily Out Of Home Duration per Person") +
-xlim(-0.55, 9) +
-ylim(-1.1, 1.9) +
+#xlim(-0.55, 9) +
+#ylim(-1.1, 1.9) +
 ylab("Growth Multiplier") +
 theme(text = element_text(size = 13), legend.position = "bottom", legend.title=element_blank()) +
 theme(axis.ticks.x = element_line(), 
@@ -178,19 +180,19 @@ theme(axis.ticks.x = element_line(),
 ggsave("oOHvsChangeOfIncidence.pdf", w = 9, h = 4.5, dpi = 500)
 
 # Scatter plot: growth mutiplier vs outdoor fraction
-joinedDataFrame_reduced %>% filter(cOI_2weeksbefore < 2) %>%
-ggplot(aes(x = out2, y = cOI_2weeksbefore)) +
+p2 <- joinedDataFrame_reduced %>% filter(cOI_2weeksbefore < 2) %>%
+ggplot(aes(x = outdoorFraction2, y = cOI_2weeksbefore)) +
 geom_point(color = "#666666", size = 2) +
 theme_minimal() +
 xlab("Outdoor Fraction") +
 ylab("Growth Multiplier") +
 theme(text = element_text(size = 13))
 
-ggsave("oOHindoorFractionvsChangeOfIncidence.png", dpi = 500, w = 9, h = 6)
+ggsave("oOHoutdoorFractionvsChangeOfIncidence.png", dpi = 500, w = 9, h = 6)
 
 # Scatter plot : growth multiplier vs oOH*outdoorfraction
 joinedDataFrame_reduced %>% filter(cOI_2weeksbefore < 2) %>%
-ggplot(aes(x = outOfHomeDuration*out2, y = cOI_2weeksbefore)) +
+ggplot(aes(x = outOfHomeDuration*outdoorFraction2, y = cOI_2weeksbefore)) +
 geom_point(color = "#666666", size = 2) +
 theme_minimal() +
 xlab("Daily Out Of Home Duration/Person*outdoorFraction") +
