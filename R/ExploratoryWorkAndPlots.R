@@ -68,10 +68,10 @@ theme(text = element_text(size = 13), legend.position = "bottom", legend.title =
                    axis.ticks.length = unit(5, "pt"))
 
 # Prepping mobility data
-date_breaks <- data.frame(start = c(as.Date("2020-03-23"), as.Date("2020-05-10"), as.Date("2020-11-02"), as.Date("2020-12-16")),
-                          end = c(as.Date("2020-05-10"), as.Date("2020-11-02"), as.Date("2020-12-16"), as.Date("2021-01-03")),
-                          colors = c("First Contact Restrictions", "Relaxation Period", "Lockdown Light", "Tighter Contact Restrctions"))
-date_breaks$colors <- factor(date_breaks$colors, levels = c("First Contact Restrictions", "Relaxation Period", "Lockdown Light", "Tighter Contact Restrctions"))
+date_breaks <- data.frame(start = c(as.Date("2020-03-08"), as.Date("2020-03-23"), as.Date("2020-05-10"), as.Date("2020-11-02"), as.Date("2020-12-16")),
+                          end = c(as.Date("2020-03-23"), as.Date("2020-05-10"), as.Date("2020-11-02"), as.Date("2020-12-16"), as.Date("2021-01-03")),
+                          colors = c("No Restrictions", "First Contact Restrictions", "Relaxation Period", "Lockdown Light", "Tighter Contact Restrctions"))
+date_breaks$colors <- factor(date_breaks$colors, levels = c("No Restrictions", "First Contact Restrictions", "Relaxation Period", "Lockdown Light", "Tighter Contact Restrctions"))
 
 source("PrepMobilityData.R")
 
@@ -87,7 +87,7 @@ geom_rect(data = date_breaks,
                 ymax = Inf,
                 fill = colors),
             alpha = 0.3) +
-scale_fill_manual(values = c("#E7298A",
+scale_fill_manual(values = c("#B3B3B3", "#E7298A",
                                "#E6AB02", "#66A61E", "#A6761D")) +
 #endregiongeom_vline(aes(xintercept = (as.Date("2020-03-16")),
 #                colour = "Beginning School Closure"), size=1, linetype = "dotted") +
@@ -144,13 +144,13 @@ p <- arrangeGrob(p1,p2, nrow=2)
 p <- arrangeGrob(p4,p5, nrow=2)
 
 # Creating regression line for the linear/quadratic/cubic mobility-only model
-oOH_x <- seq(-0.5, 10, length.out = 39)
+oOH_x <- seq(-0.5, 10, length.out = 40)
 oOH_y <- resultsList[["oOH"]][["cOI_2weeksbefore"]][["Model"]]$coefficients[[1]] + resultsList[["oOH"]][["cOI_2weeksbefore"]][["Model"]]$coefficients[[2]]*oOH_x
 
-oOH2_x <- seq(-0.5, 10, length.out = 39)
+oOH2_x <- seq(-0.5, 10, length.out = 40)
 oOH2_y <- resultsList[["oOH2"]][["cOI_2weeksbefore"]][["Model"]]$coefficients[[1]] + resultsList[["oOH2"]][["cOI_2weeksbefore"]][["Model"]]$coefficients[[2]]*oOH2_x^2
 
-oOH3_x <- seq(-0.5, 10, length.out = 39)
+oOH3_x <- seq(-0.5, 10, length.out = 40)
 oOH3_y <- resultsList[["oOH3"]][["cOI_2weeksbefore"]][["Model"]]$coefficients[[1]] + resultsList[["oOH3"]][["cOI_2weeksbefore"]][["Model"]]$coefficients[[2]]*oOH3_x^3
 
 joinedDataFrame_reduced <- joinedDataFrame %>% filter(cOI_2weeksbefore < 2) %>% filter(Date + 14 < "2021-01-01")
@@ -162,22 +162,22 @@ colors <- c("linear" = "#e6ab02", "quadratic" = "#e7298a", "cubic" = "#7570b3")
 p <- joinedDataFrame_reduced %>%
 ggplot(aes(x = outOfHomeDuration, y = cOI_2weeksbefore)) +
 theme_minimal() +
-#geom_line(aes(oOH_x, oOH_y, color = "linear")) +
-#geom_line(aes(oOH2_x, oOH2_y, color = "quadratic")) +
-#geom_line(aes(oOH3_x, oOH3_y, , color = "cubic")) +
-#scale_color_manual(values = colors, breaks = names(colors)[c(1, 2, 3)]) +
-#geom_text_repel(aes(label = labeled)) +
+geom_line(aes(oOH_x, oOH_y, color = "linear")) +
+geom_line(aes(oOH2_x, oOH2_y, color = "quadratic")) +
+geom_line(aes(oOH3_x, oOH3_y, , color = "cubic")) +
+scale_color_manual(values = colors, breaks = names(colors)[c(1, 2, 3)]) +
+geom_text_repel(aes(label = labeled)) +
 geom_point(color = "#666666", size = 2) +
 xlab("Daily Out Of Home Duration per Person") +
-#xlim(-0.55, 9) +
-#ylim(-1.1, 1.9) +
+xlim(-0.55, 9) +
+ylim(-1.1, 1.9) +
 ylab("Growth Multiplier") +
-theme(text = element_text(size = 13), legend.position = "bottom", legend.title=element_blank()) +
+theme(text = element_text(size = 17), legend.position = "bottom", legend.title=element_blank()) +
 theme(axis.ticks.x = element_line(), 
                    axis.ticks.y = element_line(),
                    axis.ticks.length = unit(5, "pt"))
 
-ggsave("oOHvsChangeOfIncidence.pdf", w = 9, h = 4.5, dpi = 500)
+ggsave("oOHvsChangeOfIncidence.pdf", w = 9, h = 9, dpi = 500)
 
 # Scatter plot: growth mutiplier vs outdoor fraction
 p2 <- joinedDataFrame_reduced %>% filter(cOI_2weeksbefore < 2) %>%
