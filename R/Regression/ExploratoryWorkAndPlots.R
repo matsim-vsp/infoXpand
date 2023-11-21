@@ -17,13 +17,13 @@ source("PrepIncidenceData.R")
 incidence_data <- incidence_data %>% filter(Date > "2020-03-15") %>% filter(Date < "2021-01-01") %>%
                                       mutate(year = year(Date))
 incidence_data <- incidence_data %>% mutate(Welle = case_when(Date < "2020-05-17" ~ "1st Wave",
-                                                               Date >= "2020-05-17" ~ "Summer break",
+                                                               Date >= "2020-05-17" ~ "Summer Period",
                                                                Date >= "2020-09-28" ~ "Second wave"))
 
 date_breaks <- data.frame(start = c(as.Date("2020-03-22"), as.Date("2020-05-17"), as.Date("2020-09-28")),
                           end = c(as.Date("2020-05-17"), as.Date("2020-09-28"), as.Date("2021-01-01")),
-                          colors = c("First Wave", "Summer Break", "Second Wave"))
-date_breaks$colors <- factor(date_breaks$colors, levels = c("First Wave", "Summer Break", "Second Wave"))
+                          colors = c("First Wave", "Summer Period", "Second Wave"))
+date_breaks$colors <- factor(date_breaks$colors, levels = c("First Wave", "Summer Period", "Second Wave"))
 
 # Plot of national 7-day incidence over time
 p1 <- ggplot(incidence_data) +
@@ -38,7 +38,7 @@ geom_rect(data = date_breaks,
             alpha = 0.3) +
 scale_fill_manual(values = c("#1B9E77",
                                "#7570B3", "#D95F02")) +
-geom_line(aes(x=Date, y =Incidence),color = "#666666", size = 1.2) +
+geom_point(aes(x = Date, y = Incidence), color = "#666666", size = 1.2) +
 theme_minimal() +
 scale_x_date(date_breaks = "1 month", date_labels = "%d/%b/%y") +
 theme(text = element_text(size = 13), legend.position = "none") +
@@ -46,7 +46,7 @@ theme(text = element_text(size = 13), legend.position = "none") +
                    axis.ticks.y = element_line(),
                    axis.ticks.length = unit(5, "pt"))
 
-# Plot of national growth multiplier over time 
+# Plot of national growth multiplier over time
 p2 <- ggplot(incidence_data) +
 ylab("Growth \nMultiplier") +
 xlab("") +
@@ -59,7 +59,7 @@ geom_rect(data = date_breaks,
             alpha = 0.3) +
 scale_fill_manual(values = c("#1B9E77",
                                "#7570B3", "#D95F02")) +
-geom_line(aes(x = Date, y = cOI), color="#666666", size = 1.2) +
+geom_point(aes(x = Date, y = cOI), color="#666666", size = 1.2) +
 theme_minimal() +
 scale_x_date(date_breaks = "1 month", date_labels = "%d/%b/%y") +
 theme(text = element_text(size = 13), legend.position = "bottom", legend.title = element_blank()) +
@@ -70,8 +70,8 @@ theme(text = element_text(size = 13), legend.position = "bottom", legend.title =
 # Prepping mobility data
 date_breaks <- data.frame(start = c(as.Date("2020-03-08"), as.Date("2020-03-23"), as.Date("2020-05-10"), as.Date("2020-11-02"), as.Date("2020-12-16")),
                           end = c(as.Date("2020-03-23"), as.Date("2020-05-10"), as.Date("2020-11-02"), as.Date("2020-12-16"), as.Date("2021-01-03")),
-                          colors = c("No Restrictions", "First Contact Restrictions", "Relaxation Period", "Lockdown Light", "Tighter Contact Restrctions"))
-date_breaks$colors <- factor(date_breaks$colors, levels = c("No Restrictions", "First Contact Restrictions", "Relaxation Period", "Lockdown Light", "Tighter Contact Restrctions"))
+                          colors = c("No Restrictions", "First Contact Restrictions", "Relaxation Period", "Lockdown Light", "Tighter Contact Restrictions"))
+date_breaks$colors <- factor(date_breaks$colors, levels = c("No Restrictions", "First Contact Restrictions", "Relaxation Period", "Lockdown Light", "Tighter Contact Restrictions"))
 
 source("PrepMobilityData.R")
 
@@ -89,35 +89,18 @@ geom_rect(data = date_breaks,
             alpha = 0.3) +
 scale_fill_manual(values = c("#B3B3B3", "#E7298A",
                                "#E6AB02", "#66A61E", "#A6761D")) +
-#endregiongeom_vline(aes(xintercept = (as.Date("2020-03-16")),
-#                colour = "Beginning School Closure"), size=1, linetype = "dotted") +
-#scale_color_manual(values = c("Beginning School Closure" = "gray40")) +
-#geom_vline(xintercept = (as.Date("2020-03-23")),
-#                color = "#009E73", size=1) +
-#geom_vline(xintercept = (as.Date("2020-05-10")),
-#                color = "#D55E00", size=1) +
-#geom_vline(xintercept = (as.Date("2020-11-02")),
-#               color = "#CC79A7", size=1) +
-#geom_vline(xintercept = (as.Date("2020-12-13")),
-#                color = "#56B4E9", size=1) +
 theme_minimal() +
-geom_line(aes(x = Date, y = outOfHomeDuration), color = "#666666", size = 1.2) +
-#annotate(geom = "text",
-#        label = c("School closure", "Contact restrictions", "Relaxation Period", "Lockdown light", "2nd Lockdown"),
-#        x = c(as.Date("2020-03-16"), as.Date("2020-03-23"), as.Date("2020-05-10"), as.Date("2020-11-02"), as.Date("2020-12-13")),
-#        y = c(6.5,6.5,6.5,6.5,6.5),
-#        angle = 90,
-#        vjust = 1.5) +
+geom_point(aes(x = Date, y = outOfHomeDuration), color = "#666666", size = 1.2) +
 scale_x_date(date_breaks = "1 month", date_labels = "%d/%b/%y") +
 theme(text = element_text(size = 13), legend.position = "bottom", legend.title=element_blank()) +
-   theme(axis.ticks.x = element_line(), 
+   theme(axis.ticks.x = element_line(),
                    axis.ticks.y = element_line(),
                    axis.ticks.length = unit(5, "pt"))
 
 # Plot of temperature data over time
 source("PrepWeatherData.R")
 p4 <- weather_data_all %>% filter(Bundesland == "Gesamt") %>% filter(Date > "2020-03-01") %>% ggplot(aes(x = Date, y = tmax)) +
-geom_line(color = "#666666", size = 1.2) +
+geom_point(color = "#666666", size = 1.2) +
 ylab("Maximum Temperature \nin C°") +
 xlab("") +
 theme_minimal() +
@@ -129,10 +112,22 @@ theme(axis.ticks.x = element_line(),
 
 # Plot of outdoor fraction over time
 p5 <- weather_data_all %>% filter(Bundesland == "Gesamt") %>% filter(Date > "2020-03-01") %>% ggplot(aes(x = Date, y = outdoorFraction2)) +
-geom_line(color="#666666", size = 1.2) +
+geom_point(color = "#666666", size = 1.2) +
 ylab("Share Of Activities \nPerformed Outside") +
 theme_minimal() +
 xlab("") +
+scale_x_date(date_breaks = "1 month", date_labels = "%d/%b/%y") +
+theme(text = element_text(size = 13)) +
+theme(axis.ticks.x = element_line(), 
+                   axis.ticks.y = element_line(),
+                   axis.ticks.length = unit(5, "pt"))
+
+#Plot of T^{\star} over time
+ggplot(weather_data_all %>% filter(Date > "2020-02-01" & Date < "2020-12-15")) +
+geom_line(aes(x = Date, y = TStar), color = "#666666", size = 1.2) +
+theme_minimal() +
+xlab("") +
+ylab("Temperature in C°") +
 scale_x_date(date_breaks = "1 month", date_labels = "%d/%b/%y") +
 theme(text = element_text(size = 13)) +
 theme(axis.ticks.x = element_line(), 
@@ -156,8 +151,8 @@ oOH3_y <- resultsList[["oOH3"]][["cOI_2weeksbefore"]][["Model"]]$coefficients[[1
 joinedDataFrame_reduced <- joinedDataFrame %>% filter(cOI_2weeksbefore < 2) %>% filter(Date + 14 < "2021-01-01")
 joinedDataFrame_reduced <- joinedDataFrame_reduced %>% mutate(labeled = case_when(cOI_2weeksbefore> 1.5 ~ as.character(joinedDataFrame_reduced$Date+14),
                                                                   cOI_2weeksbefore <= 1.5 ~ ""))
-
 colors <- c("linear" = "#e6ab02", "quadratic" = "#e7298a", "cubic" = "#7570b3")
+
 # Plot of these regression lines as well as scatter plot of growth multiplier vs oOH
 p <- joinedDataFrame_reduced %>%
 ggplot(aes(x = outOfHomeDuration, y = cOI_2weeksbefore)) +
@@ -177,7 +172,7 @@ theme(axis.ticks.x = element_line(),
                    axis.ticks.y = element_line(),
                    axis.ticks.length = unit(5, "pt"))
 
-ggsave("oOHvsChangeOfIncidence.pdf", w = 9, h = 9, dpi = 500)
+#ggsave("oOHvsChangeOfIncidence.pdf", w = 9, h = 9, dpi = 500)
 
 # Scatter plot: growth mutiplier vs outdoor fraction
 p2 <- joinedDataFrame_reduced %>% filter(cOI_2weeksbefore < 2) %>%
@@ -188,7 +183,7 @@ xlab("Outdoor Fraction") +
 ylab("Growth Multiplier") +
 theme(text = element_text(size = 13))
 
-ggsave("oOHoutdoorFractionvsChangeOfIncidence.png", dpi = 500, w = 9, h = 6)
+#ggsave("oOHoutdoorFractionvsChangeOfIncidence.png", dpi = 500, w = 9, h = 6)
 
 # Scatter plot : growth multiplier vs oOH*outdoorfraction
 joinedDataFrame_reduced %>% filter(cOI_2weeksbefore < 2) %>%

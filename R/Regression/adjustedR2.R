@@ -14,13 +14,23 @@ r2_weather_noInt_0weeks <- r2(joinedDataFrame, "cOI", "oOH2+oOH2:out2_noInt")
 r2_weather_noInt_1week <- r2(joinedDataFrame, "cOI_1weekbefore", "oOH2+oOH2:out2_noInt")
 r2_weather_noInt_2weeks <- r2(joinedDataFrame, "cOI_2weeksbefore", "oOH2+oOH2:out2_noInt")
 r2_weather_noInt_3weeks <- r2(joinedDataFrame, "cOI_3weeksbefore", "oOH2+oOH2:out2_noInt")
-r2_weather_noInt_4weeks <- r2(joinedDataFrame, "cOI_4weeksbefore", "oOH2+oOH2:out2_noInt")
+r2_weather_noInt_4weeks <- r2(joinedDataFrame, "cOI_4weeksbefore", "oOH2+oOH2:out2_noInt"
 #Computation of r2 for models using tmax/tavg
-r2_tmax_noInt_2weeks <- r2(joinedDataFrame, "cOI_2weeksbefore", "oOH2+oOH2:tmax_noInt")
-r2_tavg_noInt_2weeks <- r2(joinedDataFrame, "cOI_2weeksbefore", "oOH2+oOH2:tavg_noInt")
+r2_tmax_noInt_2weeks <- r2(joinedDataFrame, "cOI_2weeksbefore", "oOH2+oOH2*tmax_noInt")
+r2_tavg_noInt_2weeks <- r2(joinedDataFrame, "cOI_2weeksbefore", "oOH2+oOH2*tavg_noInt")
+
+r2_tmaxprcp_noInt_2weeks <- r2(joinedDataFrame, "cOI_2weeksbefore", "oOH2:tmax:prcp_noInt")
+r2_tavgprcp_noInt_2weeks <- r2(joinedDataFrame, "cOI_2weeksbefore", "oOH2:tavg:prcp_noInt")
+r2_out2prcp_noInt_2weeks <- r2(joinedDataFrame, "cOI_2weeksbefore", "oOH2:out2:prcp_noInt")
 
 #Computation of r2 for mobility only model
 r2_noInt <- r2(joinedDataFrame, "cOI_2weeksbefore", "oOH2_noInt")
+
+#Computation of r2 when using google parks data
+r2_google_noInt_2weeks <- r2(joinedDataFrame, "cOI_2weeksbefore", "oOH2+oOH2:google_noInt")
+
+r2_adjout_noInt_2weeks <- r2(joinedDataFrame, "cOI_2weeksbefore", "oOH2+oOH2:adjout_noInt")
+
 
 #Computation of adjusted r2 for no-intercept models
 adjustedr2 <- function(r2, n, p){
@@ -38,5 +48,14 @@ adjr2_weather_noInt_4weeks <- adjustedr2(r2_weather_noInt_4weeks, 40, 2)
 adjr2_tmax_noInt_2weeks <- adjustedr2(r2_tmax_noInt_2weeks, 40, 2)
 adjr2_tavg_noInt_2weeks <- adjustedr2(r2_tavg_noInt_2weeks, 40, 2)
 
+adjr2_tmaxprcp_noInt_2weeks <- adjustedr2(r2_tmaxprcp_noInt_2weeks, 40, 2)
+adjr2_tavgprcp_noInt_2weeks <- adjustedr2(r2_tavgprcp_noInt_2weeks, 40, 2)
+adjr2_out2prcp_noInt_2weeks <- adjustedr2(r2_out2prcp_noInt_2weeks, 40, 2)
+ 
+
 #Computation of r2 for mobility only model
 adjr2_noInt_2weeks <- adjustedr2(r2_noInt, 40, 2)
+
+#Computation of r2 when using google parks data
+adjr2_noInt_2weeks_google <- adjustedr2(r2_google_noInt_2weeks, 40, 2)
+adjr2_noInt_2weeks_adjout <- adjustedr2(r2_adjout_noInt_2weeks, 40, 2)
