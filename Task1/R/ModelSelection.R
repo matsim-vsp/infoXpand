@@ -1,4 +1,6 @@
 
+### This r script supports the model selection. The results of this script can be found in the supplementary material of our manuscript.
+#### Author: S. Paltra @ TU Berlin
 
 ### MODEL SELECTION ###
 #Model selection -> using INDOOR fraction
@@ -152,11 +154,11 @@ joinedDataFrame_outdoor <- as.matrix(joinedDataFrame_outdoor)
 
 #Using LASSO to perform model selection
 # 10-fold CV to find the optimal lambda
-iteratopms_lasso <- c()
+iterations_lasso <- c()
 for(i in 1 :100) {
-enet.cv=cv.glmnet(x=joinedDataFrame_outdoor, y=y_train,alpha=1, type="deviance", family="gaussian", standardize=TRUE, nfolds=10, nzero=3)
+enet.cv=cv.glmnet(x=joinedDataFrame_outdoor, y=y_train,alpha=1, type="deviance", family="gaussian", standardize=TRUE, nfolds=10, nzero=3, intercept=FALSE)
 ## Fit lasso model with 100 values for lambda
-enet_mdl = glmnet(x=joinedDataFrame_outdoor, y=y_train,alpha=1,standardize=TRUE,nlambda=100, nzero=3)
+enet_mdl = glmnet(x=joinedDataFrame_outdoor, y=y_train,alpha=1,standardize=TRUE,nlambda=100, nzero=3, intercept=FALSE)
 ## Extract coefficients at optimal lambda
 coef(enet_mdl,s=enet.cv$lambda.min)
 iterations_lasso <- append(iterations_lasso, enet.cv$lambda.min)
@@ -168,9 +170,9 @@ coef(enet_mdl,s=median(iterations_lasso))
 # 10-fold CV to find the optimal lambda
 iteration_elasticnet <- c()
 for(i in 1:100){
-enet.cv=cv.glmnet(x=joinedDataFrame_outdoor, y=y_train,alpha=0.5, type="deviance", family="gaussian", standardize=TRUE, nfolds=10, nzero=3)
+enet.cv=cv.glmnet(x=joinedDataFrame_outdoor, y=y_train,alpha=0.5, type="deviance", family="gaussian", standardize=TRUE, nfolds=10, nzero=3, intercept=FALSE)
 ## Fit lasso model with 100 values for lambda
-enet_mdl = glmnet(x=joinedDataFrame_outdoor, y=y_train,alpha=0.5,standardize=TRUE,nlambda=100, nzero=3)
+enet_mdl = glmnet(x=joinedDataFrame_outdoor, y=y_train,alpha=0.5,standardize=TRUE,nlambda=100, nzero=3, intercept = FALSE)
 ## Extract coefficients at optimal lambda
 coef(enet_mdl,s=enet.cv$lambda.min)
 iteration_elasticnet <- append(iteration_elasticnet, enet.cv$lambda.min)
@@ -179,7 +181,7 @@ coef(enet_mdl,s=mean(iteration_elasticnet))
 coef(enet_mdl,s=median(iteration_elasticnet))
 
 #Using REG SUBSET to perform model selection
-mod.full <-  regsubsets(cOI_2weeksbefore ~ ., data = as.data.frame(joinedDataFrame_outdoor), nvmax = 10)
+mod.full <-  regsubsets(cOI_2weeksbefore ~ 0 + ., data = as.data.frame(joinedDataFrame_outdoor), nvmax = 10)
 mod.summary <-  summary(mod.full)
 which.min(mod.summary$bic)
 which.max(mod.summary$adjr2)
@@ -213,7 +215,7 @@ joinedDataFrame_outdoor <- as.matrix(joinedDataFrame_outdoor)
 
 # Using LASSO to perform model selection
 # 10-fold CV to find the optimal lambda
-iteratopms_lasso <- c()
+iterations_lasso <- c()
 for(i in 1 :100) {
 enet.cv=cv.glmnet(x=joinedDataFrame_outdoor, y=y_train,alpha=1, type="deviance", family="gaussian", standardize=TRUE, nfolds=10, intercept = FALSE)
 ## Fit lasso model with 100 values for lambda

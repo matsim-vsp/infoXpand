@@ -12,6 +12,8 @@ library(glmnet)
 library(lars)
 library(splines)
 
+### This r script sets up and performs the regression analysis
+#### Author: S. Paltra @ TU Berlin
 
 source("PrepIncidenceData.R")
 source("PrepMobilityData.R")
@@ -87,7 +89,7 @@ for(id in ids){
 }
 
 lags <- c("cOI", "cOI_1weekbefore", "cOI_2weeksbefore", "cOI_3weeksbefore", "cOI_4weeksbefore", "cOI_5weeksbefore")
-#lags <- c("cOI_2weeksbefore")
+lags <- c("cOI_2weeksbefore")
 
 joinedDataFrame <- joinedDataFrame %>%
         mutate(outOfHomeDurationSquared = outOfHomeDuration*outOfHomeDuration) %>% 
@@ -394,11 +396,12 @@ for (id in ids) {
     #ggtitle(paste0("lag: ", lag, ", Model: ", id)) +
     geom_abline(aes(intercept = 0, slope = 1, color = "#666666"), size = 1.5) +
     scale_color_identity(labels = c("x=y"), guide = "legend") +
-    theme_minimal(base_size = 12) +
+    theme_minimal() +
+    theme(text = element_text(size = 25), legend.position = "bottom", legend.title = element_blank()) +
     scale_x_continuous(breaks=c(0.6,0.8,1.0,1.2,1.4)) +
     scale_y_continuous(breaks=c(0.6,0.8,1.0,1.2,1.4, 1.6)) +
-    theme(legend.position = "bottom", legend.title = element_blank(), text = element_text(size = 13)) +
-    geom_point(data = joinedDataFrame_reduced, aes(x = predicted, y = .data[[lag]], fill = .data[[chosen_welle]]), size = 4,  shape = 21, colour = "transparent") +
+    theme(legend.position = "bottom", legend.title = element_blank(), text = element_text(size = 25)) +
+    geom_point(data = joinedDataFrame_reduced, aes(x = predicted, y = .data[[lag]], fill = .data[[chosen_welle]]), size = 2.5,  shape = 21, colour = "transparent") +
     scale_fill_manual(values = c("#1B9E77",
                                "#7570B3", "#D95F02"))
     })
@@ -412,7 +415,6 @@ for (id in ids) {
   #Plot observed and predicted values over time
   g2 <- ggplot(joinedDataFrame_reduced) +
   theme_minimal() +
-  theme(legend.position = "bottom", legend.title = element_blank(), text = element_text(size = 13)) +
   geom_rect(data = date_breaks,
             aes(xmin = start,
                 xmax = end,
@@ -425,12 +427,27 @@ for (id in ids) {
   scale_x_date(date_breaks = "1 month", date_labels = "%d/%b/%y") +
   ylab("Growth Multiplier") +
   xlab("") +
-  geom_point(aes(x = Date, y = .data[[lag]]), color = "#666666", size = 2) +
-  geom_line(aes(x = Date, y = predicted), size = 1.2, show.legend=FALSE)  +
-  theme(text = element_text(size = 13), legend.position = "bottom", legend.title = element_blank()) +
+  geom_point(aes(x = Date, y = .data[[lag]]), color = "#666666", size = 2.5) +
+  geom_line(aes(x = Date, y = predicted), size = 2.5, show.legend=FALSE)  +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)) +
+  theme(text = element_text(size = 25), legend.position = "bottom", legend.title = element_blank()) +
   theme(axis.ticks.x = element_line(),
                    axis.ticks.y = element_line(),
                    axis.ticks.length = unit(5, "pt"))
   resultsList[[id]][[lag]][["PlotActualFitted_overTime"]] <- g2
   }
 }
+
+#Print plot of actual vs predicted values
+#To create the plot for a different model, one needs to adapt the model name in the first []
+resultsList[["oOH2+oOH2:out2_noInt"]][["cOI_2weeksbefore"]][["PlotActualFitted"]]
+
+ggsave("ActualvsPredicted.pdf", dpi = 500, w = 9, h = 4.5)
+ggsave("ActualvsPredicted.png", dpi = 500, w = 9, h = 4.5)
+
+#Print plot of actual and predicted values over time
+#To create the plot for a different model, one needs to adapt the model name in the first []
+resultsList[["oOH2+oOH2:out2_noInt"]][["cOI_2weeksbefore"]][["PlotActualFitted_overTime"]]
+
+ggsave("ActualvsPredicted_overTime.pdf", dpi = 500, w = 9, h = 5.5)
+ggsave("ActualvsPredicted_overTime.png", dpi = 500, w = 9, h = 5.5)

@@ -23,6 +23,8 @@ r2_tmaxprcp_noInt_2weeks <- r2(joinedDataFrame, "cOI_2weeksbefore", "oOH2:tmax:p
 r2_tavgprcp_noInt_2weeks <- r2(joinedDataFrame, "cOI_2weeksbefore", "oOH2:tavg:prcp_noInt")
 r2_out2prcp_noInt_2weeks <- r2(joinedDataFrame, "cOI_2weeksbefore", "oOH2:out2:prcp_noInt")
 
+r2_best_subset <- r2(joinedDataFrame, "cOI_2weeksbefore", "oOH3+oOHout+oOH2out")
+adj <- adjustedr2(r2_best_subset, 40, 2)
 #Computation of r2 for mobility only model
 r2_noInt <- r2(joinedDataFrame, "cOI_2weeksbefore", "oOH2_noInt")
 
@@ -47,6 +49,7 @@ adjr2_weather_noInt_4weeks <- adjustedr2(r2_weather_noInt_4weeks, 40, 2)
 #Computation of adjusted r2 for models using tmax/tavg
 adjr2_tmax_noInt_2weeks <- adjustedr2(r2_tmax_noInt_2weeks, 40, 2)
 adjr2_tavg_noInt_2weeks <- adjustedr2(r2_tavg_noInt_2weeks, 40, 2)
+
 
 adjr2_tmaxprcp_noInt_2weeks <- adjustedr2(r2_tmaxprcp_noInt_2weeks, 40, 2)
 adjr2_tavgprcp_noInt_2weeks <- adjustedr2(r2_tavgprcp_noInt_2weeks, 40, 2)

@@ -6,7 +6,6 @@ library(ggokabeito)
 #### This r script compares three mobility data sources (google, apple, senozon)
 #### Author: S. Paltra @ TU Berlin
 
-
 ### SNZ data
 source("PrepMobilityData.R") #Results are saved as mobility_data
 colnames(mobility_data)[2] <- "Bundesland_GER"
