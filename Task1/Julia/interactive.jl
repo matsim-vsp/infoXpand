@@ -4,6 +4,8 @@ using Agents
 using CairoMakie
 using GLMakie
 
+#### Author: S. Paltra @ TU Berlin
+
 include("model.jl")
 include("plotting.jl")
 

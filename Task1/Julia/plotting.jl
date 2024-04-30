@@ -1,25 +1,16 @@
 include("model.jl")
 
+#### Author: S. Paltra @ TU Berlin
+
 #functions for plotting
 function person_color(p)
-    if p.health == 0 
+    if p.health == 0 #susceptible
         return :blue 
-    elseif p.health == 1
+    elseif p.health == 1 # infected
         return :red
     else
         return :green #immune
     end
-end
-
-#alternative : person_color(p) = p.health == 0 ? :blue : :red
-
-function person_shape(p::Person)
-    if aware(p)
-        return :circle
-    end
-        
-    return :rect
-
 end
 
 #step!(model, agent_step!, 3)

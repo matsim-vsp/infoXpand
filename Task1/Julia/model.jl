@@ -1,12 +1,16 @@
 using Agents, Random
 
-#BUILDING THE ABM
-#3 Things
+#### Author: S. Paltra @ TU Berlin
 
-#Agent
+#This script builds the small -> The main building blocks are: 
+# 1) The construction of the agents
+# 2) The construction of the environment the agents "live in"
+# 3) The construction of the agents' behavior or in other words: how the infection spreads
+
+# 1) Construction of the agents
 @agent  Person ContinuousAgent{2} begin
-health :: Int64 #0 susceptible, 1 infected, 2 recovered (immune)
-illness_duration :: Int64 #how long has the agent been ill, 0 if agent
+health :: Int64 # Agents health status; 0 susceptible, 1 infected, 2 recovered (immune)
+illness_duration :: Int64 # How long has the agent been sick, 0 if agent is susceptible or immune
 #UAU-SIS Model 
 end
 
@@ -16,34 +20,29 @@ infected(p::Person) = p.health == 1
 recovered(p::Person) = p.health == 2 
 notattending(p::Person) = p.health == 3
 
-
 function initialize(;
     susceptibility = 0.3, 
     model_illness_duration = 10, 
-    immunity_duration = 300, 
     influx_probability = 0.00001,
     grid_dimensions =(20,20),
     total_agents = 400,
     seed = 1234)
 
-    #Environment
-    #space = GridSpaceSingle(grid_dimensions; periodic = false)
+    # 2) Construction of the Envionment
     space = ContinuousSpace(grid_dimensions, periodic = true)
-
     rng = Xoshiro(seed)
 
-    #model properties as defined in the function parameters
+    # Model properties as defined in the function parameters
     properties = Dict(
         :susceptibility => susceptibility, 
         :model_illness_duration => model_illness_duration,
-        :immunity_duration => immunity_duration,
         :influx_probability => influx_probability
     )    
     model = ABM(Person, space; properties, rng = rng)
 
+    # Agents are added to the environment
     for i in 1:total_agents
             p = Person(i,(i,1),(1,1),0,0)
-            #vel = (1,1)
             add_agent!(p, model)
     end
 
@@ -53,19 +52,21 @@ function initialize(;
     return model
 end    
 
-#behavior (SIRS Model) = rules = steps
+# 3) Construction of agents' behavior (and the systems' disease transmission)
 function agent_step!(person, model)
 
-    #influx from outside of model 
-    if rand(model.rng) ≤ model.influx_probability
-        p = random_agent(model)
-        if p.health == 0
-            p.health = 1
-        end
-    end
+    # # Influx from outside of model ##TODO: Is this really necessary?
+    # if rand(model.rng) ≤ model.influx_probability
+    #     p = random_agent(model)
+    #     if p.health == 0
+    #         p.health = 1
+    #     end
+    # end
 
-    if susceptible(person) 
-        for neighbor in nearby_agents(person, model)
+    # Consider susceptible agents
+    if susceptible(person) #For every susceptibile agent, we check if the agent has infectious neighbors
+        # If the susceptible agent has at least one infectious neighbor, then the susceptibile agents may be infected with probability model.susceptible by every infectious neighbor
+        for neighbor in nearby_agents(person, model, r = 1000) 
             if neighbor.health == 1
                 if rand(model.rng) < model.susceptibility
                     person.health = 1
@@ -73,7 +74,8 @@ function agent_step!(person, model)
             end    
         end   
     end 
-    #person is infected 
+
+    # Consider infected agents
     if person.health == 1
         person.illness_duration += 1
         if person.illness_duration ≥ model.model_illness_duration
@@ -81,12 +83,5 @@ function agent_step!(person, model)
             person.illness_duration = 0
         end
     end
-    #person is immune/recovered
-    if person.health == 2
-        person.illness_duration += 1
-        if person.illness_duration ≥ model.immunity_duration
-            person.health = 0 #susceptibility
-            person.illness_duration = 0
-        end
-    end
+
 end    
