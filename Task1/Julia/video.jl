@@ -12,22 +12,22 @@ include("plotting.jl")
 model_100agents = initialize(;    
                 grid_dimensions = (40,40),
                 total_agents = 100,
-                susceptibility = 0.2)
+                susceptibility = 0.001)
 #Generate a video
-Agents.abmvideo("HundredAgents.mp4", model_100agents, agent_step!; 
+Agents.abmvideo("HundredAgents.mp4", model_100agents; 
                 ac = person_color, am =:rect, as = 25,
                 frames = 50, framerate = 5,
                 title = "100 Agents enter the space")
 
 model_200agents = initialize(;    
 grid_dimensions = (40,40),
-total_agents = 100,
-susceptibility = 0.2)
+total_agents = 200,
+susceptibility = 0.001)
 
 #Generate a video
 Agents.abmvideo("TwoHundredAgents.mp4", model_200agents, agent_step!; 
                 ac = person_color, am =:rect, as = 25,
-                frames = 50, framerate = 5,
+                frames = 100, framerate = 5,
                 title = "200 Agents enter the space")
 
 

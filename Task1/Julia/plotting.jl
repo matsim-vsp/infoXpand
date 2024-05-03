@@ -18,5 +18,5 @@ end
 model = initialize()
 
 #plot a model
-fig, ax, abmobs = abmplot(model; ac = person_color, am =:rect, as = 25)
+fig, ax, abmobs = abmplot(model; agent_color = person_color, agent_marker =:rect, agent_size = 25)
 fig

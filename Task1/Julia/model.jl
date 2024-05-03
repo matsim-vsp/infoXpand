@@ -8,7 +8,7 @@ using Agents, Random
 # 3) The construction of the agents' behavior or in other words: how the infection spreads
 
 # 1) Construction of the agents
-@agent  Person ContinuousAgent{2} begin
+@agent Person ContinuousAgent{2} begin
 health :: Int64 # Agents health status; 0 susceptible, 1 infected, 2 recovered (immune)
 illness_duration :: Int64 # How long has the agent been sick, 0 if agent is susceptible or immune
 #UAU-SIS Model 
@@ -25,12 +25,10 @@ function initialize(;
     model_illness_duration = 10, 
     influx_probability = 0.00001,
     grid_dimensions =(20,20),
-    total_agents = 400,
-    seed = 1234)
+    total_agents = 400)
 
     # 2) Construction of the Envionment
     space = ContinuousSpace(grid_dimensions, periodic = true)
-    rng = Xoshiro(seed)
 
     # Model properties as defined in the function parameters
     properties = Dict(
@@ -38,7 +36,7 @@ function initialize(;
         :model_illness_duration => model_illness_duration,
         :influx_probability => influx_probability
     )    
-    model = ABM(Person, space; properties, rng = rng)
+    model = ABM(Person, space; properties, agent_step! = agent_step!)
 
     # Agents are added to the environment
     for i in 1:total_agents
@@ -66,9 +64,9 @@ function agent_step!(person, model)
     # Consider susceptible agents
     if susceptible(person) #For every susceptibile agent, we check if the agent has infectious neighbors
         # If the susceptible agent has at least one infectious neighbor, then the susceptibile agents may be infected with probability model.susceptible by every infectious neighbor
-        for neighbor in nearby_agents(person, model, r = 1000) 
+        for neighbor in nearby_agents(person, model, 1000) 
             if neighbor.health == 1
-                if rand(model.rng) < model.susceptibility
+                if rand() < model.susceptibility
                     person.health = 1
                 end    
             end    
