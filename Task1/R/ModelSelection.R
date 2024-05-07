@@ -257,6 +257,114 @@ points(which.min(mod.summary$bic), min(mod.summary$bic), pch=4, col="red", lwd=7
 plot(mod.summary$adjr2, xlab="Subset Size", ylab="AdjrR^2", pch=20, type="l")
 points(which.max(mod.summary$adjr2), max(mod.summary$adjr2), pch=4, col="red", lwd=7)
 
+
+### Model selection -> using MOBILITY ONLY models
+joinedDataFrame_mobilityonly <- joinedDataFrame %>% filter(cOI_2weeksbefore < 2) %>%
+                            filter(Date + 14 < "2021-01-01") %>% select(cOI_2weeksbefore, outOfHomeDuration, outOfHomeDurationSquared, outOfHomeDurationCubed)
+y_train <- joinedDataFrame_mobilityonly$cOI_2weeksbefore
+joinedDataFrame_mobilityonly <- joinedDataFrame_mobilityonly %>% select(-cOI_2weeksbefore)
+joinedDataFrame_mobilityonly <- as.matrix(joinedDataFrame_mobilityonly)
+
+#Using LASSO to perform model selection
+# 10-fold CV to find the optimal lambda
+iterations_lasso <- c()
+for(i in 1 :100) {
+enet.cv=cv.glmnet(x=joinedDataFrame_mobilityonly, y=y_train,alpha=1, type="deviance", family="gaussian", standardize=TRUE, nfolds=10, nzero=3, intercept=FALSE)
+## Fit lasso model with 100 values for lambda
+enet_mdl = glmnet(x=joinedDataFrame_mobilityonly, y=y_train,alpha=1,standardize=TRUE,nlambda=100, nzero=3, intercept=FALSE)
+## Extract coefficients at optimal lambda
+coef(enet_mdl,s=enet.cv$lambda.min)
+iterations_lasso <- append(iterations_lasso, enet.cv$lambda.min)
+}
+coef(enet_mdl,s=mean(iterations_lasso))
+coef(enet_mdl,s=median(iterations_lasso))
+
+#Using ELASTIC NET to perform model selection
+# 10-fold CV to find the optimal lambda
+iteration_elasticnet <- c()
+for(i in 1:100){
+enet.cv=cv.glmnet(x=joinedDataFrame_mobilityonly, y=y_train,alpha=0.5, type="deviance", family="gaussian", standardize=TRUE, nfolds=10, nzero=3, intercept=FALSE)
+## Fit lasso model with 100 values for lambda
+enet_mdl = glmnet(x=joinedDataFrame_mobilityonly, y=y_train,alpha=0.5,standardize=TRUE,nlambda=100, nzero=3, intercept = FALSE)
+## Extract coefficients at optimal lambda
+coef(enet_mdl,s=enet.cv$lambda.min)
+iteration_elasticnet <- append(iteration_elasticnet, enet.cv$lambda.min)
+}
+coef(enet_mdl,s=mean(iteration_elasticnet))
+coef(enet_mdl,s=median(iteration_elasticnet))
+
+#Using REG SUBSET to perform model selection
+mod.full <-  regsubsets(cOI_2weeksbefore ~ 0 + ., data = as.data.frame(joinedDataFrame_mobilityonly), nvmax = 10)
+mod.summary <-  summary(mod.full)
+which.min(mod.summary$bic)
+which.max(mod.summary$adjr2)
+coefficients(mod.full, id=8)
+
+plot(mod.summary$cp, xlab="Subset Size", ylab="Cp", pch=20, type="l")
+points(which.min(mod.summary$cp), min(mod.summary$cp), pch=4, col="red", lwd=7)
+
+plot(mod.summary$bic, xlab="Subset Size", ylab="BIC", pch=20, type="l")
+points(which.min(mod.summary$bic), min(mod.summary$bic), pch=4, col="red", lwd=7)
+
+plot(mod.summary$adjr2, xlab="Subset Size", ylab="AdjrR^2", pch=20, type="l")
+points(which.max(mod.summary$adjr2), max(mod.summary$adjr2), pch=4, col="red", lwd=7)
+
+
+#Model selection -> using MOBILITY ONLY models  enforcing a NO INTERCEPT model
+joinedDataFrame <- joinedDataFrame %>% mutate(outOfHomeDurationSquared = outOfHomeDuration * outOfHomeDuration) %>% 
+                                        mutate(outOfHomeDurationCubed = outOfHomeDurationSquared * outOfHomeDuration)
+
+joinedDataFrame_mobilityonly <- joinedDataFrame %>% filter(cOI_2weeksbefore < 2) %>%
+                            filter(Date + 14 < "2021-01-01") %>% select(cOI_2weeksbefore, outOfHomeDuration, outOfHomeDurationSquared, outOfHomeDurationCubed) 
+
+y_train <- joinedDataFrame_mobilityonly$cOI_2weeksbefore
+joinedDataFrame_mobilityonly <- joinedDataFrame_mobilityonly %>% select(-cOI_2weeksbefore)
+joinedDataFrame_mobilityonly <- as.matrix(joinedDataFrame_mobilityonly)
+
+# Using LASSO to perform model selection
+# 10-fold CV to find the optimal lambda
+iterations_lasso <- c()
+for(i in 1 :100) {
+enet.cv=cv.glmnet(x=joinedDataFrame_mobilityonly, y=y_train,alpha=1, type="deviance", family="gaussian", standardize=TRUE, nfolds=10, intercept = FALSE)
+## Fit lasso model with 100 values for lambda
+enet_mdl = glmnet(x=joinedDataFrame_mobilityonly, y=y_train,alpha=1,standardize=TRUE,nlambda=100, intercept = FALSE)
+## Extract coefficients at optimal lambda
+coef(enet_mdl,s=enet.cv$lambda.min)
+iterations_lasso <- append(iterations_lasso, enet.cv$lambda.min)
+}
+coef(enet_mdl,s=mean(iterations_lasso))
+coef(enet_mdl,s=median(iterations_lasso))
+
+# Using ELASTIC NET to perform model selection
+# 10-fold CV to find the optimal lambda
+iteration_elasticnet <- c()
+for(i in 1:100){
+enet.cv=cv.glmnet(x=joinedDataFrame_mobilityonly, y=y_train,alpha=0.5, type="deviance", family="gaussian", standardize=TRUE, nfolds=10, intercept = FALSE)
+## Fit lasso model with 100 values for lambda
+enet_mdl = glmnet(x=joinedDataFrame_mobilityonly, y=y_train,alpha=0.5,standardize=TRUE,nlambda=100, intercept = FALSE)
+## Extract coefficients at optimal lambda
+coef(enet_mdl,s=enet.cv$lambda.min)
+iteration_elasticnet <- append(iteration_elasticnet, enet.cv$lambda.min)
+}
+coef(enet_mdl,s=mean(iteration_elasticnet))
+coef(enet_mdl,s=median(iteration_elasticnet))
+
+# Using REG SUBSET to perform model selection
+mod.full <-  regsubsets(cOI_2weeksbefore ~ ., intercept = FALSE, data = as.data.frame(joinedDataFrame_mobilityonly), nvmax = 3)
+mod.summary <-  summary(mod.full)
+which.min(mod.summary$cp)
+which.max(mod.summary$adjr2)
+coefficients(mod.full, id=2)
+
+plot(mod.summary$cp, xlab="Subset Size", ylab="Cp", pch=20, type="l")
+points(which.min(mod.summary$cp), min(mod.summary$cp), pch=4, col="red", lwd=7)
+
+plot(mod.summary$bic, xlab="Subset Size", ylab="BIC", pch=20, type="l")
+points(which.min(mod.summary$bic), min(mod.summary$bic), pch=4, col="red", lwd=7)
+
+plot(mod.summary$adjr2, xlab="Subset Size", ylab="AdjrR^2", pch=20, type="l")
+points(which.max(mod.summary$adjr2), max(mod.summary$adjr2), pch=4, col="red", lwd=7)
+
 #Further model comparison, now considering tmax and tavg
 summary(resultsList[["oOH2+oOH2:tmax"]][["cOI_2weeksbefore"]][["Model"]])
 AIC(resultsList[["oOH2+oOH2:tmax"]][["cOI_2weeksbefore"]][["Model"]])

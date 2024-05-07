@@ -17,8 +17,20 @@ source("PrepIncidenceData.R")
 incidence_data <- incidence_data %>% filter(Date > "2020-03-15") %>% filter(Date < "2021-01-01") %>%
                                       mutate(year = year(Date))
 incidence_data <- incidence_data %>% mutate(Welle = case_when(Date < "2020-05-17" ~ "1st Wave",
-                                                               Date >= "2020-05-17" ~ "Summer Period",
-                                                               Date >= "2020-09-28" ~ "Second wave"))
+                                                              Date >= "2020-09-28" ~ "Second wave",
+                                                               Date >= "2020-05-17" ~ "Summer Period"))
+
+sd <- sd(incidence_data$Incidence)
+
+incidence_data <- incidence_data %>% mutate(leadInc = lead(incidence_data$Incidence))
+sd2 <- sd(incidence_data$leadInc, na.rm=TRUE)
+
+covariance <- cov(incidence_data$Incidence, incidence_data$leadInc, use = "pairwise.complete.obs")
+ 
+incidence_data <- incidence_data[-nrow(incidence_data),]
+
+incidence_data <- incidence_data %>% mutate(ErrorcOI = sqrt((1/sqrt(Incidence))^2 + (1/sqrt(leadInc))^2))
+incidence_data <- incidence_data %>% mutate(ErrorIncidence = 1/sqrt(Incidence))
 
 date_breaks <- data.frame(start = c(as.Date("2020-03-22"), as.Date("2020-05-17"), as.Date("2020-09-28")),
                           end = c(as.Date("2020-05-17"), as.Date("2020-09-28"), as.Date("2021-01-01")),
@@ -29,18 +41,20 @@ date_breaks$colors <- factor(date_breaks$colors, levels = c("First Wave", "Summe
 p1 <- ggplot(incidence_data) +
 ylab("7-day-Incidence \nper 100,000") +
 xlab("") +
+scale_y_log10(breaks=c(1,10,100),labels=c(1,10,100)) +
 geom_rect(data = date_breaks,
             aes(xmin = start,
                 xmax = end,
-                ymin = - Inf,
+                ymin = 0,
                 ymax = Inf,
                 fill = colors),
             alpha = 0.3) +
 scale_fill_manual(values = c("#1B9E77",
                                "#7570B3", "#D95F02")) +
-geom_point(aes(x = Date, y = Incidence), color = "#666666", size = 2.5) +
+geom_point(aes(x = Date, y = Incidence), color = "#333333", size = 2.5) +
+geom_errorbar(aes(x= Date, ymin=Incidence-ErrorIncidence, ymax=Incidence+ErrorIncidence), width=1, color="#333333") +
 theme_minimal() +
-scale_x_date(date_breaks = "1 month", date_labels = "%d/%b/%y") +
+scale_x_date(date_breaks = "1 month", date_labels = "%b") +
 theme(text = element_text(size = 25), legend.position = "bottom", legend.title=element_blank()) +
    theme(axis.ticks.x = element_line(),
                    axis.ticks.y = element_line(),
@@ -52,7 +66,7 @@ theme(text = element_text(size = 25), legend.position = "bottom", legend.title=e
 # Plot of national growth multiplier over time
 p2 <- ggplot(incidence_data) +
 ylab("Growth \nMultiplier") +
-xlab("") +
+xlab("2020") +
 geom_rect(data = date_breaks,
             aes(xmin = start,
                 xmax = end,
@@ -62,14 +76,16 @@ geom_rect(data = date_breaks,
             alpha = 0.3) +
 scale_fill_manual(values = c("#1B9E77",
                                "#7570B3", "#D95F02")) +
-geom_point(aes(x = Date, y = cOI), color="#666666", size = 2.5) +
+geom_point(aes(x = Date, y = cOI), color="#333333", size = 2.5) +
+geom_errorbar(aes(x = Date, ymin=cOI-ErrorcOI, ymax=cOI+ErrorcOI), width=1, color="#333333") +
+#coord_cartesian(ylim = c(0,20)) +
 theme_minimal() +
-scale_x_date(date_breaks = "1 month", date_labels = "%d/%b/%y") +
-theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)) +
+scale_x_date(date_breaks = "1 month", date_labels = "%b") +
+#theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)) +
 theme(text = element_text(size = 25), legend.position = "bottom", legend.title=element_blank()) +
-   theme(axis.ticks.x = element_line(), 
+   theme(axis.ticks.x = element_line(),
                    axis.ticks.y = element_line(),
-                   axis.ticks.length = unit(5, "pt")) 
+                   axis.ticks.length = unit(5, "pt"))
 
 # Prepping mobility data
 date_breaks <- data.frame(start = c(as.Date("2020-03-08"), as.Date("2020-03-23"), as.Date("2020-05-10"), as.Date("2020-11-02"), as.Date("2020-12-16")),
@@ -83,7 +99,7 @@ source("PrepMobilityData.R")
 p3 <- mobility_data %>% filter (Bundesland == "Gesamt") %>% filter(Date < "2021-01-04") %>%
 ggplot() +
 ylab("Daily Out Of Home \nDuration/Person") +
-xlab("") +
+xlab("2020") +
 geom_rect(data = date_breaks,
             aes(xmin = start,
                 xmax = end,
@@ -94,14 +110,14 @@ geom_rect(data = date_breaks,
 scale_fill_manual(values = c("#B3B3B3", "#E7298A",
                                "#E6AB02", "#66A61E", "#A6761D")) +
 theme_minimal() +
-geom_point(aes(x = Date, y = outOfHomeDuration), color = "#666666", size = 2.5) +
-scale_x_date(date_breaks = "1 month", date_labels = "%d/%b/%y") +
-theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)) +
+geom_point(aes(x = Date, y = outOfHomeDuration), color = "#333333", size = 2.5) +
+scale_x_date(date_breaks = "1 month", date_labels = "%b") +
+#theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)) +
 theme(text = element_text(size = 25), legend.position = "bottom", legend.title=element_blank()) +
    theme(axis.ticks.x = element_line(),
                    axis.ticks.y = element_line(),
                    axis.ticks.length = unit(5, "pt")) +
-guides(fill=guide_legend(nrow=2))
+guides(fill = guide_legend(nrow = 2))
 
 ggsave("OutOfHomeDuration.pdf", p3, dpi = 500, w = 12, h = 6)
 ggsave("OutOfHomeDuration.png", p3, dpi = 500, w = 12, h = 6)
@@ -110,7 +126,7 @@ ggsave("OutOfHomeDuration.png", p3, dpi = 500, w = 12, h = 6)
 # Plot of temperature data over time
 source("PrepWeatherData.R")
 p4 <- weather_data_all %>% filter(Bundesland == "Gesamt") %>% filter(Date > "2020-03-01") %>% ggplot(aes(x = Date, y = tmax)) +
-geom_point(color = "#666666", size = 2.5) +
+geom_point(color = "#333333", size = 2.5) +
 ylab("Maximum Temperature \nin C°") +
 xlab("") +
 theme_minimal() +
@@ -126,12 +142,12 @@ theme(axis.ticks.x = element_line(),
 
 # Plot of outdoor fraction over time
 p5 <- weather_data_all %>% filter(Bundesland == "Gesamt") %>% filter(Date > "2020-03-01") %>% ggplot(aes(x = Date, y = outdoorFraction2)) +
-geom_point(color = "#666666", size = 2.5) +
+geom_point(color = "#333333", size = 2.5) +
 ylab("Share Of Activities \nPerformed Outside") +
 theme_minimal() +
-xlab("") +
-scale_x_date(date_breaks = "1 month", date_labels = "%d/%b/%y") +
-theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)) +
+xlab("2020") +
+scale_x_date(date_breaks = "1 month", date_labels = "%b") +
+#theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)) +
 theme(text = element_text(size = 25), legend.position = "bottom", legend.title=element_blank()) +
 theme(axis.ticks.x = element_line(), 
                    axis.ticks.y = element_line(),
@@ -141,24 +157,24 @@ theme(axis.ticks.x = element_line(),
 ggplot(weather_data_all %>% filter(Date > "2020-02-01" & Date < "2020-12-15")) +
 geom_line(aes(x = Date, y = TStar), color = "#666666", size = 1.2) +
 theme_minimal() +
-xlab("") +
+xlab("2020") +
 ylab("Temperature in C°") +
-scale_x_date(date_breaks = "1 month", date_labels = "%d/%b/%y") +
+scale_x_date(date_breaks = "1 month", date_labels = "%b") +
 theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)) +
 theme(text = element_text(size = 25), legend.position = "bottom", legend.title=element_blank()) +
-theme(axis.ticks.x = element_line(), 
+theme(axis.ticks.x = element_line(),
                    axis.ticks.y = element_line(),
                    axis.ticks.length = unit(5, "pt"))
 
-ggsave("TStarOverTime.pdf", w = 12, h = 4.75, dpi = 500)  
+ggsave("TStarOverTime.pdf", w = 12, h = 4.75, dpi = 500)
 ggsave("TStarOverTime.png", w = 12, h = 4.75, dpi = 500)                   
 
-p <- arrangeGrob(p1,p2,p3,p4,p5, nrow=5)
-p <- arrangeGrob(p1,p2, nrow=2, heights=c(2,3.5))
-ggsave("IncidenceChangeOfIncidence.pdf", p, w = 12, h = 8, dpi = 500)
-ggsave("IncidenceChangeOfIncidence.png", p, w = 12, h = 8, dpi = 500)
-p <- arrangeGrob(p4,p5, nrow=2, heights=c(2.5,3.5))
-ggsave("weatherplots.pdf", p, w = 12, h = 9, dpi = 500)
+p <- arrangeGrob(p1, p2, p3, p4, p5, nrow = 5)
+p <- arrangeGrob(p1, p2, nrow=2, heights = c(2,3.5))
+ggsave("IncidenceChangeOfIncidence.pdf", p, w = 12, h = 10, dpi = 500)
+ggsave("IncidenceChangeOfIncidence.png", p, w = 12, h = 10, dpi = 500)
+p <- arrangeGrob(p4, p5, nrow = 2, heights = c(3.5,3.5))
+ggsave("weatherplots.pdf", p, w = 12, h = 8, dpi = 500)
 ggsave("weatherplots.png", p, w = 12, h = 8, dpi = 500)
 
 # Scatter plot: growth mutiplier vs outdoor fraction
