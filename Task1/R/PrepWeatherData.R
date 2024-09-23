@@ -55,7 +55,7 @@ dict_state_id[nrow(dict_state_id) + 1, ] <- c("Gesamt", 10382, 83237124)
 weather_data_all <- data.frame(matrix(nrow = 0, ncol = 5))
 for (state in 1 : 17) {
 ID <- dict_state_id[as.integer(state), 2]
-weather_data <- read_delim(paste0("https://bulk.meteostat.net/daily/", ID, ".csv.gz"))
+weather_data <- read_delim(paste0("https://bulk.meteostat.net/v2/daily/", ID, ".csv.gz"))
 colnames(weather_data) <- c("Date", "tavg", "tmin", "tmax", "prcp", "snow", "wdir", "wspd", "wpgt", "pres", "tsun")
 
 weather_data$Date <- as.Date(weather_data$Date)
